@@ -181,17 +181,16 @@ func TestTimeString(t *testing.T) {
 func TestTimeFormatString(t *testing.T) {
 	now := time.Now()
 	str1 := now.Format(jtime.ANSIC)
-	str2 := now.Format(jtime.RFC850)
-	str3 := now.Format(jtime.UnixDate)
-	str4 := now.Format(jtime.RubyDate)
-	str5 := now.Format(jtime.RFC850)
-	str6 := now.Format(jtime.RFC1123)
-	str7 := now.Format(jtime.RFC1123Z)
-	str8 := now.Format(jtime.RFC3339)
-	str9 := now.Format(jtime.RFC3339Nano)
-	str10 := now.Format(jtime.ISO8601)
-	str11 := now.Format(jtime.DateTime)
-	str12 := now.Format(jtime.DateS)
+	str2 := now.Format(jtime.UnixDate)
+	str3 := now.Format(jtime.RubyDate)
+	str4 := now.Format(jtime.RFC850)
+	str5 := now.Format(jtime.RFC1123)
+	str6 := now.Format(jtime.RFC1123Z)
+	str7 := now.Format(jtime.RFC3339)
+	str8 := now.Format(jtime.RFC3339Nano)
+	str9 := now.Format(jtime.ISO8601)
+	str10 := now.Format(jtime.DateTime)
+	str11 := now.Format(jtime.DateS)
 	num := now.Unix()
 	tests := []struct {
 		input  interface{}
@@ -209,7 +208,6 @@ func TestTimeFormatString(t *testing.T) {
 		{str9, str1},
 		{str10, str1},
 		{str11, str1},
-		{str12, str1},
 		{num, str1},
 	}
 	for _, test := range tests {

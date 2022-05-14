@@ -1457,6 +1457,8 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 			case 29:
 				pattern := ""
 				switch f.F {
+				case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
+					pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
 				case jtime.RFC1123: // Mon, 02 Jan 2006 15:04:05 MST
 					pattern = fmt.Sprint(en3o2, n2o, en3o, n4o, tmo, en3)
 				case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
@@ -1499,6 +1501,8 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 			default:
 				pattern := ""
 				switch f.F {
+				case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
+					pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
 				case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
 					pattern = fmt.Sprint(date, en, tmo, n, "+", o, n2o, n2)
 				case jtime.StampNano: // Jan _2 15:04:05.000000000
@@ -1525,6 +1529,8 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 		} else {
 			pattern := ""
 			switch f.F {
+			case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
+				pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
 			case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
 				pattern = fmt.Sprint(date, en, tmo, n, "+", o, n2o, n2)
 			case jtime.StampNano: // Jan _2 15:04:05.000000000

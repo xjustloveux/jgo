@@ -505,7 +505,7 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 		return nil, err
 	}
 	if res, ok := resPage.(agentResult); ok {
-		for i, _ := range res.rows {
+		for i := range res.rows {
 			delete(res.rows[i], allowPagingId)
 			delete(res.rows[i], orderById)
 		}

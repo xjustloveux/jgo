@@ -1,4 +1,7 @@
 # jgo
+[![Build Status](https://app.travis-ci.com/xjustloveux/jgo.svg?branch=master)](https://app.travis-ci.com/xjustloveux/jgo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/xjustloveux/jgo)](https://goreportcard.com/report/github.com/xjustloveux/jgo)
+[![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/xjustloveux/jgo)](https://pkg.go.dev/mod/github.com/xjustloveux/jgo)
 
 ---
 
