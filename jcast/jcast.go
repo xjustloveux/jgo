@@ -1389,15 +1389,19 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 	two := "{2}"
 	three := "{3}"
 	four := "{4}"
+	six := "{6}"
 	o := "[^A-Za-z0-9_]"
 	o2 := fmt.Sprint(o, two)
+	on := "[^0-9]"
 	n := "[0-9]"
 	n2 := fmt.Sprint(n, two)
 	n3 := fmt.Sprint(n, three)
 	n4 := fmt.Sprint(n, four)
+	n6 := fmt.Sprint(n, six)
 	n2o := fmt.Sprint(n2, o)
 	n4o := fmt.Sprint(n4, o)
 	en := "[A-Za-z]"
+	en2 := fmt.Sprint(en, two)
 	en3 := fmt.Sprint(en, three)
 	en3o := fmt.Sprint(en3, o)
 	en3o2 := fmt.Sprint(en3o, two)
@@ -1406,145 +1410,78 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 	tm := fmt.Sprint(n2o, n2o, n2)
 	tmo := fmt.Sprint(tm, o)
 	for _, f := range timeFormat {
-		if l := len(f.F); len(s) == l {
-			switch l {
-			case 19:
-				pattern := ""
-				switch f.F {
-				case jtime.RFC822: // 02 Jan 06 15:04 MST
-					pattern = fmt.Sprint(n2o, en3o, n2o, n2o, n2o, en3)
-				case jtime.StampMilli: // Jan _2 15:04:05.000
-					pattern = fmt.Sprint(en3o, n2o, tmo, n3)
-				case jtime.StampNano: // Jan _2 15:04:05.000000000
-					pattern = fmt.Sprint(en3o, n2o, tmo, n, "+")
-				case jtime.ISO8601: // 2006-01-02T15:04:05
-					pattern = fmt.Sprint(date, en, tm)
-				case jtime.DateTime: // 2006-01-02 15:04:05
-					pattern = fmt.Sprint(dateo, tm)
-				}
-				if pattern != "" {
-					if b, err := regexp.MatchString(pattern, s); err != nil {
-						return time.Time{}, err
-					} else if b {
-						if f.Z {
-							return time.ParseInLocation(f.F, s, loc)
-						} else {
-							return time.Parse(f.F, s)
-						}
-					}
-				}
-			case 25:
-				pattern := ""
-				switch f.F {
-				case jtime.RFC3339: // 2006-01-02T15:04:05Z07:00
-					pattern = fmt.Sprint(date, en, tm, o, n2o, n2)
-				case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
-					pattern = fmt.Sprint(date, en, tmo, n, "+", o, n2o, n2)
-				case jtime.StampNano: // Jan _2 15:04:05.000000000
-					pattern = fmt.Sprint(en3o, n2o, tmo, n, "+")
-				}
-				if pattern != "" {
-					if b, err := regexp.MatchString(pattern, s); err != nil {
-						return time.Time{}, err
-					} else if b {
-						if f.Z {
-							return time.ParseInLocation(f.F, s, loc)
-						} else {
-							return time.Parse(f.F, s)
-						}
-					}
-				}
-			case 29:
-				pattern := ""
-				switch f.F {
-				case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
-					pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
-				case jtime.RFC1123: // Mon, 02 Jan 2006 15:04:05 MST
-					pattern = fmt.Sprint(en3o2, n2o, en3o, n4o, tmo, en3)
-				case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
-					pattern = fmt.Sprint(date, en, tmo, n, "+", o, n2o, n2)
-				case jtime.DateS: // 2006-01-02 15:04:05 -0700 MST
-					pattern = fmt.Sprint(dateo, tmo, o, n4o, en3)
-				}
-				if pattern != "" {
-					if b, err := regexp.MatchString(pattern, s); err != nil {
-						return time.Time{}, err
-					} else if b {
-						if f.Z {
-							return time.ParseInLocation(f.F, s, loc)
-						} else {
-							return time.Parse(f.F, s)
-						}
-					}
-				}
-			case 30:
-				pattern := ""
-				switch f.F {
-				case jtime.RubyDate: // Mon Jan 02 15:04:05 -0700 2006
-					pattern = fmt.Sprint(en3o, en3o, n2o, tmo, o, n4o, n4)
-				case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
-					pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
-				case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
-					pattern = fmt.Sprint(date, en, tmo, n, "+", o, n2o, n2)
-				}
-				if pattern != "" {
-					if b, err := regexp.MatchString(pattern, s); err != nil {
-						return time.Time{}, err
-					} else if b {
-						if f.Z {
-							return time.ParseInLocation(f.F, s, loc)
-						} else {
-							return time.Parse(f.F, s)
-						}
-					}
-				}
-			default:
-				pattern := ""
-				switch f.F {
-				case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
-					pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
-				case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
-					pattern = fmt.Sprint(date, en, tmo, n, "+", o, n2o, n2)
-				case jtime.StampNano: // Jan _2 15:04:05.000000000
-					pattern = fmt.Sprint(en3o, n2o, tmo, n, "+")
-				default:
-					if f.Z {
-						return time.ParseInLocation(f.F, s, loc)
-					} else {
-						return time.Parse(f.F, s)
-					}
-				}
-				if pattern != "" {
-					if b, err := regexp.MatchString(pattern, s); err != nil {
-						return time.Time{}, err
-					} else if b {
-						if f.Z {
-							return time.ParseInLocation(f.F, s, loc)
-						} else {
-							return time.Parse(f.F, s)
-						}
-					}
-				}
-			}
-		} else {
-			pattern := ""
-			switch f.F {
-			case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
-				pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
-			case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
-				pattern = fmt.Sprint(date, en, tmo, n, "+", o, n2o, n2)
-			case jtime.StampNano: // Jan _2 15:04:05.000000000
-				pattern = fmt.Sprint(en3o, n2o, tmo, n, "+")
-			}
-			if pattern != "" {
-				if b, err := regexp.MatchString(pattern, s); err != nil {
-					return time.Time{}, err
-				} else if b {
-					if f.Z {
-						return time.ParseInLocation(f.F, s, loc)
-					} else {
-						return time.Parse(f.F, s)
-					}
+		pattern := ""
+		ck := false
+		switch f.F {
+		case jtime.ANSIC: // Mon Jan _2 15:04:05 2006
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", en3o, en3o, n2o, tmo, n4)
+		case jtime.UnixDate: // Mon Jan _2 15:04:05 MST 2006
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", en3o, en3o, n2o, tmo, en3o, n4)
+		case jtime.RubyDate: // Mon Jan 02 15:04:05 -0700 2006
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", en3o, en3o, n2o, tmo, o, n4o, n4)
+		case jtime.RFC822: // 02 Jan 06 15:04 MST
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", n2o, en3o, n2o, n2o, n2o, en3)
+		case jtime.RFC822Z: // 02 Jan 06 15:04 -0700
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", n2o, en3o, n2o, n2o, n2o, o, n4)
+		case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
+			ck = len(s) > (len(f.F) - 3)
+			pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
+		case jtime.RFC1123: // Mon, 02 Jan 2006 15:04:05 MST
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", en3o2, n2o, en3o, n4o, tmo, en3)
+		case jtime.RFC1123Z: // Mon, 02 Jan 2006 15:04:05 -0700
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", en3o2, n2o, en3o, n4o, tmo, o, n4)
+		case jtime.RFC3339: // 2006-01-02T15:04:05Z07:00
+			ck = len(s) > (len(f.F) - 4)
+			pattern = fmt.Sprint("^", date, en, tm, on)
+		case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
+			ck = len(s) > (len(f.F) - 12)
+			pattern = fmt.Sprint("^", date, en, tmo, n, "+", on)
+		case jtime.Kitchen: // 3:04PM
+			ck = len(s) > (len(f.F) - 1)
+			pattern = fmt.Sprint("^", n, "+", o, n2, en2)
+		case jtime.Stamp: // Jan _2 15:04:05
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", en3o, n2o, tm)
+		case jtime.StampMilli: // Jan _2 15:04:05.000
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", en3o, n2o, tmo, n3)
+		case jtime.StampMicro: // Jan _2 15:04:05.000000
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", en3o, n2o, tmo, n6)
+		case jtime.StampNano: // Jan _2 15:04:05.000000000
+			ck = len(s) > (len(f.F) - 8)
+			pattern = fmt.Sprint("^", en3o, n2o, tmo, n, "+")
+		case jtime.ISO8601: // 2006-01-02T15:04:05
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", date, en, tm)
+		case jtime.DateTime: // 2006-01-02 15:04:05
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", dateo, tm)
+		case jtime.DateS: // 2006-01-02 15:04:05 -0700 MST
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", dateo, tmo, o, n4o, en3)
+		case jtime.Date: // 2006-01-02
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", date)
+		case jtime.Time:
+			ck = len(f.F) == len(s)
+			pattern = fmt.Sprint("^", tm)
+		}
+		if pattern != "" && ck {
+			if b, err := regexp.MatchString(pattern, s); err != nil {
+				continue
+			} else if b {
+				if f.Z {
+					return time.ParseInLocation(f.F, s, loc)
+				} else {
+					return time.Parse(f.F, s)
 				}
 			}
 		}
