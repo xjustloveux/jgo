@@ -168,6 +168,12 @@ func Value(i interface{}) interface{} {
 			s[idx] = sv
 		}
 		return s
+	case []bool:
+		s := make([]bool, len(v))
+		for idx, sv := range v {
+			s[idx] = sv
+		}
+		return s
 	case []int:
 		s := make([]int, len(v))
 		for idx, sv := range v {
@@ -1098,7 +1104,7 @@ func Float64(i interface{}) (float64, error) {
 	case uint64:
 		return float64(v), nil
 	case float32:
-		return float64(v), nil
+		return strconv.ParseFloat(String(v), 64)
 	case float64:
 		return v, nil
 	case []byte:
@@ -1475,9 +1481,7 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 			pattern = fmt.Sprint("^", tm)
 		}
 		if pattern != "" && ck {
-			if b, err := regexp.MatchString(pattern, s); err != nil {
-				continue
-			} else if b {
+			if b, err := regexp.MatchString(pattern, s); err == nil && b {
 				if f.Z {
 					return time.ParseInLocation(f.F, s, loc)
 				} else {

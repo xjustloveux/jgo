@@ -76,7 +76,3 @@ func ParseTimeDuration(t string) (time.Duration, error) {
 func errorf(e jError, args ...interface{}) error {
 	return fmt.Errorf(fmt.Sprint(pkgName, ": ", e.Error()), args...)
 }
-
-func errors(e jError) error {
-	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
-}
