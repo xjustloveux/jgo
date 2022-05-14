@@ -1429,7 +1429,7 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 			ck = len(f.F) == len(s)
 			pattern = fmt.Sprint("^", n2o, en3o, n2o, n2o, n2o, o, n4)
 		case jtime.RFC850: // Monday, 02-Jan-06 15:04:05 MST
-			ck = len(s) > (len(f.F) - 3)
+			ck = len(s) >= len(f.F)
 			pattern = fmt.Sprint("^", en, "+", o2, n2o, en3o, n2o, tmo, en3)
 		case jtime.RFC1123: // Mon, 02 Jan 2006 15:04:05 MST
 			ck = len(f.F) == len(s)
@@ -1438,13 +1438,13 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 			ck = len(f.F) == len(s)
 			pattern = fmt.Sprint("^", en3o2, n2o, en3o, n4o, tmo, o, n4)
 		case jtime.RFC3339: // 2006-01-02T15:04:05Z07:00
-			ck = len(s) > (len(f.F) - 4)
+			ck = len(s) >= (len(f.F) - 5)
 			pattern = fmt.Sprint("^", date, en, tm, on)
 		case jtime.RFC3339Nano: // 2006-01-02T15:04:05.999999999Z07:00
-			ck = len(s) > (len(f.F) - 12)
+			ck = len(s) >= (len(f.F) - 13)
 			pattern = fmt.Sprint("^", date, en, tmo, n, "+", on)
 		case jtime.Kitchen: // 3:04PM
-			ck = len(s) > (len(f.F) - 1)
+			ck = len(s) >= (len(f.F) - 1)
 			pattern = fmt.Sprint("^", n, "+", o, n2, en2)
 		case jtime.Stamp: // Jan _2 15:04:05
 			ck = len(f.F) == len(s)
@@ -1456,7 +1456,7 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 			ck = len(f.F) == len(s)
 			pattern = fmt.Sprint("^", en3o, n2o, tmo, n6)
 		case jtime.StampNano: // Jan _2 15:04:05.000000000
-			ck = len(s) > (len(f.F) - 8)
+			ck = len(s) >= (len(f.F) - 8)
 			pattern = fmt.Sprint("^", en3o, n2o, tmo, n, "+")
 		case jtime.ISO8601: // 2006-01-02T15:04:05
 			ck = len(f.F) == len(s)
