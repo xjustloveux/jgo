@@ -1,0 +1,73 @@
+{
+  "map1": {
+    "map1-1": {
+      "str": "test-str",
+      "test-bool": false,
+      "test-int": -7,
+      "test-float": -7.7
+    },
+    "slice1-1": [
+      "test-str",
+      true,
+      7,
+      7.7,
+      {
+        "str": "test-slice-map",
+        "test-bool": true,
+        "test-int": 7,
+        "test-float": 7.7
+      },
+      [
+        "test-slice-slice",
+        false,
+        -7,
+        -7.7,
+        true,
+        7,
+        7.7
+      ],
+      false,
+      -7,
+      -7.7
+    ]
+  },
+  "map2": {
+    "map2-1": {
+      "str": "str",
+      "bool": true,
+      "int": 7,
+      "float": 7.7
+    },
+    "slice2-1": [
+      "str",
+      true,
+      7,
+      7.7,
+      {
+        "str": "slice-map",
+        "bool": false,
+        "int": -7,
+        "float": -7.7
+      }
+    ]
+  },
+  "map3": {
+    "str": "str",
+    "bool": true,
+    "int": 7,
+    "float": 7.7,
+    "m": {
+      "str": "str",
+      "bool": true,
+      "int": 7,
+      "float": 7.7
+    },
+    "s": [
+      "str",
+      true,
+      7,
+      7.7
+    ]
+  },
+  "slice2": [1, 2, 3, 4, 5]
+}

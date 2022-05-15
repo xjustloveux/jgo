@@ -4,6 +4,10 @@
 
 // Package jgo
 //
+// Jgo provides an easier configuration for writing sql, log, and cron jobs.
+//
+// Jgo minimizes dependencies on third-party middleware to avoid conflicts.
+//
 // jcast: cast tool
 //
 // jconf: config tool

@@ -1,0 +1,43 @@
+// Copyright 2022 JaJa All rights reserved.
+// Use of this source code is governed by a MIT-style.
+// license that can be found in the LICENSE file.
+
+package jfile
+
+import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func TestJsonCodec(t *testing.T) {
+	m := make(map[string]interface{})
+	m["str"] = "str"
+	m["bool"] = true
+	m["int"] = 7
+	m["float"] = 7.7
+	m1 := make(map[string]interface{})
+	m1["str"] = "str"
+	m1["bool"] = true
+	m1["int"] = 7
+	m1["float"] = 7.7
+	m["map"] = m1
+	s1 := []interface{}{"str", true, 7, 7.7}
+	m["slice"] = s1
+	var err error
+	var b []byte
+	if b, err = (jsonCodec{}).Encode(m); err != nil {
+		t.Error(err)
+		return
+	}
+	m2 := make(map[string]interface{})
+	if err = (jsonCodec{}).Decode(b, m2); err != nil {
+		t.Error(err)
+	} else {
+		m["int"] = float64(7)
+		m["map"].(map[string]interface{})["int"] = float64(7)
+		m["slice"].([]interface{})[2] = float64(7)
+		msg := fmt.Sprintf("%v != %v", m, m2)
+		assert.Equal(t, m, m2, msg)
+	}
+}

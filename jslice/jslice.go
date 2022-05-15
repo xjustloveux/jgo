@@ -72,7 +72,3 @@ func InsertAll(idx int, i, v interface{}) ([]interface{}, error) {
 func errorf(e jError, args ...interface{}) error {
 	return fmt.Errorf(fmt.Sprint(pkgName, ": ", e.Error()), args...)
 }
-
-func errors(e jError) error {
-	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
-}

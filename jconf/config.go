@@ -495,7 +495,7 @@ func (c *config) SliceFloat64(args ...interface{}) ([]float64, error) {
 func (c *config) Convert(v interface{}, args ...interface{}) error {
 	var err error
 	var m map[string]interface{}
-	if len(args) == 1 && reflect.TypeOf(args[0]).Kind() == reflect.Map {
+	if len(args) == 1 && args[0] != nil && reflect.TypeOf(args[0]).Kind() == reflect.Map {
 		if m, err = jcast.StringMapInterface(args[0]); err != nil {
 			return err
 		}

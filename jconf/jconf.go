@@ -69,6 +69,7 @@ func overwriteMap(m1, m2 map[interface{}]interface{}) interface{} {
 					}
 					if !def {
 						nm[k] = overwriteMap(nmimi, vimi)
+						def = true
 					}
 				} else if reflect.TypeOf(v).Kind() == reflect.Slice && reflect.TypeOf(nm[k]).Kind() == reflect.Slice {
 					var err error
@@ -81,11 +82,10 @@ func overwriteMap(m1, m2 map[interface{}]interface{}) interface{} {
 					}
 					if !def {
 						nm[k] = overwriteSlice(nmsi, vsi)
+						def = true
 					}
-				} else {
-					def = true
 				}
-				if def {
+				if !def {
 					nm[k] = jcast.Value(v)
 				}
 			}
@@ -108,7 +108,7 @@ func overwriteSlice(s1, s2 []interface{}) []interface{} {
 		for i, v := range s2 {
 			if i < len(ns) {
 				if ns[i] == nil {
-					ns[i] = v
+					ns[i] = jcast.Value(v)
 				} else if v != nil {
 					def := false
 					if reflect.TypeOf(v).Kind() == reflect.Map && reflect.TypeOf(ns[i]).Kind() == reflect.Map {
@@ -122,6 +122,7 @@ func overwriteSlice(s1, s2 []interface{}) []interface{} {
 						}
 						if !def {
 							ns[i] = overwriteMap(nsimi, vimi)
+							def = true
 						}
 					} else if reflect.TypeOf(v).Kind() == reflect.Slice && reflect.TypeOf(ns[i]).Kind() == reflect.Slice {
 						var err error
@@ -134,9 +135,11 @@ func overwriteSlice(s1, s2 []interface{}) []interface{} {
 						}
 						if !def {
 							ns[i] = overwriteSlice(nssi, vsi)
+							def = true
 						}
-					} else {
-						def = true
+					}
+					if !def {
+						ns[i] = jcast.Value(v)
 					}
 				}
 			} else {

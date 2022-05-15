@@ -92,6 +92,8 @@ func TestValue(t *testing.T) {
 	mui64i := make(map[uint64]interface{})
 	mf32i := make(map[float32]interface{})
 	mf64i := make(map[float64]interface{})
+	mnii := make(map[interface{}]interface{})
+	mn := make(map[time.Time]interface{})
 	mii[str] = str
 	mbi[bo] = bo
 	mi00i[i] = i
@@ -99,12 +101,15 @@ func TestValue(t *testing.T) {
 	mi16i[int16(i)] = int16(i)
 	mi32i[int32(i)] = int32(i)
 	mi64i[int64(i)] = int64(i)
+	mui00i[uint(i)] = uint(i)
 	mui08i[uint8(i)] = uint8(i)
 	mui16i[uint16(i)] = uint16(i)
 	mui32i[uint32(i)] = uint32(i)
 	mui64i[uint64(i)] = uint64(i)
 	mf32i[float32(i)] = float32(f)
 	mf64i[float64(i)] = f
+	mn[now] = now
+	mnii[now] = now
 	ss := []string{str}
 	sb := []bool{bo}
 	si := []int{i}
@@ -119,6 +124,8 @@ func TestValue(t *testing.T) {
 	sui64 := []uint64{uint64(i)}
 	sf32 := []float32{float32(f)}
 	sf64 := []float64{f}
+	sn := []time.Time{now}
+	snii := []interface{}{now}
 	tests := []struct {
 		input  interface{}
 		output interface{}
@@ -146,6 +153,7 @@ func TestValue(t *testing.T) {
 		{mui64i, mui64i},
 		{mf32i, mf32i},
 		{mf64i, mf64i},
+		{mn, mnii},
 		{ss, ss},
 		{sb, sb},
 		{si, si},
@@ -160,6 +168,7 @@ func TestValue(t *testing.T) {
 		{sui64, sui64},
 		{sf32, sf32},
 		{sf64, sf64},
+		{sn, snii},
 	}
 	for _, test := range tests {
 		v := Value(test.input)
@@ -220,6 +229,7 @@ func TestTimeLoc(t *testing.T) {
 		{uint64(i), it},
 		{[]byte(it.Format(jtime.DateS)), it},
 		{"Error String", time.Time{}},
+		{7.7, time.Time{}},
 	}
 	for _, test := range tests {
 		if v, err := TimeLoc(test.input, loc); err != nil {
@@ -357,10 +367,11 @@ func TestBool(t *testing.T) {
 		{[]byte{116, 114, 117, 101}, true},
 		{nil, false},
 		{errStr, false},
+		{time.Now(), false},
 	}
 	for _, test := range tests {
 		if v, err := Bool(test.input); err != nil {
-			if test.input != errStr {
+			if test.output {
 				t.Error(err)
 			}
 		} else {

@@ -1,0 +1,52 @@
+{
+  "jEnv": "test",
+  "error-json": "error-json",
+  "map1": {
+    "map1-1": {
+      "str": "str",
+      "bool": true,
+      "int": 7,
+      "float": 7.7
+    },
+    "slice1-1": [
+      "str",
+      true,
+      7,
+      7.7,
+      {
+        "str": "slice-map",
+        "bool": false,
+        "int": -7,
+        "float": -7.7
+      },
+      [
+        "slice-slice",
+        false,
+        -7,
+        -7.7
+      ]
+    ]
+  },
+  "slice1": [
+    "str",
+    true,
+    7,
+    7.7
+  ],
+  "sliceString": [
+    "str1",
+    "str2"
+  ],
+  "sliceBool": [
+    true,
+    false
+  ],
+  "sliceInt": [
+    7,
+    77
+  ],
+  "sliceFloat": [
+    7.7,
+    -7.7
+  ]
+}
