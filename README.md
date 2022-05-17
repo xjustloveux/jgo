@@ -570,15 +570,15 @@ func Job02(data map[string]interface{}) {
 
 ### CronExpression
 
-| Name         | Required | Allowed Values | Allowed Special Characters |
-|--------------|----------|----------------|----------------------------|
-| Seconds      | true     | 0-59           | ,-*/                       |
-| Minutes      | true     | 0-59           | ,-*/                       |
-| Hours        | true     | 0-23           | ,-*/                       |
-| Day of month | true     | 1-31           | ,-*/?                      |
-| Month        | true     | 1-12           | ,-*/                       |
-| Day of week  | true     | 0-6            | ,-*/?                      |
-| Year         | false    | 2000-2100      | ,-*/                       |
+| Name         | Required | Allowed Values                      | Allowed Special Characters |
+|--------------|----------|-------------------------------------|----------------------------|
+| Seconds      | true     | 0-59                                | ,-*/                       |
+| Minutes      | true     | 0-59                                | ,-*/                       |
+| Hours        | true     | 0-23                                | ,-*/                       |
+| Day of month | true     | 1-31                                | ,-*/?                      |
+| Month        | true     | 1-12 or January-December or JAN-DEC | ,-*/                       |
+| Day of week  | true     | 0-6 or Sunday-Saturday or SUN-SAT   | ,-*/?                      |
+| Year         | false    | 2020-2080                           | ,-*/                       |
 
 # Api
 

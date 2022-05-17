@@ -30,8 +30,8 @@ const (
 const (
 	pkgName  = "jcron"
 	fileName = "cron.json"
-	minYear  = 2000
-	maxYear  = 2100
+	minYear  = 2020
+	maxYear  = 2080
 )
 
 var (
@@ -120,9 +120,7 @@ func Init() error {
 
 // AddJob add job
 func AddJob(name string, j Job) error {
-	if status == Stop {
-		jobs[name] = j
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: addJob,
 			data: &job{
@@ -133,6 +131,8 @@ func AddJob(name string, j Job) error {
 		}
 		c := <-outCh
 		return c.err
+	} else {
+		jobs[name] = j
 	}
 	return nil
 }
@@ -161,10 +161,7 @@ func AddSchedule(sch *SchInfo) (err error) {
 		desc:           sch.Desc,
 		status:         Run,
 	}
-	if status == Stop {
-		totalSch[s.name] = s
-		runSch = append(runSch, s)
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: addSch,
 			data:   s,
@@ -172,15 +169,16 @@ func AddSchedule(sch *SchInfo) (err error) {
 		}
 		c := <-outCh
 		return c.err
+	} else {
+		totalSch[s.name] = s
+		runSch = append(runSch, s)
 	}
 	return nil
 }
 
 // GetSchedule returns schedule
 func GetSchedule(name string) (Schedule, error) {
-	if status == Stop {
-		return totalSch[name], nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSch,
 			data:   name,
@@ -191,9 +189,18 @@ func GetSchedule(name string) (Schedule, error) {
 			return nil, c.err
 		}
 		if v, ok := c.data.(*schedule); ok {
+			if v == nil {
+				return nil, errors(errorUnknownSch)
+			}
 			return v, c.err
 		} else {
 			return nil, errorf(errorDataSch, c.data)
+		}
+	} else {
+		if sch := totalSch[name]; sch == nil {
+			return nil, errors(errorUnknownSch)
+		} else {
+			return sch, nil
 		}
 	}
 }
@@ -221,7 +228,6 @@ func Interrupt() {
 	if status != Run {
 		return
 	}
-	status = SyncWait
 	inCh <- channel{
 		action: stop,
 		data:   nil,
@@ -255,13 +261,26 @@ func WaitTrigger() {
 // Trigger trigger job
 func Trigger(j Job, data map[string]interface{}) error {
 	if j != nil {
-		e := &entry{
-			j:    j,
-			data: data,
+		if status == Run {
+			inCh <- channel{
+				action: trigger,
+				data: &entry{
+					j:    j,
+					data: data,
+				},
+				err: nil,
+			}
+			c := <-outCh
+			return c.err
+		} else {
+			e := &entry{
+				j:    j,
+				data: data,
+			}
+			wgTrigger.Add(1)
+			go e.run(wgTrigger)
+			return nil
 		}
-		wgTrigger.Add(1)
-		go e.run(wgTrigger)
-		return nil
 	} else {
 		return errors(errorJobNil)
 	}
@@ -270,13 +289,26 @@ func Trigger(j Job, data map[string]interface{}) error {
 // TriggerFunc trigger job with function
 func TriggerFunc(f func(map[string]interface{}), data map[string]interface{}) error {
 	if f != nil {
-		e := &entry{
-			j:    jobFunc(f),
-			data: data,
+		if status == Run {
+			inCh <- channel{
+				action: trigger,
+				data: &entry{
+					j:    jobFunc(f),
+					data: data,
+				},
+				err: nil,
+			}
+			c := <-outCh
+			return c.err
+		} else {
+			e := &entry{
+				j:    jobFunc(f),
+				data: data,
+			}
+			wgTrigger.Add(1)
+			go e.run(wgTrigger)
+			return nil
 		}
-		wgTrigger.Add(1)
-		go e.run(wgTrigger)
-		return nil
 	} else {
 		return errors(errorFuncNil)
 	}
@@ -437,8 +469,8 @@ func runCh(c channel, now time.Time) channel {
 							break
 						}
 					}
+					s.status = Run
 					if add {
-						s.status = Run
 						noneCh <- channel{
 							action: addSch,
 							data:   s,

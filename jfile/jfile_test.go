@@ -12,16 +12,11 @@ import (
 
 func TestLoad(t *testing.T) {
 	testErr := "TEST ERROR:"
-	if _, err := Load("error.json"); err != nil {
-		fmt.Println(testErr)
-		fmt.Println(err)
-	} else {
+	if _, err := Load("error.json"); err == nil {
 		t.Error(fmt.Sprint(testErr, " Load must be return error"))
-		return
 	}
 	if _, err := Load("../files/error.json"); err != nil {
 		t.Error(err)
-		return
 	}
 }
 
@@ -60,7 +55,6 @@ func TestConvert(t *testing.T) {
 	}
 	if err := Convert(m1, &ts); err != nil {
 		t.Error(err)
-		return
 	} else {
 		output.M2["int"] = float64(7)
 		output.M2["m3"].(map[string]interface{})["int"] = float64(7)

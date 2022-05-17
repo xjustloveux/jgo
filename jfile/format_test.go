@@ -6,9 +6,11 @@ package jfile
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestFormat_String(t *testing.T) {
-	fmt.Println(Json.String())
+	str := Json.String()
+	assert.Equal(t, "Json", str, fmt.Sprintf("%v != %v", str, "Json"))
 }

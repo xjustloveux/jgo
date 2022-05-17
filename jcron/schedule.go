@@ -49,9 +49,7 @@ type schedule struct {
 }
 
 func (s *schedule) Name() (string, error) {
-	if status == Stop {
-		return s.name, nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSchName,
 			data:   s,
@@ -59,13 +57,13 @@ func (s *schedule) Name() (string, error) {
 		}
 		c := <-outCh
 		return jcast.String(c.data), c.err
+	} else {
+		return s.name, nil
 	}
 }
 
 func (s *schedule) CronExpression() (string, error) {
-	if status == Stop {
-		return s.cronExpression, nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSchCronExpression,
 			data:   s,
@@ -73,13 +71,13 @@ func (s *schedule) CronExpression() (string, error) {
 		}
 		c := <-outCh
 		return jcast.String(c.data), c.err
+	} else {
+		return s.cronExpression, nil
 	}
 }
 
 func (s *schedule) Job() (string, error) {
-	if status == Stop {
-		return s.job, nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSchJob,
 			data:   s,
@@ -87,13 +85,13 @@ func (s *schedule) Job() (string, error) {
 		}
 		c := <-outCh
 		return jcast.String(c.data), c.err
+	} else {
+		return s.job, nil
 	}
 }
 
 func (s *schedule) Data() (map[string]interface{}, error) {
-	if status == Stop {
-		return s.data, nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSchData,
 			data:   s,
@@ -104,13 +102,13 @@ func (s *schedule) Data() (map[string]interface{}, error) {
 			return nil, c.err
 		}
 		return jcast.StringMapInterface(c.data)
+	} else {
+		return s.data, nil
 	}
 }
 
 func (s *schedule) Desc() (string, error) {
-	if status == Stop {
-		return s.desc, nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSchDesc,
 			data:   s,
@@ -118,13 +116,13 @@ func (s *schedule) Desc() (string, error) {
 		}
 		c := <-outCh
 		return jcast.String(c.data), c.err
+	} else {
+		return s.desc, nil
 	}
 }
 
 func (s *schedule) Status() (Status, error) {
-	if status == Stop {
-		return s.status, nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSchSts,
 			data:   s,
@@ -139,13 +137,13 @@ func (s *schedule) Status() (Status, error) {
 		} else {
 			return Unknown, errorf(errorDataStatus, c.data)
 		}
+	} else {
+		return s.status, nil
 	}
 }
 
 func (s *schedule) NextTime() (time.Time, error) {
-	if status == Stop {
-		return s.next, nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSchNext,
 			data:   s,
@@ -156,13 +154,13 @@ func (s *schedule) NextTime() (time.Time, error) {
 			return time.Time{}, c.err
 		}
 		return jcast.Time(c.data)
+	} else {
+		return s.next, nil
 	}
 }
 
 func (s *schedule) PrevTime() (time.Time, error) {
-	if status == Stop {
-		return s.prev, nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: getSchPrev,
 			data:   s,
@@ -173,17 +171,13 @@ func (s *schedule) PrevTime() (time.Time, error) {
 			return time.Time{}, c.err
 		}
 		return jcast.Time(c.data)
+	} else {
+		return s.prev, nil
 	}
 }
 
 func (s *schedule) Stop() error {
-	if status == Stop {
-		var nt time.Time
-		s.status = Stop
-		s.next = nt
-		s.prev = nt
-		return nil
-	} else {
+	if status == Run {
 		inCh <- channel{
 			action: stopSch,
 			data:   s,
@@ -191,11 +185,25 @@ func (s *schedule) Stop() error {
 		}
 		c := <-outCh
 		return c.err
+	} else {
+		var nt time.Time
+		s.status = Stop
+		s.next = nt
+		s.prev = nt
+		return nil
 	}
 }
 
 func (s *schedule) Resume() error {
-	if status == Stop {
+	if status == Run {
+		inCh <- channel{
+			action: resumeSch,
+			data:   s,
+			err:    nil,
+		}
+		c := <-outCh
+		return c.err
+	} else {
 		if totalSch[s.name] == s {
 			add := true
 			for _, rs := range runSch {
@@ -204,27 +212,30 @@ func (s *schedule) Resume() error {
 					break
 				}
 			}
+			s.status = Run
 			if add {
-				s.status = Run
 				runSch = append(runSch, s)
 			}
 		} else {
 			return errors(errorUnknownSch)
 		}
 		return nil
-	} else {
-		inCh <- channel{
-			action: resumeSch,
-			data:   s,
-			err:    nil,
-		}
-		c := <-outCh
-		return c.err
 	}
 }
 
 func (s *schedule) Trigger(data map[string]interface{}) error {
-	if status == Stop {
+	if status == Run {
+		inCh <- channel{
+			action: trigger,
+			data: &entry{
+				sch:  s,
+				data: data,
+			},
+			err: nil,
+		}
+		c := <-outCh
+		return c.err
+	} else {
 		if j := jobs[s.job]; j != nil {
 			e := &entry{
 				j:    j,
@@ -236,17 +247,6 @@ func (s *schedule) Trigger(data map[string]interface{}) error {
 		} else {
 			return errors(errorJobNil)
 		}
-	} else {
-		inCh <- channel{
-			action: trigger,
-			data: &entry{
-				sch:  s,
-				data: data,
-			},
-			err: nil,
-		}
-		c := <-outCh
-		return c.err
 	}
 }
 
@@ -264,9 +264,9 @@ func (s *schedule) toNext(n time.Time) {
 
 func (s *schedule) getNext(t time.Time) time.Time {
 	var err error
-	year := s.getNum(t.Year(), s.cron.year)
+	year := s.getNum(t.Year()-minYear, s.cron.year) + minYear
 	if v := year - t.Year(); v > 0 {
-		if t, err = s.getTime(t.Year()+v, s.cron.month[0], 1, s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
+		if t, err = s.getTime(t.Year()+v, 1, 1, 0, 0, 0); err != nil {
 			fmtPrintln(err)
 			s.status = Stop
 			return t
@@ -278,38 +278,35 @@ func (s *schedule) getNext(t time.Time) time.Time {
 	nm := int(t.Month())
 	month := s.getNum(nm, s.cron.month)
 	if v := month - nm; v > 0 {
-		if t, err = s.getTime(t.Year(), nm+v, 1, s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
+		if t, err = s.getTime(t.Year(), nm+v, 1, 0, 0, 0); err != nil {
 			fmtPrintln(err)
 			s.status = Stop
 			return t
 		}
 	} else if v < 0 {
-		if t, err = s.getTime(t.Year()+1, s.cron.month[0], 1, s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
+		if t, err = s.getTime(t.Year()+1, 1, 1, 0, 0, 0); err != nil {
 			fmtPrintln(err)
 			s.status = Stop
 			return t
 		}
 		return s.getNext(t)
 	}
-	if len(s.cron.day) > 0 {
+	if s.cron.day > 0 {
 		day := s.getNum(t.Day(), s.cron.day)
 		if v := day - t.Day(); v > 0 {
 			m := t.Month()
 			t = t.Add(time.Duration(v) * jtime.Day)
 			if m != t.Month() {
-				if t, err = s.getTime(t.Year(), int(t.Month()), 1, s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
+				if t, err = s.getTime(t.Year(), int(t.Month()), 1, 0, 0, 0); err != nil {
 					fmtPrintln(err)
 					s.status = Stop
 					return t
 				}
 				return s.getNext(t)
-			} else {
-				if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
-					fmtPrintln(err)
-					s.status = Stop
-					return t
-				}
-				return s.getNext(t)
+			} else if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), 0, 0, 0); err != nil {
+				fmtPrintln(err)
+				s.status = Stop
+				return t
 			}
 		} else if v < 0 {
 			ty := t.Year()
@@ -319,7 +316,7 @@ func (s *schedule) getNext(t time.Time) time.Time {
 				ty++
 				tm = 1
 			}
-			if t, err = s.getTime(ty, tm, 1, s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
+			if t, err = s.getTime(ty, tm, 1, 0, 0, 0); err != nil {
 				fmtPrintln(err)
 				s.status = Stop
 				return t
@@ -333,52 +330,45 @@ func (s *schedule) getNext(t time.Time) time.Time {
 		if v := week - w; v > 0 {
 			t = t.Add(time.Duration(v) * jtime.Day)
 			if m != t.Month() {
-				if t, err = s.getTime(t.Year(), int(t.Month()), 1, s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
+				if t, err = s.getTime(t.Year(), int(t.Month()), 1, 0, 0, 0); err != nil {
 					fmtPrintln(err)
 					s.status = Stop
 					return t
 				}
 				return s.getNext(t)
-			} else {
-				if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
-					fmtPrintln(err)
-					s.status = Stop
-					return t
-				}
-				return s.getNext(t)
+			} else if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), 0, 0, 0); err != nil {
+				fmtPrintln(err)
+				s.status = Stop
+				return t
 			}
 		} else if v < 0 {
-			v = 7 - w + s.cron.weekday[0]
+			v = 7 - w
 			t = t.Add(time.Duration(v) * jtime.Day)
 			if m != t.Month() {
-				if t, err = s.getTime(t.Year(), int(t.Month()), 1, s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
+				if t, err = s.getTime(t.Year(), int(t.Month()), 1, 0, 0, 0); err != nil {
 					fmtPrintln(err)
 					s.status = Stop
 					return t
 				}
-				return s.getNext(t)
-			} else {
-				if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
-					fmtPrintln(err)
-					s.status = Stop
-					return t
-				}
-				return s.getNext(t)
+			} else if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), 0, 0, 0); err != nil {
+				fmtPrintln(err)
+				s.status = Stop
+				return t
 			}
+			return s.getNext(t)
 		}
 	}
 	hr := s.getNum(t.Hour(), s.cron.hour)
 	if v := hr - t.Hour(); v > 0 {
 		t = t.Add(time.Duration(v) * jtime.Hour)
-		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), s.cron.minute[0], s.cron.second[0]); err != nil {
+		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), 0, 0); err != nil {
 			fmtPrintln(err)
 			s.status = Stop
 			return t
 		}
-		return s.getNext(t)
 	} else if v < 0 {
 		t = t.Add(jtime.Day)
-		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), s.cron.hour[0], s.cron.minute[0], s.cron.second[0]); err != nil {
+		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), 0, 0, 0); err != nil {
 			fmtPrintln(err)
 			s.status = Stop
 			return t
@@ -388,15 +378,14 @@ func (s *schedule) getNext(t time.Time) time.Time {
 	min := s.getNum(t.Minute(), s.cron.minute)
 	if v := min - t.Minute(); v > 0 {
 		t = t.Add(time.Duration(v) * jtime.Minute)
-		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), t.Minute(), s.cron.second[0]); err != nil {
+		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), t.Minute(), 0); err != nil {
 			fmtPrintln(err)
 			s.status = Stop
 			return t
 		}
-		return s.getNext(t)
 	} else if v < 0 {
 		t = t.Add(jtime.Hour)
-		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), s.cron.minute[0], s.cron.second[0]); err != nil {
+		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), 0, 0); err != nil {
 			fmtPrintln(err)
 			s.status = Stop
 			return t
@@ -408,7 +397,7 @@ func (s *schedule) getNext(t time.Time) time.Time {
 		t = t.Add(time.Duration(v) * jtime.Second)
 	} else if v < 0 {
 		t = t.Add(jtime.Minute)
-		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), t.Minute(), s.cron.second[0]); err != nil {
+		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), t.Minute(), 0); err != nil {
 			fmtPrintln(err)
 			s.status = Stop
 			return t
@@ -418,17 +407,21 @@ func (s *schedule) getNext(t time.Time) time.Time {
 	return t
 }
 
-func (s *schedule) getNum(n int, arr []int) int {
-	var num int
-	if len(arr) > 0 {
-		for _, v := range arr {
-			num = v
-			if v >= n {
+func (s *schedule) getNum(n int, bits uint64) int {
+	num := 0
+	if bits > 0 {
+		var vBits uint64
+		v := n
+		vBits = 1 << v
+		for vBits <= bits {
+			if vBits&bits > 0 {
+				num = v
 				break
+			} else {
+				v++
+				vBits = 1 << v
 			}
 		}
-	} else {
-		num = n
 	}
 	return num
 }

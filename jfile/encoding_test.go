@@ -32,28 +32,19 @@ func TestEncoding(t *testing.T) {
 	m["slice"] = s1
 	var err error
 	var b []byte
-	if _, err = Encode(Yaml.String(), m); err != nil {
-		fmt.Println(testErr)
-		fmt.Println(err)
-	} else {
+	if _, err = Encode(Yaml.String(), m); err == nil {
 		t.Error(fmt.Sprint(testErr, " Encode must be return error"))
-		return
 	}
 	if b, err = Encode(Json.String(), m); err != nil {
 		t.Error(err)
 		return
 	}
 	m2 := make(map[string]interface{})
-	if err = Decode(Yaml.String(), b, m2); err != nil {
-		fmt.Println(testErr)
-		fmt.Println(err)
-	} else {
+	if err = Decode(Yaml.String(), b, m2); err == nil {
 		t.Error(fmt.Sprint(testErr, " Decode must be return error"))
-		return
 	}
 	if err = Decode(Json.String(), b, m2); err != nil {
 		t.Error(err)
-		return
 	} else {
 		m["int"] = float64(7)
 		m["map"].(map[string]interface{})["int"] = float64(7)
