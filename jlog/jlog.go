@@ -101,7 +101,6 @@ func Init() error {
 		return err
 	}
 	cd = &configData{Debug: false}
-	fmt.Println(conf.Get("logs"))
 	if err := conf.Convert(cd); err != nil {
 		return err
 	}
@@ -148,9 +147,23 @@ func NewAppender(name string) (Appender, error) {
 	return ap[name], nil
 }
 
+// GetLogger returns *logrus.Logger with appender name
+func GetLogger(name string) *logrus.Logger {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
+	return apMap[name]
+}
+
 // Log log
-func Log(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Log(level Level, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = logrus.Level(level)
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Print print
@@ -194,98 +207,158 @@ func Trace(args ...interface{}) {
 }
 
 // Logf log
-func Logf(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Logf(level Level, format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+2)
+	na[0] = logrus.Level(level)
+	na[1] = format
+	for i, v := range args {
+		na[i+2] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Printf print
-func Printf(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Printf(format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = format
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Panicf print panic level message
-func Panicf(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Panicf(format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = format
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Fatalf print fatal level message
-func Fatalf(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Fatalf(format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = format
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Errorf print error level message
-func Errorf(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Errorf(format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = format
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Warnf print warn level message
-func Warnf(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Warnf(format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = format
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Infof print info level message
-func Infof(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Infof(format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = format
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Debugf print debug level message
-func Debugf(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Debugf(format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = format
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Tracef print trace level message
-func Tracef(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Tracef(format string, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = format
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // LogFn log
-func LogFn(args ...interface{}) {
+func LogFn(level Level, fn LogFunction) {
+	args := []interface{}{logrus.Level(level), logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // PrintFn print
-func PrintFn(args ...interface{}) {
+func PrintFn(fn LogFunction) {
+	args := []interface{}{logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // PanicFn print panic level message
-func PanicFn(args ...interface{}) {
+func PanicFn(fn LogFunction) {
+	args := []interface{}{logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // FatalFn print fatal level message
-func FatalFn(args ...interface{}) {
+func FatalFn(fn LogFunction) {
+	args := []interface{}{logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // ErrorFn print error level message
-func ErrorFn(args ...interface{}) {
+func ErrorFn(fn LogFunction) {
+	args := []interface{}{logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // WarnFn print warn level message
-func WarnFn(args ...interface{}) {
+func WarnFn(fn LogFunction) {
+	args := []interface{}{logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // InfoFn print info level message
-func InfoFn(args ...interface{}) {
+func InfoFn(fn LogFunction) {
+	args := []interface{}{logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // DebugFn print debug level message
-func DebugFn(args ...interface{}) {
+func DebugFn(fn LogFunction) {
+	args := []interface{}{logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // TraceFn print trace level message
-func TraceFn(args ...interface{}) {
+func TraceFn(fn LogFunction) {
+	args := []interface{}{logrus.LogFunction(fn)}
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
 }
 
 // Logln log
-func Logln(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+func Logln(level Level, args ...interface{}) {
+	na := make([]interface{}, len(args)+1)
+	na[0] = logrus.Level(level)
+	for i, v := range args {
+		na[i+1] = v
+	}
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
 }
 
 // Println print
@@ -326,10 +399,6 @@ func Debugln(args ...interface{}) {
 // Traceln print trace level message
 func Traceln(args ...interface{}) {
 	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
-}
-
-func errorf(e jError, args ...interface{}) error {
-	return fmt.Errorf(fmt.Sprint(pkgName, ": ", e.Error()), args...)
 }
 
 func errors(e jError) error {

@@ -215,12 +215,12 @@ func Start() {
 	if status != Stop {
 		return
 	}
-	status = Run
 	inCh = make(chan channel)
 	outCh = make(chan channel)
 	noneCh = make(chan channel, 10)
 	wg.Add(1)
 	go run()
+	status = Run
 }
 
 // Interrupt cron stop
@@ -228,13 +228,18 @@ func Interrupt() {
 	if status != Run {
 		return
 	}
+	defer func() {
+		close(inCh)
+		close(outCh)
+		close(noneCh)
+	}()
+	status = Stop
 	inCh <- channel{
 		action: stop,
 		data:   nil,
 		err:    nil,
 	}
 	<-outCh
-	status = Stop
 }
 
 // Wait sync.WaitGroup.Wait()
@@ -242,6 +247,11 @@ func Wait() {
 	if status != Run {
 		return
 	}
+	defer func() {
+		close(inCh)
+		close(outCh)
+		close(noneCh)
+	}()
 	status = SyncWait
 	inCh <- channel{
 		action: stop,
@@ -346,9 +356,6 @@ func createSchedule() error {
 
 func run() {
 	defer func() {
-		close(inCh)
-		close(outCh)
-		close(noneCh)
 		wg.Done()
 	}()
 	var nextTime time.Time

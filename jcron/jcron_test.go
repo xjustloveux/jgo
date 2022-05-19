@@ -168,7 +168,7 @@ func TestCron(t *testing.T) {
 	if err := TriggerFunc(job02, m); err != nil {
 		t.Error(err)
 	}
-	<-time.After(5 * jtime.Second)
+	<-time.After(6 * jtime.Second)
 }
 
 func job01(m map[string]interface{}) {

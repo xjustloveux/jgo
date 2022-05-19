@@ -7,6 +7,7 @@ package jlog
 import (
 	"github.com/sirupsen/logrus"
 	"reflect"
+	"regexp"
 	"sync"
 )
 
@@ -34,6 +35,8 @@ func (a appender) Call(funcName string, params ...interface{}) error {
 		l := 0
 		for _, param := range params {
 			switch param.(type) {
+			case Fields:
+				e = nl.WithFields(param.(Fields).toLogrusFields())
 			case logrus.Fields:
 				e = nl.WithFields(param.(logrus.Fields))
 			default:
@@ -41,19 +44,30 @@ func (a appender) Call(funcName string, params ...interface{}) error {
 			}
 		}
 		f := reflect.ValueOf(a.getFunc(nl, e)[funcName])
-		if fl := f.Type().NumIn(); fl > 1 && l < fl {
-			return errors(errorParamsNumOutIndex)
+		if isFormat, err := regexp.MatchString("f$", funcName); err != nil {
+			return err
+		} else {
+			if isFormat {
+				if fl := f.Type().NumIn(); fl > 1 && l < fl-1 {
+					return errors(errorParamsNumOutIndex)
+				}
+			} else {
+				if fl := f.Type().NumIn(); fl > 1 && l < fl {
+					return errors(errorParamsNumOutIndex)
+				}
+			}
 		}
 		in := make([]reflect.Value, l)
 		count := 0
 		for _, param := range params {
 			switch param.(type) {
+			case Fields:
 			case logrus.Fields:
 			default:
 				if param != nil {
 					in[count] = reflect.ValueOf(param)
 				} else {
-					in[count] = reflect.ValueOf("nil")
+					in[count] = reflect.ValueOf("<nil>")
 				}
 				count++
 			}

@@ -169,6 +169,7 @@ func TestValue(t *testing.T) {
 		{sf32, sf32},
 		{sf64, sf64},
 		{sn, snii},
+		{nil, nil},
 	}
 	for _, test := range tests {
 		v := Value(test.input)

@@ -17,6 +17,7 @@
     * [jsql](#jsql)
     * [jlog](#jlog)
     * [jcron](#jcron)
+* [Environment](#Environment)
 * [Api](#Api)
 * [License](#License)
 
@@ -579,6 +580,144 @@ func Job02(data map[string]interface{}) {
 | Month        | true     | 1-12 or January-December or JAN-DEC | ,-*/                       |
 | Day of week  | true     | 0-6 or Sunday-Saturday or SUN-SAT   | ,-*/?                      |
 | Year         | false    | 2020-2080                           | ,-*/                       |
+
+# Environment
+
+---
+
+jsql, jlog, jcron, jconf support environment variables.
+
+Config required to be set file name, this file will be basic setting.
+
+jsql default file name is 'sql.json'.
+
+jlog default file name is 'log.json'.
+
+jcron default file name is 'cron.json'.
+
+You can override the basic setting by setting the env file name, env val or env key.
+
+### Example1
+
+#### default.json
+
+```json
+{
+  "val": 123,
+  "type": "default"
+}
+```
+
+#### override.json
+
+```json
+{
+  "type": "override",
+  "name": "test"
+}
+```
+
+#### main.go
+
+```go
+package main
+
+import (
+  "fmt"
+  "github.com/xjustloveux/jgo/jconf"
+)
+
+func main() {
+  conf := jconf.New()
+  conf.SetFileName("default.json")
+  conf.SetEnvFileName("override.json")
+  if err := conf.Load(); err != nil {
+    fmt.Println(err)
+  }
+}
+```
+
+#### last json data
+
+```json
+{
+  "val": 123,
+  "type": "override",
+  "name": "test"
+}
+```
+
+### Example2
+
+#### main.go
+
+```go
+package main
+
+import (
+  "fmt"
+  "github.com/xjustloveux/jgo/jconf"
+)
+
+func main() {
+  conf := jconf.New()
+  conf.SetFileName("default.json")
+  conf.SetEnvVal("dev")
+  // Override file name is 'default-dev.json'.
+  if err := conf.Load(); err != nil {
+    fmt.Println(err)
+  }
+}
+```
+
+### Example3
+
+#### main.go
+
+```go
+package main
+
+import (
+  "fmt"
+  "github.com/xjustloveux/jgo/jconf"
+)
+
+func main() {
+  conf := jconf.New()
+  conf.SetFileName("default.json")
+  conf.SetEnvKey("goEnv")
+  // If the 'default.json' file or os have 'goEnv' environment variables.
+  // Override file name is 'default-$goEnv.json'.
+  // E.g. goEnv value is 'dev', then the override file name is 'default-dev.json'.
+  if err := conf.Load(); err != nil {
+    fmt.Println(err)
+  }
+}
+```
+
+### Example4
+
+#### main.go
+
+```go
+package main
+
+import (
+  "fmt"
+  "github.com/xjustloveux/jgo/jconf"
+)
+
+func main() {
+  conf := jconf.New()
+  conf.SetFileName("default.json")
+  // If the 'default.json' file or os have 'jEnv' environment variables.
+  // Override file name is 'default-$jEnv.json'.
+  // E.g. jEnv value is 'dev', then the override file name is 'default-dev.json'.
+  if err := conf.Load(); err != nil {
+    fmt.Println(err)
+  }
+}
+```
 
 # Api
 

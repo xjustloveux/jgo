@@ -8,21 +8,5 @@
 //
 // Jgo minimizes dependencies on third-party middleware to avoid conflicts.
 //
-// jcast: cast tool
-//
-// jconf: config tool
-//
-// jcron: schedule tool
-//
-// jfile: file tool
-//
-// jlog: log tool
-//
-// jruntime: runtime tool
-//
-// jslice: slice tool
-//
-// jsql: sql tool
-//
-// jtime: time tool
+// package: jlog, jsql, jcron, jconf, jcast, jfile, jruntime, jslice, jtime
 package jgo

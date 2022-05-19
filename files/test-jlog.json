@@ -1,0 +1,52 @@
+{
+  "debug": true,
+  "params": {
+    "path": "../log"
+  },
+  "appender": {
+    "sys": {
+      "level": "Error",
+      "formatter": {
+        "type": "JSON",
+        "json": {
+          "timestampFormat": "2006-01-02"
+        }
+      },
+      "output": {
+        "p": "${path}/sys/%Y-%m-%d/system.log",
+        "utc": false,
+        "linkName": "${path}/sys/system",
+        "rotationSize": 100,
+        "rotationSizeUnit": "KB"
+      }
+    },
+    "test": {
+      "level": "Test",
+      "formatter": {
+        "type": "TEXT",
+        "json": {
+          "timestampFormat": "2006-01-02"
+        }
+      },
+      "output": {
+        "p": "${path}/sys/%Y-%m-%d/system.log",
+        "utc": true,
+        "linkName": "${path}/sys/system",
+        "maxAge": 0,
+        "rotationSize": 100,
+        "rotationSizeUnit": "KB",
+        "rotationCount": 5
+      }
+    }
+  },
+  "logs": [
+    {
+      "program": [
+        "test", "default"
+      ],
+      "appender": [
+        "console", "console"
+      ]
+    }
+  ]
+}

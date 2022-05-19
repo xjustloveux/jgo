@@ -247,6 +247,9 @@ func Value(i interface{}) interface{} {
 		}
 		return s
 	default:
+		if v == nil {
+			return nil
+		}
 		if reflect.TypeOf(v).Kind() == reflect.Map {
 			if m, err := InterfaceMapInterface(i); err == nil {
 				return m
