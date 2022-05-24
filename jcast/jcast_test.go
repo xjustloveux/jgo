@@ -1048,6 +1048,55 @@ func TestStringMapInterface(t *testing.T) {
 	}
 }
 
+func TestStringMapString(t *testing.T) {
+	str := "Str"
+	bo := true
+	i := 7
+	f := 7.7
+	b := []byte{55}
+	now := time.Now()
+	m := make(map[string]interface{})
+	s1 := []interface{}{str, bo, i, f, b, now, m, &now}
+	s2 := []interface{}{str, bo, i, f, b, now, m, now}
+	m1 := make(map[string]interface{})
+	m1["str"] = str
+	m1["bo"] = bo
+	m1["i"] = i
+	m1["f"] = f
+	m1["b"] = b
+	m1["now"] = now
+	m1["m"] = m
+	m1["s"] = s1
+	m1["addrNow"] = &now
+	m2 := make(map[string]string)
+	m2["str"] = str
+	m2["bo"] = "true"
+	m2["i"] = "7"
+	m2["f"] = "7.7"
+	m2["b"] = "7"
+	m2["now"] = fmt.Sprintf("%v", now)
+	m2["m"] = fmt.Sprintf("%v", m)
+	m2["s"] = fmt.Sprintf("%v", s2)
+	m2["addrNow"] = fmt.Sprintf("%v", now)
+	tests := []struct {
+		input  interface{}
+		output map[string]string
+	}{
+		{m1, m2},
+		{now, nil},
+	}
+	for _, test := range tests {
+		if v, err := StringMapString(test.input); err != nil {
+			if test.output != nil {
+				t.Error(err)
+			}
+		} else {
+			msg := fmt.Sprintf("%v != %v", v, test.output)
+			assert.Equal(t, test.output, v, msg)
+		}
+	}
+}
+
 func TestSliceInterface(t *testing.T) {
 	str := "Str"
 	bo := true

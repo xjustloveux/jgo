@@ -14,5 +14,5 @@ type xmlInsert struct {
 }
 
 func (xi *xmlInsert) getSql(param map[string]interface{}) (string, string, error) {
-	return xmlToSql(xi.Xml, param, xi.If, xi.For, xi.OrderBy, false)
+	return xmlToSql(Insert, xi.Xml, param, xi.If, xi.For, xi.OrderBy, false)
 }

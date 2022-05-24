@@ -1,0 +1,19 @@
+{
+  "debug": true,
+  "daoPath": "../files/",
+  "default": "testMySql",
+  "dataSource": {
+    "testMySql": {
+      "type": "MySql",
+      "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true"
+    },
+    "testMSSql": {
+      "type": "MSSql",
+      "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True"
+    },
+    "testOracle": {
+      "type": "Oracle",
+      "dsn": "user/password@192.168.1.1:1521/ORCLCDB"
+    }
+  }
+}

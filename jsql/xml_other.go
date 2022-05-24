@@ -14,5 +14,5 @@ type xmlOther struct {
 }
 
 func (xo *xmlOther) getSql(param map[string]interface{}) (string, string, error) {
-	return xmlToSql(xo.Xml, param, xo.If, xo.For, xo.OrderBy, false)
+	return xmlToSql(Other, xo.Xml, param, xo.If, xo.For, xo.OrderBy, false)
 }

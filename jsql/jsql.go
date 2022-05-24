@@ -12,6 +12,7 @@ import (
 	"github.com/xjustloveux/jgo/jfile"
 	"os"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -57,6 +58,7 @@ const (
 	errorWrongNumOfForeach  = jError("wrong number of tags <foreach>")
 	errorWrongNumOfIf       = jError("wrong number of tags <if>")
 	errorWrongNumOfOrderBy  = jError("wrong number of tags <orderBy>")
+	errorWrongSql           = jError("wrong %q sql statements")
 
 	errorOprValLenZero               = jError("operators %q, the value length is zero")
 	errorOprValLenNot2               = jError("operators %q, the value length not 2")
@@ -174,9 +176,9 @@ func SetDecodeFunc(f func(string) (string, error)) {
 // GetAgent returns SqlAgent
 // if not input data source key then return default data source agent
 func GetAgent(dsKey ...string) (*Agent, error) {
-	mux.RLock()
+	mux.Lock()
 	defer func() {
-		mux.RUnlock()
+		mux.Unlock()
 	}()
 	key := ""
 	if len(dsKey) > 0 && dsKey[0] != "" {
@@ -252,19 +254,19 @@ func loadDaoXml() error {
 		otherMap = make(map[string]*xmlOther)
 		for _, xs := range list {
 			for _, xss := range xs.Select {
-				selectMap[xss.Id] = &xss
+				selectMap[xss.Id] = xss
 			}
 			for _, xsi := range xs.Insert {
-				insertMap[xsi.Id] = &xsi
+				insertMap[xsi.Id] = xsi
 			}
 			for _, xsu := range xs.Update {
-				updateMap[xsu.Id] = &xsu
+				updateMap[xsu.Id] = xsu
 			}
 			for _, xsd := range xs.Delete {
-				deleteMap[xsd.Id] = &xsd
+				deleteMap[xsd.Id] = xsd
 			}
 			for _, xso := range xs.Other {
-				otherMap[xso.Id] = &xso
+				otherMap[xso.Id] = xso
 			}
 		}
 	}
@@ -296,15 +298,21 @@ func loadDaoXmlDir(path string) (xmlList []xmlSql, err error) {
 					xmlList = append(xmlList, xs...)
 				}
 			} else {
-				var b []byte
-				if b, err = jfile.Load(fmt.Sprint(path, "/", f.Name())); err != nil {
-					return nil, err
-				} else {
-					var result xmlSql
-					if err = xml.Unmarshal(b, &result); err != nil {
+				var isXml bool
+				if isXml, err = regexp.MatchString(".xml$", f.Name()); err != nil || !isXml {
+					continue
+				}
+				if isXml {
+					var b []byte
+					if b, err = jfile.Load(fmt.Sprint(path, "/", f.Name())); err != nil {
 						return nil, err
+					} else {
+						var result xmlSql
+						if err = xml.Unmarshal(b, &result); err != nil {
+							return nil, err
+						}
+						xmlList = append(xmlList, result)
 					}
-					xmlList = append(xmlList, result)
 				}
 			}
 		}
@@ -312,7 +320,7 @@ func loadDaoXmlDir(path string) (xmlList []xmlSql, err error) {
 	}
 }
 
-func xmlToSql(xml string, param map[string]interface{}, xi []xmlIf, xf []xmlFor, xo []xmlOrderBy, page bool) (query, order string, err error) {
+func xmlToSql(ops Operations, xml string, param map[string]interface{}, xi []xmlIf, xf []xmlFor, xo []xmlOrderBy, page bool) (query, order string, err error) {
 	query = xml
 	if param != nil {
 		if param, err = jcast.StringMapInterface(param); err != nil {
@@ -336,6 +344,21 @@ func xmlToSql(xml string, param map[string]interface{}, xi []xmlIf, xf []xmlFor,
 				order = strings.ReplaceAll(order, fmt.Sprint("${", k, "}"), v.(string))
 			}
 		}
+	}
+	query = trim(query)
+	cs := ""
+	switch ops {
+	case Select:
+		cs = "select"
+	case Insert:
+		cs = "insert"
+	case Update:
+		cs = "update"
+	case Delete:
+		cs = "delete"
+	}
+	if strings.Index(strings.ToLower(query), cs) != 0 {
+		return "", "", errorf(errorWrongSql, cs)
 	}
 	return query, order, nil
 }
@@ -439,4 +462,14 @@ func getPageSql(t Type, sql, obs string, start, end int64) (pageSql, countSql st
 	}
 	countSql = fmt.Sprint("SELECT COUNT(1) as ", totalRecord, " FROM (", sql, ") data")
 	return pageSql, countSql
+}
+
+func trim(str string) string {
+	ts := []string{" ", "　", "\r\n", "\r", "\n"}
+	for i := 0; i < len(ts); i++ {
+		for _, v := range ts {
+			str = strings.Trim(str, v)
+		}
+	}
+	return str
 }

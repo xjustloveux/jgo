@@ -5,9 +5,9 @@
 package jsql
 
 type xmlSql struct {
-	Select []xmlSelect `xml:"select"`
-	Insert []xmlInsert `xml:"insert"`
-	Update []xmlUpdate `xml:"update"`
-	Delete []xmlDelete `xml:"delete"`
-	Other  []xmlOther  `xml:"other"`
+	Select []*xmlSelect `xml:"select"`
+	Insert []*xmlInsert `xml:"insert"`
+	Update []*xmlUpdate `xml:"update"`
+	Delete []*xmlDelete `xml:"delete"`
+	Other  []*xmlOther  `xml:"other"`
 }

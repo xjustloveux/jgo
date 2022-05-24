@@ -14,5 +14,5 @@ type xmlUpdate struct {
 }
 
 func (xu *xmlUpdate) getSql(param map[string]interface{}) (string, string, error) {
-	return xmlToSql(xu.Xml, param, xu.If, xu.For, xu.OrderBy, false)
+	return xmlToSql(Update, xu.Xml, param, xu.If, xu.For, xu.OrderBy, false)
 }

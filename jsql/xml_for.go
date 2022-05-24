@@ -6,6 +6,7 @@ package jsql
 
 import (
 	"fmt"
+	"github.com/xjustloveux/jgo/jcast"
 	"reflect"
 	"strings"
 )
@@ -33,44 +34,44 @@ func (xf xmlFor) getSql(params map[string]interface{}, page bool) (query, order 
 	switch reflect.TypeOf(val).Kind() {
 	case reflect.Map:
 		idx := 0
-		if vm, ok := val.(map[string]string); ok {
-			for k, v := range vm {
-				var xml, obs string
-				if xml, obs, err = replaceXmlForeach(xf.If, xf.For, xf.OrderBy, xf.Xml, params, page); err != nil {
-					return "", "", err
-				}
-				if obs != "" {
-					order = obs
-				}
-				xml = strings.ReplaceAll(xml, "#{key}", k)
-				xml = strings.ReplaceAll(xml, "#{val}", v)
-				if idx > 0 {
-					query += xf.Separator
-				}
-				query += xml
-				idx++
-			}
-		} else {
+		var vm map[string]string
+		if vm, err = jcast.StringMapString(val); err != nil {
 			return "", "", errorf(errorWrongTypeOfForeach)
 		}
-	case reflect.Slice:
-		if vs, ok := val.([]string); ok {
-			for idx, v := range vs {
-				var xml, obs string
-				if xml, obs, err = replaceXmlForeach(xf.If, xf.For, xf.OrderBy, xf.Xml, params, page); err != nil {
-					return "", "", err
-				}
-				if obs != "" {
-					order = obs
-				}
-				xml = strings.ReplaceAll(xml, "#{val}", v)
-				if idx > 0 {
-					query += xf.Separator
-				}
-				query += xml
+		for k, v := range vm {
+			var xml, obs string
+			if xml, obs, err = replaceXmlForeach(xf.If, xf.For, xf.OrderBy, xf.Xml, params, page); err != nil {
+				return "", "", err
 			}
-		} else {
+			if obs != "" {
+				order = obs
+			}
+			xml = strings.ReplaceAll(xml, "#{key}", k)
+			xml = strings.ReplaceAll(xml, "#{val}", v)
+			if idx > 0 {
+				query += fmt.Sprint(xf.Separator, " ")
+			}
+			query += trim(xml)
+			idx++
+		}
+	case reflect.Slice:
+		var vs []string
+		if vs, err = jcast.SliceString(val); err != nil {
 			return "", "", errorf(errorWrongTypeOfForeach)
+		}
+		for idx, v := range vs {
+			var xml, obs string
+			if xml, obs, err = replaceXmlForeach(xf.If, xf.For, xf.OrderBy, xf.Xml, params, page); err != nil {
+				return "", "", err
+			}
+			if obs != "" {
+				order = obs
+			}
+			xml = strings.ReplaceAll(xml, "#{val}", v)
+			if idx > 0 {
+				query += fmt.Sprint(xf.Separator, " ")
+			}
+			query += trim(xml)
 		}
 	default:
 		return "", "", errors(errorWrongTypeOfForeach)

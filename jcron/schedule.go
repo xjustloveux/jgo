@@ -49,6 +49,10 @@ type schedule struct {
 }
 
 func (s *schedule) Name() (string, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSchName,
@@ -63,6 +67,10 @@ func (s *schedule) Name() (string, error) {
 }
 
 func (s *schedule) CronExpression() (string, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSchCronExpression,
@@ -77,6 +85,10 @@ func (s *schedule) CronExpression() (string, error) {
 }
 
 func (s *schedule) Job() (string, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSchJob,
@@ -91,6 +103,10 @@ func (s *schedule) Job() (string, error) {
 }
 
 func (s *schedule) Data() (map[string]interface{}, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSchData,
@@ -108,6 +124,10 @@ func (s *schedule) Data() (map[string]interface{}, error) {
 }
 
 func (s *schedule) Desc() (string, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSchDesc,
@@ -122,6 +142,10 @@ func (s *schedule) Desc() (string, error) {
 }
 
 func (s *schedule) Status() (Status, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSchSts,
@@ -143,6 +167,10 @@ func (s *schedule) Status() (Status, error) {
 }
 
 func (s *schedule) NextTime() (time.Time, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSchNext,
@@ -160,6 +188,10 @@ func (s *schedule) NextTime() (time.Time, error) {
 }
 
 func (s *schedule) PrevTime() (time.Time, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSchPrev,
@@ -177,6 +209,10 @@ func (s *schedule) PrevTime() (time.Time, error) {
 }
 
 func (s *schedule) Stop() error {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: stopSch,
@@ -195,6 +231,10 @@ func (s *schedule) Stop() error {
 }
 
 func (s *schedule) Resume() error {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: resumeSch,
@@ -224,6 +264,10 @@ func (s *schedule) Resume() error {
 }
 
 func (s *schedule) Trigger(data map[string]interface{}) error {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: trigger,

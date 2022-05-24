@@ -54,7 +54,7 @@ func (xi xmlIf) getSql(params map[string]interface{}, page bool) (query, order s
 	if obs != "" {
 		order = obs
 	}
-	return query, order, nil
+	return trim(query), order, nil
 }
 
 func (xi xmlIf) replaceXml(xml string, params map[string]interface{}, page bool) (query, order string, err error) {

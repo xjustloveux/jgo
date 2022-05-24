@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao>
+    <select id="testMySql1">
+        SELECT * FROM USR
+    </select>
+    <select id="testMSSql1">
+        SELECT * FROM USR
+    </select>
+    <select id="testOracle1">
+        SELECT * FROM M_USER
+    </select>
+
+    <select id="testMySql2">
+        SELECT * FROM USR
+        WHERE USR_STS = @{USR_STS}
+        <if test="!nil(USR_ID) and USR_ID != ''">
+            AND USR_ID = @{USR_ID}
+        </if>
+    </select>
+    <select id="testMSSql2">
+        SELECT * FROM USR
+        WHERE USE_STS = @{USE_STS}
+        <if test="!nil(USR_ID) and USR_ID != ''">
+            AND USR_ID = @{USR_ID}
+        </if>
+    </select>
+    <select id="testOracle2">
+        SELECT * FROM M_USER
+        WHERE USER_STATUS = @{USER_STATUS}
+        <if test="!nil(USER_ID) and USER_ID != ''">
+            AND USER_ID = @{USER_ID}
+        </if>
+    </select>
+
+    <select id="testMySql3">
+        SELECT ${COL1}, ${COL2} FROM USR
+        <orderBy lastTag="true">
+            ${SORT} DESC
+        </orderBy>
+    </select>
+    <select id="testMSSql3">
+        SELECT ${COL1}, ${COL2} FROM USR
+        <orderBy lastTag="true">
+            ${SORT} DESC
+        </orderBy>
+    </select>
+    <select id="testOracle3">
+        SELECT ${COL1}, ${COL2} FROM M_USER
+        <orderBy lastTag="true">
+            ${SORT} DESC
+        </orderBy>
+    </select>
+
+    <select id="testMySql4">
+        SELECT
+        <foreach params="list" open="" separator="," close="">
+            #{val}
+        </foreach>
+        FROM USR
+    </select>
+    <select id="testMSSql4">
+        SELECT
+        <foreach params="list" open="" separator="," close="">
+            #{val}
+        </foreach>
+        FROM USR
+    </select>
+    <select id="testOracle4">
+        SELECT
+        <foreach params="list" open="" separator="," close="">
+            #{val}
+        </foreach>
+        FROM M_USER
+    </select>
+
+    <select id="testSelect5">
+        SELECT
+        <if test="TYPE == 'MySql'">
+            <foreach params="MySqlList" open="" separator="," close="">
+                <if test="AS_NAME">#{val} AS #{key}</if>
+                <if test="!AS_NAME">#{val}</if>
+            </foreach>
+        </if>
+        <if test="TYPE == 'MSSql'">
+            <foreach params="MSSqlList" open="" separator="," close="">
+                <if test="AS_NAME">#{val} AS #{key}</if>
+                <if test="!AS_NAME">#{val}</if>
+            </foreach>
+        </if>
+        <if test="TYPE == 'Oracle'">
+            <foreach params="OracleList" open="" separator="," close="">
+                <if test="AS_NAME">#{val} AS #{key}</if>
+                <if test="!AS_NAME">#{val}</if>
+            </foreach>
+        </if>
+        FROM ${TABLE}
+    </select>
+
+    <insert id="testInsert1">
+        INSERT INTO ${TABLE}
+        <foreach params="list" open="(" separator="," close=")">
+            #{val}
+        </foreach>
+        VALUES
+        <foreach params="list" open="(" separator="," close=")">
+            @{#{val}}
+        </foreach>
+    </insert>
+
+    <update id="testUpdate1">
+        UPDATE ${TABLE} SET ${COL1}=@{${COL1}} WHERE ${COL2}=@{${COL2}}
+    </update>
+
+    <delete id="testDelete1">
+        DELETE FROM ${TABLE} WHERE ${COL}=@{${COL}}
+    </delete>
+
+    <other id="testOther1">
+        CREATE TABLE TEST_CREATE (TEST_COL VARCHAR(255))
+    </other>
+
+    <other id="testOther2">
+        DROP TABLE TEST_CREATE
+    </other>
+</dao>

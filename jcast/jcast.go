@@ -1150,6 +1150,19 @@ func StringMapInterface(i interface{}) (map[string]interface{}, error) {
 	return m, nil
 }
 
+// StringMapString interface to map[string]string
+func StringMapString(i interface{}) (map[string]string, error) {
+	m := make(map[string]string)
+	if imi, err := InterfaceMapInterface(i); err != nil {
+		return nil, errorf(errorInterfaceTo, i, i, "map[string]string")
+	} else {
+		for k, v := range imi {
+			m[String(k)] = String(v)
+		}
+	}
+	return m, nil
+}
+
 // SliceInterface interface to []interface{}
 func SliceInterface(i interface{}) ([]interface{}, error) {
 	v := VerifyPtr(i)

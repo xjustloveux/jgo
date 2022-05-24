@@ -104,6 +104,8 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
 
 #### dao/example.xml
 
+<font color=#FFD700>Warning: The tags ${} and #{} will directly become SQL statements at the end, which may cause SQL injection problems. Please use them with caution.</font>
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <dao>
@@ -113,7 +115,7 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
     <select id="example2">
         SELECT * FROM TABLE2
         WHERE COL1 = @{COL1}
-        <if test="!Nil(COL2) and COL2 != ''">
+        <if test="!nil(COL2) and COL2 != ''">
             AND COL2 = @{COL2}
         </if>
     </select>

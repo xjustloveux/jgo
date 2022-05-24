@@ -14,14 +14,5 @@ type xmlSelect struct {
 }
 
 func (xs *xmlSelect) getSql(param map[string]interface{}, page bool) (string, string, error) {
-	return xmlToSql(xs.Xml, param, xs.If, xs.For, xs.OrderBy, page)
-}
-
-func (xs *xmlSelect) getPageSql(t Type, start, end int64, param map[string]interface{}) (pageSql, countSql string, err error) {
-	var sql, obs string
-	if sql, obs, err = xs.getSql(param, true); err != nil {
-		return "", "", err
-	}
-	pageSql, countSql = getPageSql(t, sql, obs, start, end)
-	return pageSql, countSql, nil
+	return xmlToSql(Select, xs.Xml, param, xs.If, xs.For, xs.OrderBy, page)
 }

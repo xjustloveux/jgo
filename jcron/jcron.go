@@ -36,6 +36,7 @@ const (
 
 var (
 	conf      = jconf.New()
+	mux       = new(sync.RWMutex)
 	cd        = &configData{}
 	status    = Stop
 	wg        = new(sync.WaitGroup)
@@ -120,6 +121,10 @@ func Init() error {
 
 // AddJob add job
 func AddJob(name string, j Job) error {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: addJob,
@@ -148,6 +153,10 @@ func AddJobFunc(name string, f func(map[string]interface{})) error {
 
 // AddSchedule add schedule
 func AddSchedule(sch *SchInfo) (err error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	var cron *CronExpression
 	if cron, err = ParseCronExpression(sch.Cron); err != nil {
 		return err
@@ -178,6 +187,10 @@ func AddSchedule(sch *SchInfo) (err error) {
 
 // GetSchedule returns schedule
 func GetSchedule(name string) (Schedule, error) {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status == Run {
 		inCh <- channel{
 			action: getSch,
@@ -207,11 +220,19 @@ func GetSchedule(name string) (Schedule, error) {
 
 // GetStatus returns cron status
 func GetStatus() Status {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	return status
 }
 
 // Start cron start
 func Start() {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status != Stop {
 		return
 	}
@@ -225,41 +246,41 @@ func Start() {
 
 // Interrupt cron stop
 func Interrupt() {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status != Run {
 		return
 	}
-	defer func() {
-		close(inCh)
-		close(outCh)
-		close(noneCh)
-	}()
-	status = Stop
 	inCh <- channel{
 		action: stop,
 		data:   nil,
 		err:    nil,
 	}
 	<-outCh
+	status = Stop
 }
 
 // Wait sync.WaitGroup.Wait()
 func Wait() {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if status != Run {
 		return
 	}
-	defer func() {
-		close(inCh)
-		close(outCh)
-		close(noneCh)
-	}()
-	status = SyncWait
 	inCh <- channel{
 		action: stop,
 		data:   nil,
 		err:    nil,
 	}
 	<-outCh
+	status = SyncWait
+	mux.Unlock()
 	wg.Wait()
+	mux.Lock()
 	status = Stop
 }
 
@@ -270,6 +291,10 @@ func WaitTrigger() {
 
 // Trigger trigger job
 func Trigger(j Job, data map[string]interface{}) error {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if j != nil {
 		if status == Run {
 			inCh <- channel{
@@ -298,6 +323,10 @@ func Trigger(j Job, data map[string]interface{}) error {
 
 // TriggerFunc trigger job with function
 func TriggerFunc(f func(map[string]interface{}), data map[string]interface{}) error {
+	mux.Lock()
+	defer func() {
+		mux.Unlock()
+	}()
 	if f != nil {
 		if status == Run {
 			inCh <- channel{
@@ -357,6 +386,9 @@ func createSchedule() error {
 func run() {
 	defer func() {
 		wg.Done()
+		close(inCh)
+		close(outCh)
+		close(noneCh)
 	}()
 	var nextTime time.Time
 	now := time.Now().Local()

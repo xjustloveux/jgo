@@ -14,5 +14,5 @@ type xmlDelete struct {
 }
 
 func (xd *xmlDelete) getSql(param map[string]interface{}) (string, string, error) {
-	return xmlToSql(xd.Xml, param, xd.If, xd.For, xd.OrderBy, false)
+	return xmlToSql(Delete, xd.Xml, param, xd.If, xd.For, xd.OrderBy, false)
 }

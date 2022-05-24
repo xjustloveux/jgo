@@ -82,55 +82,55 @@ func (ta *TableAgent) NotEqual(col string, val interface{}) {
 }
 
 // In add And In Param
-func (ta *TableAgent) In(col string, val interface{}) {
+func (ta *TableAgent) In(col string, val []interface{}) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
 	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
 }
 
 // NotIn add And NotIn Param
-func (ta *TableAgent) NotIn(col string, val interface{}) {
+func (ta *TableAgent) NotIn(col string, val []interface{}) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
 	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
 }
 
 // Between add And Between Param
-func (ta *TableAgent) Between(col string, val interface{}) {
+func (ta *TableAgent) Between(col string, val []interface{}) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
 	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
 }
 
 // NotBetween add And NotBetween Param
-func (ta *TableAgent) NotBetween(col string, val interface{}) {
+func (ta *TableAgent) NotBetween(col string, val []interface{}) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
 	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
 }
 
 // IsNull add And IsNull Param
-func (ta *TableAgent) IsNull(col string, val interface{}) {
+func (ta *TableAgent) IsNull(col string) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
-	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
+	ta.AddParam(&Param{Col: col, Val: nil, Opr: opr})
 }
 
 // IsNotNull add And IsNotNull Param
-func (ta *TableAgent) IsNotNull(col string, val interface{}) {
+func (ta *TableAgent) IsNotNull(col string) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
-	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
+	ta.AddParam(&Param{Col: col, Val: nil, Opr: opr})
 }
 
 // Like add And Like Param
-func (ta *TableAgent) Like(col string, val interface{}) {
+func (ta *TableAgent) Like(col string, val string) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
 	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
 }
 
 // SLike add And SLike Param
-func (ta *TableAgent) SLike(col string, val interface{}) {
+func (ta *TableAgent) SLike(col string, val string) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
 	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
 }
 
 // ELike add And ELike Param
-func (ta *TableAgent) ELike(col string, val interface{}) {
+func (ta *TableAgent) ELike(col string, val string) {
 	opr, _ := ParseOperators(jruntime.GetFuncName())
 	ta.AddParam(&Param{Col: col, Val: val, Opr: opr})
 }
@@ -345,7 +345,7 @@ func (ta *TableAgent) getInsert() (query string, args []interface{}, err error) 
 	if ta.Table == "" {
 		return "", nil, errors(errorTableEmpty)
 	}
-	if ta.Col == nil || len(args) <= 0 {
+	if ta.Col == nil || len(ta.Col) <= 0 {
 		return "", nil, errors(errorColNil)
 	}
 	if ta.Agent == nil {
@@ -356,15 +356,15 @@ func (ta *TableAgent) getInsert() (query string, args []interface{}, err error) 
 	query = fmt.Sprint("INSERT INTO ", ta.Table)
 	col := "("
 	val := "("
-	args = make([]interface{}, len(args))
+	args = make([]interface{}, len(ta.Col))
 	count := 0
 	for k, c := range ta.Col {
-		if l := len(args); l == 0 {
+		if count == 0 {
 			col = fmt.Sprint(col, k)
-			val = fmt.Sprint(val, ta.Agent.t.Param(l))
+			val = fmt.Sprint(val, ta.Agent.t.Param(count))
 		} else {
 			col = fmt.Sprint(col, ", ", k)
-			val = fmt.Sprint(val, ", ", ta.Agent.t.Param(l))
+			val = fmt.Sprint(val, ", ", ta.Agent.t.Param(count))
 		}
 		args[count] = c
 		count++
@@ -379,7 +379,7 @@ func (ta *TableAgent) getUpdate() (query string, args []interface{}, err error) 
 	if ta.Table == "" {
 		return "", nil, errors(errorTableEmpty)
 	}
-	if ta.Col == nil || len(args) <= 0 {
+	if ta.Col == nil || len(ta.Col) <= 0 {
 		return "", nil, errors(errorColNil)
 	}
 	if ta.Agent == nil {
@@ -389,13 +389,13 @@ func (ta *TableAgent) getUpdate() (query string, args []interface{}, err error) 
 	}
 	query = fmt.Sprint("UPDATE ", ta.Table, " SET")
 	col := ""
-	args = make([]interface{}, len(args))
+	args = make([]interface{}, len(ta.Col))
 	count := 0
 	for k, c := range ta.Col {
-		if l := len(args); l == 0 {
-			col = fmt.Sprint(col, k, " = ", ta.Agent.t.Param(l))
+		if count == 0 {
+			col = fmt.Sprint(col, k, " = ", ta.Agent.t.Param(count))
 		} else {
-			col = fmt.Sprint(col, ", ", k, " = ", ta.Agent.t.Param(l))
+			col = fmt.Sprint(col, ", ", k, " = ", ta.Agent.t.Param(count))
 		}
 		args[count] = c
 		count++
@@ -438,5 +438,4 @@ func (ta *TableAgent) getDelete() (query string, args []interface{}, err error) 
 		}
 	}
 	return query, args, nil
-
 }
