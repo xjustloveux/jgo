@@ -6,9 +6,6 @@ package jsql
 
 import (
 	"fmt"
-	_ "github.com/denisenkom/go-mssqldb"
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/mattn/go-oci8"
 	"github.com/stretchr/testify/assert"
 	"github.com/xjustloveux/jgo/jfile"
 	"github.com/xjustloveux/jgo/jtime"
