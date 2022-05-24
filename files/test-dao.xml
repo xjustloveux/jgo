@@ -96,6 +96,29 @@
         FROM ${TABLE}
     </select>
 
+    <select id="testSelect6">
+        SELECT *
+        <!--comment-->
+        FROM ${TABLE}
+        --comment
+        WHERE ${COL} = @{VAL}
+        <if test="TEST">
+            <!--
+            comment
+            <foreach params="list" open="" separator="," close="">
+                #{val}
+            </foreach>
+            -->
+            --comment
+        </if>
+        <!--
+        <if test="!nil(VAL) and VAL != ''">
+            AND COL = @{VAL}
+        </if>
+        comment
+        -->
+    </select>
+
     <insert id="testInsert1">
         INSERT INTO ${TABLE}
         <foreach params="list" open="(" separator="," close=")">

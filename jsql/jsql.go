@@ -321,7 +321,7 @@ func loadDaoXmlDir(path string) (xmlList []xmlSql, err error) {
 }
 
 func xmlToSql(ops Operations, xml string, param map[string]interface{}, xi []xmlIf, xf []xmlFor, xo []xmlOrderBy, page bool) (query, order string, err error) {
-	query = xml
+	query = removeComment(xml)
 	if param != nil {
 		if param, err = jcast.StringMapInterface(param); err != nil {
 			return "", "", err
@@ -364,7 +364,7 @@ func xmlToSql(ops Operations, xml string, param map[string]interface{}, xi []xml
 }
 
 func replaceXmlForeach(xi []xmlIf, xf []xmlFor, xo []xmlOrderBy, xml string, params map[string]interface{}, page bool) (sql, orderByStr string, err error) {
-	sql = xml
+	sql = removeComment(xml)
 	var obs string
 	for _, i := range xi {
 		if sql, obs, err = i.replaceXml(sql, params, page); err != nil {
@@ -469,6 +469,43 @@ func trim(str string) string {
 	for i := 0; i < len(ts); i++ {
 		for _, v := range ts {
 			str = strings.Trim(str, v)
+		}
+	}
+	return str
+}
+
+func removeComment(str string) string {
+	for {
+		st := "<!--"
+		et := "-->"
+		si := strings.Index(str, st)
+		ei := strings.Index(str, et)
+		if si >= ei || si < 0 || ei < 0 {
+			break
+		}
+		str = fmt.Sprint(str[:si], str[ei+len(et):])
+	}
+	for {
+		st := "--"
+		et := "\r\n"
+		si := strings.Index(str, st)
+		if si >= 0 {
+			ei := strings.Index(str[si:], et)
+			if ei < 0 {
+				et = "\n"
+				ei = strings.Index(str[si:], et)
+			}
+			if ei < 0 {
+				et = "\r"
+				ei = strings.Index(str[si:], et)
+			}
+			if ei < 0 {
+				str = str[:si]
+			} else {
+				str = fmt.Sprint(str[:si], str[si+ei+len(et):])
+			}
+		} else {
+			break
 		}
 	}
 	return str

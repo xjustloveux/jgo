@@ -57,10 +57,10 @@ func (xo xmlOrderBy) replaceXml(xml string, params map[string]interface{}, page 
 		return "", "", err
 	} else {
 		if page && xo.LastTag {
-			query = fmt.Sprint(xml[0:si], xml[ei+len(et):])
+			query = fmt.Sprint(xml[:si], xml[ei+len(et):])
 			order = s
 		} else {
-			query = fmt.Sprint(xml[0:si], " ORDER BY ", s, xml[ei+len(et):])
+			query = fmt.Sprint(xml[:si], " ORDER BY ", s, xml[ei+len(et):])
 			order = ""
 		}
 	}

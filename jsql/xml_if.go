@@ -82,7 +82,7 @@ func (xi xmlIf) replaceXml(xml string, params map[string]interface{}, page bool)
 	if s, order, err = xi.getSql(params, page); err != nil {
 		return "", "", err
 	} else {
-		query = fmt.Sprint(xml[0:si], s, xml[ei+len(et):])
+		query = fmt.Sprint(xml[:si], s, xml[ei+len(et):])
 	}
 	return query, order, nil
 }

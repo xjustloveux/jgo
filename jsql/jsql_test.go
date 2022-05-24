@@ -6,6 +6,9 @@ package jsql
 
 import (
 	"fmt"
+	/*_ "github.com/denisenkom/go-mssqldb"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-oci8"*/
 	"github.com/stretchr/testify/assert"
 	"github.com/xjustloveux/jgo/jfile"
 	"github.com/xjustloveux/jgo/jtime"
@@ -47,6 +50,7 @@ func TestSql(t *testing.T) {
 	testSql3(t)
 	testSql4(t)
 	testSql5(t)
+	testSql6(t)
 	testSqlInsert1(t)
 	testSqlUpdate1(t)
 	testSqlDelete1(t)
@@ -77,6 +81,7 @@ func TestSql(t *testing.T) {
 	test3(t)
 	test4(t)
 	test5(t)
+	test6(t)
 	testInsert1(t)
 	testUpdate1(t)
 	testDelete1(t)
@@ -447,6 +452,73 @@ func testSql5(t *testing.T) {
 			continue
 		}
 		fmt.Println(query)
+		assert.Equal(t, args, v.args, fmt.Sprintf("%v != %v", args, v.args))
+	}
+}
+
+func testSql6(t *testing.T) {
+	pm1 := make(map[string]interface{})
+	pm1["TABLE"] = "USR"
+	pm1["COL"] = "USR_SEQ"
+	pm1["VAL"] = 1
+	pm1["TEST"] = true
+	pm2 := make(map[string]interface{})
+	pm2["TABLE"] = "USR"
+	pm2["COL"] = "USR_SEQ"
+	pm2["VAL"] = 1
+	pm2["TEST"] = true
+	pm3 := make(map[string]interface{})
+	pm3["TABLE"] = "M_USER"
+	pm3["COL"] = "USER_ID"
+	pm3["VAL"] = "Z00000000"
+	pm3["TEST"] = true
+	tests := []struct {
+		a     *Agent
+		id    string
+		pm    map[string]interface{}
+		query string
+		args  []interface{}
+	}{
+		{
+			&Agent{t: MySql},
+			"testSelect6",
+			pm1,
+			`SELECT *
+        
+        FROM USR
+                WHERE USR_SEQ = ?`,
+			[]interface{}{pm1["VAL"]},
+		},
+		{
+			&Agent{t: MSSql},
+			"testSelect6",
+			pm2,
+			`SELECT *
+        
+        FROM USR
+                WHERE USR_SEQ = @p1`,
+			[]interface{}{pm2["VAL"]},
+		},
+		{
+			&Agent{t: Oracle},
+			"testSelect6",
+			pm3,
+			`SELECT *
+        
+        FROM M_USER
+                WHERE USER_ID = :0`,
+			[]interface{}{pm3["VAL"]},
+		},
+	}
+	for _, v := range tests {
+		var query string
+		var args []interface{}
+		var err error
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Select, "testSelect6", []map[string]interface{}{v.pm}); err != nil {
+			t.Error(err)
+			continue
+		}
+		assert.Equal(t, query, v.query, fmt.Sprintf("%v != %v", query, v.query))
 		assert.Equal(t, args, v.args, fmt.Sprintf("%v != %v", args, v.args))
 	}
 }
@@ -1994,6 +2066,55 @@ func test5(t *testing.T) {
 		params["OracleList"] = m
 		var res Result
 		if res, err = agent.QueryRow("testSelect5", params); err != nil {
+			t.Error(err)
+		} else {
+			fmt.Println(res.Row())
+		}
+	}
+}
+
+func test6(t *testing.T) {
+	params := make(map[string]interface{})
+	// MySql
+	if agent, err := GetAgent(); err != nil {
+		t.Error(err)
+	} else {
+		params["TABLE"] = "USR"
+		params["COL"] = "USR_SEQ"
+		params["VAL"] = 1
+		params["TEST"] = true
+		var res Result
+		if res, err = agent.QueryRow("testSelect6", params); err != nil {
+			t.Error(err)
+		} else {
+			fmt.Println(res.Row())
+		}
+	}
+	// MSSql
+	if agent, err := GetAgent("testMSSql"); err != nil {
+		t.Error(err)
+	} else {
+		params["TABLE"] = "USR"
+		params["COL"] = "USR_SEQ"
+		params["VAL"] = 1
+		params["TEST"] = true
+		var res Result
+		if res, err = agent.QueryRow("testSelect6", params); err != nil {
+			t.Error(err)
+		} else {
+			fmt.Println(res.Row())
+		}
+	}
+	// Oracle
+	if agent, err := GetAgent("testOracle"); err != nil {
+		t.Error(err)
+	} else {
+		params["TABLE"] = "M_USER"
+		params["COL"] = "USER_ID"
+		params["VAL"] = "Z00000000"
+		params["TEST"] = true
+		var res Result
+		if res, err = agent.QueryRow("testSelect6", params); err != nil {
 			t.Error(err)
 		} else {
 			fmt.Println(res.Row())
