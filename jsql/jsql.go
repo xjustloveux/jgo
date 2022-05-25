@@ -486,6 +486,16 @@ func removeComment(str string) string {
 		str = fmt.Sprint(str[:si], str[ei+len(et):])
 	}
 	for {
+		st := "<![CDATA["
+		et := "]]>"
+		si := strings.Index(str, st)
+		ei := strings.Index(str, et)
+		if si >= ei || si < 0 || ei < 0 {
+			break
+		}
+		str = fmt.Sprint(str[:si], str[ei+len(et):])
+	}
+	for {
 		st := "--"
 		et := "\r\n"
 		si := strings.Index(str, st)

@@ -102,7 +102,29 @@
         FROM ${TABLE}
         --comment
         WHERE ${COL} = @{VAL}
+        <!--
+        <![CDATA[AND ${COL2} >= @{VAL2}]]>
+        -->
+        <![CDATA[--comment]]>
+        <![CDATA[--comment<!--comment-->]]>
         <if test="TEST">
+            <!--
+            comment
+            <foreach params="list" open="" separator="," close="">
+                #{val}
+            </foreach>
+            -->
+            --comment
+        </if>
+        <![CDATA[
+        --comment
+        <!--
+            comment
+            AND ${COL2} >= @{VAL2}
+        -->
+]]>
+        <if test="TEST2">
+            AND ${COL2} <![CDATA[ >= ]]> @{VAL2}
             <!--
             comment
             <foreach params="list" open="" separator="," close="">

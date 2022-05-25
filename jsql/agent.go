@@ -416,7 +416,7 @@ func (a *Agent) xmlAndParamsToQueryAndArgs(ops Operations, id string, param []ma
 		}
 	}
 	query, args = a.getQueryAndArgs(query, pm)
-	return query, args, nil
+	return trim(query), args, nil
 }
 
 func (a *Agent) getQueryAndArgs(sorQuery string, params map[string]interface{}) (query string, args []interface{}) {

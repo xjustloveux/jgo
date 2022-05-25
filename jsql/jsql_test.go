@@ -462,16 +462,19 @@ func testSql6(t *testing.T) {
 	pm1["COL"] = "USR_SEQ"
 	pm1["VAL"] = 1
 	pm1["TEST"] = true
+	pm1["TEST2"] = false
 	pm2 := make(map[string]interface{})
 	pm2["TABLE"] = "USR"
 	pm2["COL"] = "USR_SEQ"
 	pm2["VAL"] = 1
 	pm2["TEST"] = true
+	pm2["TEST2"] = false
 	pm3 := make(map[string]interface{})
 	pm3["TABLE"] = "M_USER"
 	pm3["COL"] = "USER_ID"
 	pm3["VAL"] = "Z00000000"
 	pm3["TEST"] = true
+	pm3["TEST2"] = false
 	tests := []struct {
 		a     *Agent
 		id    string
@@ -1755,6 +1758,7 @@ func testSqlTable19(t *testing.T) {
 
 func testSqlTable20(t *testing.T) {
 	tests := []struct {
+		add   bool
 		a     *Agent
 		table string
 		pm    []*Param
@@ -1762,6 +1766,7 @@ func testSqlTable20(t *testing.T) {
 		args  []interface{}
 	}{
 		{
+			false,
 			&Agent{t: MySql},
 			"USR",
 			[]*Param{
@@ -1777,6 +1782,7 @@ func testSqlTable20(t *testing.T) {
 			[]interface{}{1, 2},
 		},
 		{
+			true,
 			&Agent{t: MSSql},
 			"USR",
 			[]*Param{
@@ -1792,6 +1798,7 @@ func testSqlTable20(t *testing.T) {
 			[]interface{}{1, 2},
 		},
 		{
+			false,
 			&Agent{t: Oracle},
 			"M_USER",
 			[]*Param{
@@ -1809,7 +1816,13 @@ func testSqlTable20(t *testing.T) {
 	}
 	for _, v := range tests {
 		ta := &TableAgent{Agent: v.a, Table: v.table}
-		ta.SetParams(v.pm)
+		if v.add {
+			for _, p := range v.pm {
+				ta.AddParam(p)
+			}
+		} else {
+			ta.SetParams(v.pm)
+		}
 		if query, args, err := ta.getQueryAndArgs(); err != nil {
 			t.Error(err)
 		} else {
@@ -2083,6 +2096,7 @@ func test6(t *testing.T) {
 		params["COL"] = "USR_SEQ"
 		params["VAL"] = 1
 		params["TEST"] = true
+		params["TEST2"] = false
 		var res Result
 		if res, err = agent.QueryRow("testSelect6", params); err != nil {
 			t.Error(err)
@@ -2098,6 +2112,7 @@ func test6(t *testing.T) {
 		params["COL"] = "USR_SEQ"
 		params["VAL"] = 1
 		params["TEST"] = true
+		params["TEST2"] = false
 		var res Result
 		if res, err = agent.QueryRow("testSelect6", params); err != nil {
 			t.Error(err)
@@ -2113,6 +2128,7 @@ func test6(t *testing.T) {
 		params["COL"] = "USER_ID"
 		params["VAL"] = "Z00000000"
 		params["TEST"] = true
+		params["TEST2"] = false
 		var res Result
 		if res, err = agent.QueryRow("testSelect6", params); err != nil {
 			t.Error(err)
@@ -2918,11 +2934,13 @@ func testTable19(t *testing.T) {
 
 func testTable20(t *testing.T) {
 	tests := []struct {
+		add   bool
 		dsKey string
 		table string
 		pm    []*Param
 	}{
 		{
+			false,
 			"testMySql",
 			"USR",
 			[]*Param{
@@ -2936,6 +2954,7 @@ func testTable20(t *testing.T) {
 			},
 		},
 		{
+			true,
 			"testMSSql",
 			"USR",
 			[]*Param{
@@ -2949,6 +2968,7 @@ func testTable20(t *testing.T) {
 			},
 		},
 		{
+			false,
 			"testOracle",
 			"M_USER",
 			[]*Param{
@@ -2964,7 +2984,13 @@ func testTable20(t *testing.T) {
 	}
 	for _, v := range tests {
 		ta := &TableAgent{DSKey: v.dsKey, Table: v.table}
-		ta.SetParams(v.pm)
+		if v.add {
+			for _, p := range v.pm {
+				ta.AddParam(p)
+			}
+		} else {
+			ta.SetParams(v.pm)
+		}
 		if res, err := ta.QueryRow(); err != nil {
 			t.Error(err)
 		} else {
