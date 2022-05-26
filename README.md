@@ -121,7 +121,7 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
     </select>
     <select id="example3">
         SELECT ${COL1}, ${COL2} FROM TABLE3
-        <orderBy lastTag="true">
+        <orderBy last="true">
             ${SORT} DESC
         </orderBy>
     </select>

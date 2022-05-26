@@ -5,6 +5,7 @@
 package jcast
 
 import (
+	"encoding/xml"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/xjustloveux/jgo/jtime"
@@ -333,6 +334,8 @@ func TestString(t *testing.T) {
 		{7, "7"},
 		{7.7, "7.7"},
 		{[]byte{116, 101, 115, 116}, "test"},
+		{xml.CharData{116, 101, 115, 116}, "test"},
+		{xml.Comment{116, 101, 115, 116}, "test"},
 		{now, fmt.Sprintf("%v", now)},
 		{nil, ""},
 	}

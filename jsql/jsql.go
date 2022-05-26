@@ -11,7 +11,6 @@ import (
 	"github.com/xjustloveux/jgo/jconf"
 	"github.com/xjustloveux/jgo/jfile"
 	"os"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -48,12 +47,6 @@ const (
 	errorDecodeFuncOut1NotStringType = jError("decode function first output type not string type")
 	errorDecodeFuncType              = jError("decode function input params must be (string), output params must be (string, error)")
 
-	errorXmlNotSelectType = jError("xml type is %q, not *xmlSelect")
-	errorXmlNotInsertType = jError("xml type is %q, not *xmlInsert")
-	errorXmlNotUpdateType = jError("xml type is %q, not *xmlUpdate")
-	errorXmlNotDeleteType = jError("xml type is %q, not *xmlDelete")
-	errorXmlNotOtherType  = jError("xml type is %q, not *xmlOther")
-
 	errorWrongTypeOfForeach = jError("wrong params type of tags <foreach>, type must be []string or map[string]string")
 	errorWrongNumOfForeach  = jError("wrong number of tags <foreach>")
 	errorWrongNumOfIf       = jError("wrong number of tags <if>")
@@ -82,11 +75,11 @@ var (
 	logFunc    func(...interface{})
 	decodeFunc func(string) (string, error)
 	dsMap      map[string]*dataSource
-	selectMap  map[string]*xmlSelect
-	insertMap  map[string]*xmlInsert
-	updateMap  map[string]*xmlUpdate
-	deleteMap  map[string]*xmlDelete
-	otherMap   map[string]*xmlOther
+	selectMap  map[string]*element
+	insertMap  map[string]*element
+	updateMap  map[string]*element
+	deleteMap  map[string]*element
+	otherMap   map[string]*element
 )
 
 func init() {
@@ -247,33 +240,34 @@ func loadDaoXml() error {
 	if list, err := loadDaoXmlDir(GetDaoPath()); err != nil {
 		return err
 	} else {
-		selectMap = make(map[string]*xmlSelect)
-		insertMap = make(map[string]*xmlInsert)
-		updateMap = make(map[string]*xmlUpdate)
-		deleteMap = make(map[string]*xmlDelete)
-		otherMap = make(map[string]*xmlOther)
-		for _, xs := range list {
-			for _, xss := range xs.Select {
-				selectMap[xss.Id] = xss
-			}
-			for _, xsi := range xs.Insert {
-				insertMap[xsi.Id] = xsi
-			}
-			for _, xsu := range xs.Update {
-				updateMap[xsu.Id] = xsu
-			}
-			for _, xsd := range xs.Delete {
-				deleteMap[xsd.Id] = xsd
-			}
-			for _, xso := range xs.Other {
-				otherMap[xso.Id] = xso
+		selectMap = make(map[string]*element)
+		insertMap = make(map[string]*element)
+		updateMap = make(map[string]*element)
+		deleteMap = make(map[string]*element)
+		otherMap = make(map[string]*element)
+		for _, dao := range list {
+			if dao != nil {
+				for _, elem := range dao.nodes {
+					switch elem.tag {
+					case tagSelect:
+						selectMap[elem.id] = elem
+					case tagInsert:
+						insertMap[elem.id] = elem
+					case tagUpdate:
+						updateMap[elem.id] = elem
+					case tagDelete:
+						deleteMap[elem.id] = elem
+					case tagOther:
+						otherMap[elem.id] = elem
+					}
+				}
 			}
 		}
 	}
 	return nil
 }
 
-func loadDaoXmlDir(path string) (xmlList []xmlSql, err error) {
+func loadDaoXmlDir(path string) (xmlList []*element, err error) {
 	path = strings.Trim(strings.Trim(path, "\\ "), "/ ")
 	var file *os.File
 	if file, err = os.Open(path); err != nil {
@@ -288,10 +282,10 @@ func loadDaoXmlDir(path string) (xmlList []xmlSql, err error) {
 	if list, err = file.Readdir(0); err != nil {
 		return nil, err
 	} else {
-		xmlList = make([]xmlSql, 0)
+		xmlList = make([]*element, 0)
 		for _, f := range list {
 			if f.IsDir() {
-				var xs []xmlSql
+				var xs []*element
 				if xs, err = loadDaoXmlDir(fmt.Sprint(path, "/", f.Name())); err != nil {
 					return nil, err
 				} else {
@@ -303,15 +297,11 @@ func loadDaoXmlDir(path string) (xmlList []xmlSql, err error) {
 					continue
 				}
 				if isXml {
-					var b []byte
-					if b, err = jfile.Load(fmt.Sprint(path, "/", f.Name())); err != nil {
+					var dao *element
+					if dao, err = toElement(fmt.Sprint(path, "/", f.Name())); err != nil {
 						return nil, err
 					} else {
-						var result xmlSql
-						if err = xml.Unmarshal(b, &result); err != nil {
-							return nil, err
-						}
-						xmlList = append(xmlList, result)
+						xmlList = append(xmlList, dao)
 					}
 				}
 			}
@@ -320,80 +310,7 @@ func loadDaoXmlDir(path string) (xmlList []xmlSql, err error) {
 	}
 }
 
-func xmlToSql(ops Operations, xml string, param map[string]interface{}, xi []xmlIf, xf []xmlFor, xo []xmlOrderBy, page bool) (query, order string, err error) {
-	query = removeComment(xml)
-	if param != nil {
-		if param, err = jcast.StringMapInterface(param); err != nil {
-			return "", "", err
-		}
-		for k, v := range param {
-			if reflect.TypeOf(v).String() == "time.Time" {
-				if param[k], err = jcast.TimeString(v); err != nil {
-					return "", "", err
-				}
-			}
-		}
-	}
-	if query, order, err = replaceXmlForeach(xi, xf, xo, xml, param, page); err != nil {
-		return "", "", err
-	}
-	if param != nil {
-		for k, v := range param {
-			if reflect.TypeOf(v).Kind() == reflect.String {
-				query = strings.ReplaceAll(query, fmt.Sprint("${", k, "}"), v.(string))
-				order = strings.ReplaceAll(order, fmt.Sprint("${", k, "}"), v.(string))
-			}
-		}
-	}
-	query = trim(query)
-	cs := ""
-	switch ops {
-	case Select:
-		cs = "select"
-	case Insert:
-		cs = "insert"
-	case Update:
-		cs = "update"
-	case Delete:
-		cs = "delete"
-	}
-	if strings.Index(strings.ToLower(query), cs) != 0 {
-		return "", "", errorf(errorWrongSql, cs)
-	}
-	return query, order, nil
-}
-
-func replaceXmlForeach(xi []xmlIf, xf []xmlFor, xo []xmlOrderBy, xml string, params map[string]interface{}, page bool) (sql, orderByStr string, err error) {
-	sql = removeComment(xml)
-	var obs string
-	for _, i := range xi {
-		if sql, obs, err = i.replaceXml(sql, params, page); err != nil {
-			return "", "", err
-		}
-		if obs != "" {
-			orderByStr = obs
-		}
-	}
-	for _, f := range xf {
-		if sql, obs, err = f.replaceXml(sql, params, page); err != nil {
-			return "", "", err
-		}
-		if obs != "" {
-			orderByStr = obs
-		}
-	}
-	for _, o := range xo {
-		if sql, obs, err = o.replaceXml(sql, params, page); err != nil {
-			return "", "", err
-		}
-		if obs != "" {
-			orderByStr = obs
-		}
-	}
-	return sql, orderByStr, nil
-}
-
-func getXmlSql(ops Operations, id string) (interface{}, error) {
+func getElement(ops Operations, id string) (*element, error) {
 	mux.RLock()
 	defer func() {
 		mux.RUnlock()
@@ -486,16 +403,6 @@ func removeComment(str string) string {
 		str = fmt.Sprint(str[:si], str[ei+len(et):])
 	}
 	for {
-		st := "<![CDATA["
-		et := "]]>"
-		si := strings.Index(str, st)
-		ei := strings.Index(str, et)
-		if si >= ei || si < 0 || ei < 0 {
-			break
-		}
-		str = fmt.Sprint(str[:si], str[ei+len(et):])
-	}
-	for {
 		st := "--"
 		et := "\r\n"
 		si := strings.Index(str, st)
@@ -519,4 +426,87 @@ func removeComment(str string) string {
 		}
 	}
 	return str
+}
+
+func toElement(path string) (dao *element, err error) {
+	var file *os.File
+	if file, err = os.Open(path); err != nil {
+		return nil, err
+	}
+	defer func() {
+		if e := file.Close(); e != nil {
+			err = e
+		}
+	}()
+	parser := xml.NewDecoder(file)
+	idx := make([]int, 0)
+	for {
+		var token xml.Token
+		if token, err = parser.Token(); err != nil {
+			err = nil
+			break
+		}
+		switch t := token.(type) {
+		case xml.StartElement:
+			name := t.Name.Local
+			switch tn := ParseTag(name); tn {
+			case tagDao:
+				if dao == nil {
+					dao = &element{id: "", tag: tn, nodes: make([]*element, 0)}
+				}
+			case tagSelect:
+				fallthrough
+			case tagInsert:
+				fallthrough
+			case tagUpdate:
+				fallthrough
+			case tagDelete:
+				fallthrough
+			case tagOther:
+				if dao != nil && len(idx) <= 0 {
+					attr := make(map[string]string)
+					for _, a := range t.Attr {
+						attr[a.Name.Local] = a.Value
+					}
+					dao.nodes = append(dao.nodes, &element{id: attr["id"], tag: tn, attr: attr, text: "", nodes: make([]*element, 0)})
+					idx = append(idx, len(dao.nodes)-1)
+				}
+			case tagIf:
+				fallthrough
+			case tagForeach:
+				fallthrough
+			case tagOrderBy:
+				if dao != nil && len(idx) > 0 {
+					e := dao
+					for _, i := range idx {
+						e = e.nodes[i]
+					}
+					attr := make(map[string]string)
+					for _, a := range t.Attr {
+						attr[strings.ToLower(a.Name.Local)] = a.Value
+					}
+					e.nodes = append(e.nodes, &element{id: attr["id"], tag: tn, attr: attr, text: "", nodes: make([]*element, 0)})
+					idx = append(idx, len(e.nodes)-1)
+				}
+			}
+		case xml.EndElement:
+			if l := len(idx); l > 0 {
+				idx = idx[:l-1]
+			}
+		case xml.CharData:
+			if dao != nil && len(idx) > 0 {
+				e := dao
+				for _, i := range idx {
+					e = e.nodes[i]
+				}
+				text := trim(removeComment(jcast.String(t)))
+				e.nodes = append(e.nodes, &element{id: "", tag: tagText, attr: nil, text: text, nodes: nil})
+			}
+		case xml.Comment:
+		case xml.ProcInst:
+		case xml.Directive:
+		default:
+		}
+	}
+	return dao, nil
 }

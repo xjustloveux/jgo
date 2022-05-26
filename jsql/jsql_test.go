@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/xjustloveux/jgo/jfile"
 	"github.com/xjustloveux/jgo/jtime"
-	"reflect"
 	"strconv"
 	"testing"
 	"time"
@@ -148,21 +147,15 @@ func testSql1(t *testing.T) {
 		},
 	}
 	for _, v := range tests {
-		var xml interface{}
+		var elem *element
 		var err error
-		if xml, err = getXmlSql(Select, v.id); err != nil {
+		if elem, err = getElement(Select, v.id); err != nil {
 			t.Error(err)
-			continue
-		}
-		var xs *xmlSelect
-		var ok bool
-		if xs, ok = xml.(*xmlSelect); !ok {
-			t.Error(errorf(errorXmlNotSelectType, reflect.TypeOf(xml)))
 			continue
 		}
 		var query string
 		var order string
-		if query, order, err = xs.getSql(v.pm, true); err != nil {
+		if query, order, err = elem.getSql(v.pm, true); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -198,8 +191,7 @@ func testSql2(t *testing.T) {
 			"testMySql2",
 			pm1,
 			`SELECT * FROM USR
-        WHERE USR_STS = ?
-        AND USR_ID = ?`,
+        WHERE USR_STS = ? AND USR_ID = ?`,
 			[]interface{}{pm1["USR_STS"], pm1["USR_ID"]},
 		},
 		{
@@ -207,8 +199,7 @@ func testSql2(t *testing.T) {
 			"testMSSql2",
 			pm2,
 			`SELECT * FROM USR
-        WHERE USE_STS = @p1
-        AND USR_ID = @p2`,
+        WHERE USE_STS = @p1 AND USR_ID = @p2`,
 			[]interface{}{pm2["USE_STS"], pm2["USR_ID"]},
 		},
 		{
@@ -216,8 +207,7 @@ func testSql2(t *testing.T) {
 			"testOracle2",
 			pm3,
 			`SELECT * FROM M_USER
-        WHERE USER_STATUS = :0
-        AND USER_ID = :1`,
+        WHERE USER_STATUS = :0 AND USER_ID = :1`,
 			[]interface{}{pm3["USER_STATUS"], pm3["USER_ID"]},
 		},
 	}
@@ -259,9 +249,7 @@ func testSql3(t *testing.T) {
 			&Agent{t: MySql},
 			"testMySql3",
 			pm1,
-			`SELECT * FROM (SELECT (@i := @i + 1) AS ALLOWPAGINGID, table1.* FROM (SELECT *, 1 as ORDERBYID FROM (SELECT USR_ID, USR_STS FROM USR ORDER BY 
-            USR_ID DESC
-        )  as  tbs1 ) as table1, (select @i := 0) temp ORDER BY ORDERBYID DESC ) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
+			`SELECT * FROM (SELECT (@i := @i + 1) AS ALLOWPAGINGID, table1.* FROM (SELECT *, 1 as ORDERBYID FROM (SELECT USR_ID, USR_STS FROM USR ORDER BY USR_ID DESC)  as  tbs1 ) as table1, (select @i := 0) temp ORDER BY ORDERBYID DESC ) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
 			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USR_ID, USR_STS FROM USR) data`,
 			make([]interface{}, 0),
 		},
@@ -269,9 +257,7 @@ func testSql3(t *testing.T) {
 			&Agent{t: MSSql},
 			"testMSSql3",
 			pm2,
-			`SELECT * FROM (SELECT ROW_NUMBER() OVER( ORDER BY 
-            USR_ID DESC
-        ) AS ALLOWPAGINGID,* FROM (SELECT * FROM (SELECT USR_ID, USE_STS FROM USR) as tbs1) as table1) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
+			`SELECT * FROM (SELECT ROW_NUMBER() OVER( ORDER BY USR_ID DESC) AS ALLOWPAGINGID,* FROM (SELECT * FROM (SELECT USR_ID, USE_STS FROM USR) as tbs1) as table1) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
 			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USR_ID, USE_STS FROM USR) data`,
 			make([]interface{}, 0),
 		},
@@ -279,29 +265,21 @@ func testSql3(t *testing.T) {
 			&Agent{t: Oracle},
 			"testOracle3",
 			pm3,
-			`SELECT t3.* FROM (SELECT t2.*, rownum as ALLOWPAGINGID FROM (SELECT t1.*, 1 as ORDERBYID FROM (SELECT USER_ID, USER_STATUS FROM M_USER ORDER BY 
-            USER_ID DESC
-        ) t1) t2 ORDER BY ORDERBYID) t3 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
+			`SELECT t3.* FROM (SELECT t2.*, rownum as ALLOWPAGINGID FROM (SELECT t1.*, 1 as ORDERBYID FROM (SELECT USER_ID, USER_STATUS FROM M_USER ORDER BY USER_ID DESC) t1) t2 ORDER BY ORDERBYID) t3 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
 			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USER_ID, USER_STATUS FROM M_USER) data`,
 			make([]interface{}, 0),
 		},
 	}
 	for _, v := range tests {
-		var xml interface{}
+		var elem *element
 		var err error
-		if xml, err = getXmlSql(Select, v.id); err != nil {
+		if elem, err = getElement(Select, v.id); err != nil {
 			t.Error(err)
-			continue
-		}
-		var xs *xmlSelect
-		var ok bool
-		if xs, ok = xml.(*xmlSelect); !ok {
-			t.Error(errorf(errorXmlNotSelectType, reflect.TypeOf(xml)))
 			continue
 		}
 		var query string
 		var order string
-		if query, order, err = xs.getSql(v.pm, true); err != nil {
+		if query, order, err = elem.getSql(v.pm, true); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -337,55 +315,37 @@ func testSql4(t *testing.T) {
 			&Agent{t: MySql},
 			"testMySql4",
 			pm1,
-			`SELECT * FROM (SELECT (@i := @i + 1) AS ALLOWPAGINGID, table1.* FROM (SELECT *, 1 as ORDERBYID FROM (SELECT
-        USR_ID, USR_STS
-        FROM USR)  as  tbs1 ) as table1, (select @i := 0) temp ORDER BY ORDERBYID DESC ) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
-			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT
-        USR_ID, USR_STS
-        FROM USR) data`,
+			`SELECT * FROM (SELECT (@i := @i + 1) AS ALLOWPAGINGID, table1.* FROM (SELECT *, 1 as ORDERBYID FROM (SELECT USR_ID, USR_STS FROM USR)  as  tbs1 ) as table1, (select @i := 0) temp ORDER BY ORDERBYID DESC ) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
+			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USR_ID, USR_STS FROM USR) data`,
 			make([]interface{}, 0),
 		},
 		{
 			&Agent{t: MSSql},
 			"testMSSql4",
 			pm2,
-			`SELECT * FROM (SELECT ROW_NUMBER() OVER(ORDER BY ORDERBYID DESC) AS ALLOWPAGINGID,* FROM (SELECT *, 1 as ORDERBYID FROM (SELECT
-        USR_ID, USE_STS
-        FROM USR) as tbs1) as table1) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
-			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT
-        USR_ID, USE_STS
-        FROM USR) data`,
+			`SELECT * FROM (SELECT ROW_NUMBER() OVER(ORDER BY ORDERBYID DESC) AS ALLOWPAGINGID,* FROM (SELECT *, 1 as ORDERBYID FROM (SELECT USR_ID, USE_STS FROM USR) as tbs1) as table1) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
+			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USR_ID, USE_STS FROM USR) data`,
 			make([]interface{}, 0),
 		},
 		{
 			&Agent{t: Oracle},
 			"testOracle4",
 			pm3,
-			`SELECT t3.* FROM (SELECT t2.*, rownum as ALLOWPAGINGID FROM (SELECT t1.*, 1 as ORDERBYID FROM (SELECT
-        USER_ID, USER_STATUS
-        FROM M_USER) t1) t2 ORDER BY ORDERBYID) t3 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
-			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT
-        USER_ID, USER_STATUS
-        FROM M_USER) data`,
+			`SELECT t3.* FROM (SELECT t2.*, rownum as ALLOWPAGINGID FROM (SELECT t1.*, 1 as ORDERBYID FROM (SELECT USER_ID, USER_STATUS FROM M_USER) t1) t2 ORDER BY ORDERBYID) t3 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
+			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USER_ID, USER_STATUS FROM M_USER) data`,
 			make([]interface{}, 0),
 		},
 	}
 	for _, v := range tests {
-		var xml interface{}
+		var elem *element
 		var err error
-		if xml, err = getXmlSql(Select, v.id); err != nil {
+		if elem, err = getElement(Select, v.id); err != nil {
 			t.Error(err)
-			continue
-		}
-		var xs *xmlSelect
-		var ok bool
-		if xs, ok = xml.(*xmlSelect); !ok {
-			t.Error(errorf(errorXmlNotSelectType, reflect.TypeOf(xml)))
 			continue
 		}
 		var query string
 		var order string
-		if query, order, err = xs.getSql(v.pm, true); err != nil {
+		if query, order, err = elem.getSql(v.pm, true); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -486,9 +446,7 @@ func testSql6(t *testing.T) {
 			&Agent{t: MySql},
 			"testSelect6",
 			pm1,
-			`SELECT *
-        
-        FROM USR
+			`SELECT * FROM USR
                 WHERE USR_SEQ = ?`,
 			[]interface{}{pm1["VAL"]},
 		},
@@ -496,9 +454,7 @@ func testSql6(t *testing.T) {
 			&Agent{t: MSSql},
 			"testSelect6",
 			pm2,
-			`SELECT *
-        
-        FROM USR
+			`SELECT * FROM USR
                 WHERE USR_SEQ = @p1`,
 			[]interface{}{pm2["VAL"]},
 		},
@@ -506,9 +462,7 @@ func testSql6(t *testing.T) {
 			&Agent{t: Oracle},
 			"testSelect6",
 			pm3,
-			`SELECT *
-        
-        FROM M_USER
+			`SELECT * FROM M_USER
                 WHERE USER_ID = :0`,
 			[]interface{}{pm3["VAL"]},
 		},
@@ -556,28 +510,19 @@ func testSqlInsert1(t *testing.T) {
 		{
 			&Agent{t: MySql},
 			pm1,
-			`INSERT INTO USR
-        (USR_SEQ, USR_ID, LAST_TIME)
-        VALUES
-        (?, ?, ?)`,
+			`INSERT INTO USR (USR_SEQ, USR_ID, LAST_TIME) VALUES (?, ?, ?)`,
 			[]interface{}{pm1["USR_SEQ"], pm1["USR_ID"], pm1["LAST_TIME"]},
 		},
 		{
 			&Agent{t: MSSql},
 			pm2,
-			`INSERT INTO USR
-        (USR_SEQ, USR_ID, LAST_TIME)
-        VALUES
-        (@p1, @p2, @p3)`,
+			`INSERT INTO USR (USR_SEQ, USR_ID, LAST_TIME) VALUES (@p1, @p2, @p3)`,
 			[]interface{}{pm2["USR_SEQ"], pm2["USR_ID"], pm2["LAST_TIME"]},
 		},
 		{
 			&Agent{t: Oracle},
 			pm3,
-			`INSERT INTO M_USER
-        (USER_ID, LAST_LOGIN_DT)
-        VALUES
-        (:0, :1)`,
+			`INSERT INTO M_USER (USER_ID, LAST_LOGIN_DT) VALUES (:0, :1)`,
 			[]interface{}{pm3["USER_ID"], pm3["LAST_LOGIN_DT"]},
 		},
 	}

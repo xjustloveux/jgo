@@ -354,8 +354,8 @@ func (a *Agent) execPrepareTxOps(ops Operations, id string, param map[string]int
 	return a.execPrepareTx(query, args...)
 }
 
-func (a *Agent) getXmlAndParam(ops Operations, id string, param []map[string]interface{}) (xml interface{}, pm map[string]interface{}, err error) {
-	if xml, err = getXmlSql(ops, id); err != nil {
+func (a *Agent) getXmlAndParam(ops Operations, id string, param []map[string]interface{}) (elem *element, pm map[string]interface{}, err error) {
+	if elem, err = getElement(ops, id); err != nil {
 		return nil, nil, err
 	}
 	if len(param) > 0 {
@@ -363,57 +363,17 @@ func (a *Agent) getXmlAndParam(ops Operations, id string, param []map[string]int
 	} else {
 		pm = nil
 	}
-	return xml, pm, nil
+	return elem, pm, nil
 }
 
 func (a *Agent) xmlAndParamsToQueryAndArgs(ops Operations, id string, param []map[string]interface{}) (query string, args []interface{}, err error) {
-	var xml interface{}
-	var xs *xmlSelect
-	var xi *xmlInsert
-	var xu *xmlUpdate
-	var xd *xmlDelete
-	var xo *xmlOther
-	var ok bool
+	var elem *element
 	var pm map[string]interface{}
-	if xml, pm, err = a.getXmlAndParam(ops, id, param); err != nil {
+	if elem, pm, err = a.getXmlAndParam(ops, id, param); err != nil {
 		return "", nil, err
 	}
-	switch ops {
-	case Select:
-		if xs, ok = xml.(*xmlSelect); !ok {
-			return "", nil, errorf(errorXmlNotSelectType, reflect.TypeOf(xml))
-		}
-		if query, _, err = xs.getSql(pm, false); err != nil {
-			return "", nil, err
-		}
-	case Insert:
-		if xi, ok = xml.(*xmlInsert); !ok {
-			return "", nil, errorf(errorXmlNotInsertType, reflect.TypeOf(xml))
-		}
-		if query, _, err = xi.getSql(pm); err != nil {
-			return "", nil, err
-		}
-	case Update:
-		if xu, ok = xml.(*xmlUpdate); !ok {
-			return "", nil, errorf(errorXmlNotUpdateType, reflect.TypeOf(xml))
-		}
-		if query, _, err = xu.getSql(pm); err != nil {
-			return "", nil, err
-		}
-	case Delete:
-		if xd, ok = xml.(*xmlDelete); !ok {
-			return "", nil, errorf(errorXmlNotDeleteType, reflect.TypeOf(xml))
-		}
-		if query, _, err = xd.getSql(pm); err != nil {
-			return "", nil, err
-		}
-	case Other:
-		if xo, ok = xml.(*xmlOther); !ok {
-			return "", nil, errorf(errorXmlNotOtherType, reflect.TypeOf(xml))
-		}
-		if query, _, err = xo.getSql(pm); err != nil {
-			return "", nil, err
-		}
+	if query, _, err = elem.getSql(pm, false); err != nil {
+		return "", nil, err
 	}
 	query, args = a.getQueryAndArgs(query, pm)
 	return trim(query), args, nil
@@ -463,19 +423,14 @@ func (a *Agent) queryTx(single bool, query string, args ...interface{}) (result 
 }
 
 func (a *Agent) queryPage(ct bool, id string, start, end int64, param ...map[string]interface{}) (result Result, err error) {
-	var xml interface{}
+	var elem *element
 	var pm map[string]interface{}
-	if xml, pm, err = a.getXmlAndParam(Select, id, param); err != nil {
+	if elem, pm, err = a.getXmlAndParam(Select, id, param); err != nil {
 		return nil, err
-	}
-	var xs *xmlSelect
-	var ok bool
-	if xs, ok = xml.(*xmlSelect); !ok {
-		return nil, errorf(errorXmlNotSelectType, reflect.TypeOf(xml))
 	}
 	var query string
 	var order string
-	if query, order, err = xs.getSql(pm, true); err != nil {
+	if query, order, err = elem.getSql(pm, true); err != nil {
 		return nil, err
 	}
 	var args []interface{}

@@ -5,6 +5,7 @@
 package jcast
 
 import (
+	"encoding/xml"
 	"fmt"
 	"github.com/xjustloveux/jgo/jruntime"
 	"github.com/xjustloveux/jgo/jtime"
@@ -327,6 +328,10 @@ func String(i interface{}) string {
 	case string:
 		return v
 	case []byte:
+		return string(v)
+	case xml.CharData:
+		return string(v)
+	case xml.Comment:
 		return string(v)
 	case nil:
 		return ""

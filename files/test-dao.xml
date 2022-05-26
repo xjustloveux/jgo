@@ -34,19 +34,19 @@
 
     <select id="testMySql3">
         SELECT ${COL1}, ${COL2} FROM USR
-        <orderBy lastTag="true">
+        <orderBy last="true">
             ${SORT} DESC
         </orderBy>
     </select>
     <select id="testMSSql3">
         SELECT ${COL1}, ${COL2} FROM USR
-        <orderBy lastTag="true">
+        <orderBy last="true">
             ${SORT} DESC
         </orderBy>
     </select>
     <select id="testOracle3">
         SELECT ${COL1}, ${COL2} FROM M_USER
-        <orderBy lastTag="true">
+        <orderBy last="true">
             ${SORT} DESC
         </orderBy>
     </select>
