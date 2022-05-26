@@ -43,12 +43,8 @@ func Load(name string) (bytes []byte, err error) {
 // Convert map[string]interface{} convert to v
 func Convert(m map[string]interface{}, v interface{}) error {
 	var err error
-	for mk, mv := range m {
-		if reflect.TypeOf(mv).Kind() == reflect.Map {
-			if m[mk], err = toStringMap(mv); err != nil {
-				return err
-			}
-		}
+	if m, err = toStringMap(m); err != nil {
+		return err
 	}
 	var b []byte
 	if b, err = Encode(Json.String(), m); err != nil {
@@ -77,7 +73,33 @@ func toStringMap(i interface{}) (map[string]interface{}, error) {
 					return nil, err
 				}
 			}
+			if reflect.TypeOf(v).Kind() == reflect.Slice {
+				if m[k], err = checkSliceToStringMap(v); err != nil {
+					return nil, err
+				}
+			}
 		}
 	}
 	return m, nil
+}
+
+func checkSliceToStringMap(v interface{}) ([]interface{}, error) {
+	var err error
+	var s []interface{}
+	if s, err = jcast.SliceInterface(v); err != nil {
+		return nil, err
+	}
+	for si, sv := range s {
+		if reflect.TypeOf(sv).Kind() == reflect.Map {
+			if s[si], err = toStringMap(sv); err != nil {
+				return nil, err
+			}
+		}
+		if reflect.TypeOf(sv).Kind() == reflect.Slice {
+			if s[si], err = checkSliceToStringMap(sv); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return s, nil
 }

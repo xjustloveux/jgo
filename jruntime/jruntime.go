@@ -58,3 +58,39 @@ func GetCallerProgramName(sep ...string) string {
 	}
 	return ""
 }
+
+// GetPkgName returns package name
+func GetPkgName() string {
+	if pc, _, _, ok := runtime.Caller(1); ok {
+		path := runtime.FuncForPC(pc).Name()
+		pathArr := strings.Split(path, "/")
+		if l := len(pathArr); l < 1 {
+			return path
+		} else {
+			pathArr = strings.Split(pathArr[l-1], ".")
+		}
+		if len(pathArr) > 0 {
+			return pathArr[0]
+		}
+		return path
+	}
+	return ""
+}
+
+// GetCallerPkgName returns caller package name
+func GetCallerPkgName() string {
+	if pc, _, _, ok := runtime.Caller(2); ok {
+		path := runtime.FuncForPC(pc).Name()
+		pathArr := strings.Split(path, "/")
+		if l := len(pathArr); l < 1 {
+			return path
+		} else {
+			pathArr = strings.Split(pathArr[l-1], ".")
+		}
+		if len(pathArr) > 0 {
+			return pathArr[0]
+		}
+		return path
+	}
+	return ""
+}

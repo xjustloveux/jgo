@@ -445,6 +445,15 @@ Configuration file default `json` format, you can use `jlog.SetFormat` to set yo
         "console",
         "web"
       ]
+    },
+    {
+      "program": [
+        "pkg:packageName"
+      ],
+      "appender": [
+        "console",
+        "sys"
+      ]
     }
   ]
 }
@@ -882,6 +891,8 @@ func main() {
 ### GetFuncName
 ### GetCallerName
 ### GetCallerProgramName
+### GetPkgName
+### GetCallerPkgName
 
 ## jcast
 

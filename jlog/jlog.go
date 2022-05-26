@@ -30,6 +30,7 @@ const (
 	fileName = "log.json"
 	console  = "console"
 	Default  = "default"
+	pkgKey   = "pkg:"
 )
 
 var (
@@ -123,11 +124,16 @@ func GetAppender(args ...string) Appender {
 		mux.RUnlock()
 	}()
 	if len(args) > 0 {
-		if a := ap[args[0]]; a != nil {
-			return a
+		for _, k := range args {
+			if a := ap[k]; a != nil {
+				return a
+			}
 		}
 	} else {
 		if a := ap[jruntime.GetCallerProgramName()]; a != nil {
+			return a
+		}
+		if a := ap[fmt.Sprint(pkgKey, jruntime.GetCallerPkgName())]; a != nil {
 			return a
 		}
 	}
@@ -163,47 +169,47 @@ func Log(level Level, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Print print
 func Print(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Panic print panic level message
 func Panic(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Fatal print fatal level message
 func Fatal(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Error print error level message
 func Error(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Warn print warn level message
 func Warn(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Info print info level message
 func Info(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Debug print debug level message
 func Debug(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Trace print trace level message
 func Trace(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Logf log
@@ -214,7 +220,7 @@ func Logf(level Level, format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+2] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Printf print
@@ -224,7 +230,7 @@ func Printf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Panicf print panic level message
@@ -234,7 +240,7 @@ func Panicf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Fatalf print fatal level message
@@ -244,7 +250,7 @@ func Fatalf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Errorf print error level message
@@ -254,7 +260,7 @@ func Errorf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Warnf print warn level message
@@ -264,7 +270,7 @@ func Warnf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Infof print info level message
@@ -274,7 +280,7 @@ func Infof(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Debugf print debug level message
@@ -284,7 +290,7 @@ func Debugf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Tracef print trace level message
@@ -294,61 +300,61 @@ func Tracef(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // LogFn log
 func LogFn(level Level, fn LogFunction) {
 	args := []interface{}{logrus.Level(level), logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // PrintFn print
 func PrintFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // PanicFn print panic level message
 func PanicFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // FatalFn print fatal level message
 func FatalFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // ErrorFn print error level message
 func ErrorFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // WarnFn print warn level message
 func WarnFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // InfoFn print info level message
 func InfoFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // DebugFn print debug level message
 func DebugFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // TraceFn print trace level message
 func TraceFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Logln log
@@ -358,47 +364,47 @@ func Logln(level Level, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), na...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
 }
 
 // Println print
 func Println(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Panicln print panic level message
 func Panicln(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Fatalln print fatal level message
 func Fatalln(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Errorln print error level message
 func Errorln(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Warnln print warn level message
 func Warnln(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Infoln print info level message
 func Infoln(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Debugln print debug level message
 func Debugln(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 // Traceln print trace level message
 func Traceln(args ...interface{}) {
-	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), args...)
+	appenderCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
 func errors(e jError) error {
@@ -480,7 +486,7 @@ func createAppender() error {
 	for _, lv := range cd.Logs {
 		for _, pv := range lv.Program {
 			var pn string
-			if pv == Default {
+			if pv == Default || strings.Index(pv, pkgKey) == 0 {
 				pn = pv
 			} else {
 				pn = fmt.Sprint(strings.Trim(pv, ".go"), ".go")
@@ -505,12 +511,13 @@ func createAppender() error {
 	return nil
 }
 
-func appenderCall(pn, fn string, args ...interface{}) {
-	if a := GetAppender(pn); a != nil {
+func appenderCall(pn, fn, pkg string, args ...interface{}) {
+	a := GetAppender(pn, fmt.Sprint(pkgKey, pkg))
+	if a == nil {
+		fmtPrintln(errors(errorAppenderNil))
+	} else {
 		if err := a.Call(fn, args...); err != nil {
 			fmtPrintln(err)
 		}
-	} else {
-		fmtPrintln(errors(errorAppenderNil))
 	}
 }

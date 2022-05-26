@@ -74,3 +74,15 @@ func TestGetCallerProgramName(t *testing.T) {
 		assert.Equal(t, test.output, v, msg)
 	}
 }
+
+func TestGetPkgName(t *testing.T) {
+	input := "jruntime"
+	output := GetPkgName()
+	assert.Equal(t, input, output, fmt.Sprintf("%v != %v", input, output))
+}
+
+func TestGetCallerPkgName(t *testing.T) {
+	input := "testing"
+	output := GetCallerPkgName()
+	assert.Equal(t, input, output, fmt.Sprintf("%v != %v", input, output))
+}
