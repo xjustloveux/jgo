@@ -475,6 +475,8 @@ func toElement(path string) (dao *element, err error) {
 				fallthrough
 			case tagForeach:
 				fallthrough
+			case tagWhere:
+				fallthrough
 			case tagOrderBy:
 				if dao != nil && len(idx) > 0 {
 					e := dao
@@ -485,7 +487,7 @@ func toElement(path string) (dao *element, err error) {
 					for _, a := range t.Attr {
 						attr[strings.ToLower(a.Name.Local)] = a.Value
 					}
-					e.nodes = append(e.nodes, &element{id: attr["id"], tag: tn, attr: attr, text: "", nodes: make([]*element, 0)})
+					e.nodes = append(e.nodes, &element{id: "", tag: tn, attr: attr, text: "", nodes: make([]*element, 0)})
 					idx = append(idx, len(e.nodes)-1)
 				}
 			}

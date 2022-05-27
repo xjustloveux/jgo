@@ -18,6 +18,7 @@ const (
 	tagOther   tag = "other"
 	tagIf      tag = "if"
 	tagForeach tag = "foreach"
+	tagWhere   tag = "where"
 	tagOrderBy tag = "orderBy"
 	tagUnknown tag = "Unknown"
 )
@@ -46,6 +47,8 @@ func ParseTag(str string) tag {
 		return tagIf
 	case "foreach":
 		return tagForeach
+	case "where":
+		return tagWhere
 	case "orderby":
 		return tagOrderBy
 	default:

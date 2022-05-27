@@ -12,24 +12,30 @@
 
     <select id="testMySql2">
         SELECT * FROM USR
-        WHERE USR_STS = @{USR_STS}
-        <if test="!nil(USR_ID) and USR_ID != ''">
-            AND USR_ID = @{USR_ID}
-        </if>
+        <where>
+            USR_STS = @{USR_STS}
+            <if test="!nil(USR_ID) and USR_ID != ''">
+                AND USR_ID = @{USR_ID}
+            </if>
+        </where>
     </select>
     <select id="testMSSql2">
         SELECT * FROM USR
-        WHERE USE_STS = @{USE_STS}
-        <if test="!nil(USR_ID) and USR_ID != ''">
-            AND USR_ID = @{USR_ID}
-        </if>
+        <where>
+            USE_STS = @{USE_STS}
+            <if test="!nil(USR_ID) and USR_ID != ''">
+                AND USR_ID = @{USR_ID}
+            </if>
+        </where>
     </select>
     <select id="testOracle2">
         SELECT * FROM M_USER
-        WHERE USER_STATUS = @{USER_STATUS}
-        <if test="!nil(USER_ID) and USER_ID != ''">
-            AND USER_ID = @{USER_ID}
-        </if>
+        <where>
+            USER_STATUS = @{USER_STATUS}
+            <if test="!nil(USER_ID) and USER_ID != ''">
+                AND USER_ID = @{USER_ID}
+            </if>
+        </where>
     </select>
 
     <select id="testMySql3">

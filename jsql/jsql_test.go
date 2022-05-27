@@ -190,24 +190,21 @@ func testSql2(t *testing.T) {
 			&Agent{t: MySql},
 			"testMySql2",
 			pm1,
-			`SELECT * FROM USR
-        WHERE USR_STS = ? AND USR_ID = ?`,
+			`SELECT * FROM USR WHERE USR_STS = ? AND USR_ID = ?`,
 			[]interface{}{pm1["USR_STS"], pm1["USR_ID"]},
 		},
 		{
 			&Agent{t: MSSql},
 			"testMSSql2",
 			pm2,
-			`SELECT * FROM USR
-        WHERE USE_STS = @p1 AND USR_ID = @p2`,
+			`SELECT * FROM USR WHERE USE_STS = @p1 AND USR_ID = @p2`,
 			[]interface{}{pm2["USE_STS"], pm2["USR_ID"]},
 		},
 		{
 			&Agent{t: Oracle},
 			"testOracle2",
 			pm3,
-			`SELECT * FROM M_USER
-        WHERE USER_STATUS = :0 AND USER_ID = :1`,
+			`SELECT * FROM M_USER WHERE USER_STATUS = :0 AND USER_ID = :1`,
 			[]interface{}{pm3["USER_STATUS"], pm3["USER_ID"]},
 		},
 	}

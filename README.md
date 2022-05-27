@@ -1,4 +1,5 @@
 # jgo
+
 [![codecov](https://codecov.io/gh/xjustloveux/jgo/branch/master/graph/badge.svg?token=RCO5VO2YU6)](https://codecov.io/gh/xjustloveux/jgo)
 [![Build Status](https://app.travis-ci.com/xjustloveux/jgo.svg?branch=master)](https://app.travis-ci.com/xjustloveux/jgo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xjustloveux/jgo)](https://goreportcard.com/report/github.com/xjustloveux/jgo)
@@ -104,7 +105,10 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
 
 #### dao/example.xml
 
-⚠️**The tags ${} and #{} will directly become SQL statements at the end, which may cause SQL injection problems. Please use them with caution.**
+For details, please refer to [XmlTag](#XmlTag).
+
+⚠️**The tags ${} and #{} will directly become SQL statements at the end, which may cause SQL injection problems. Please
+use them with caution.**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -114,10 +118,12 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
     </select>
     <select id="example2">
         SELECT * FROM TABLE2
-        WHERE COL1 = @{COL1}
-        <if test="!nil(COL2) and COL2 != ''">
-            AND COL2 = @{COL2}
-        </if>
+        <where>
+            COL1 = @{COL1}
+            <if test="!nil(COL2) and COL2 != ''">
+                AND COL2 = @{COL2}
+            </if>
+        </where>
     </select>
     <select id="example3">
         SELECT ${COL1}, ${COL2} FROM TABLE3
@@ -358,6 +364,32 @@ func example7() {
 }
 ```
 
+### XmlTag
+
+| Tag Name | Layer | Attr Name | Required | Type   | Comment                                                                                                  |
+|----------|-------|-----------|----------|--------|----------------------------------------------------------------------------------------------------------|
+| dao      | 1     |           | true     |        |                                                                                                          |
+| select   | 2     |           |          |        |                                                                                                          |
+|          |       | id        | true     | string |                                                                                                          |
+| insert   | 2     |           |          |        |                                                                                                          |
+|          |       | id        | true     | string |                                                                                                          |
+| update   | 2     |           |          |        |                                                                                                          |
+|          |       | id        | true     | string |                                                                                                          |
+| delete   | 2     |           |          | string |                                                                                                          |
+|          |       | id        | true     | string |                                                                                                          |
+| other    | 2     |           |          | string |                                                                                                          |
+|          |       | id        | true     | string |                                                                                                          |
+| if       | 3 up  |           |          |        |                                                                                                          |
+|          |       | test      | true     | string | expression, support nil check use nil()<br/>middleware: [govaluate](https://github.com/Knetic/govaluate) |
+| foreach  | 3 up  |           |          |        |                                                                                                          |
+|          |       | params    | true     | string | param key, param type can be map or slice                                                                |
+|          |       | open      | false    | string |                                                                                                          |
+|          |       | separator | false    | string |                                                                                                          |
+|          |       | close     | false    | string |                                                                                                          |
+| where    | 3 up  |           |          |        |                                                                                                          |
+| orderBy  | 3 up  |           |          |        |                                                                                                          |
+|          |       | last      | false    | bool   | for QueryPage                                                                                            |
+
 ## jlog
 
 ### Configuration
@@ -390,7 +422,7 @@ Configuration file default `json` format, you can use `jlog.SetFormat` to set yo
 | Logs.Program                         | true     | []string               | empty                                                  | go program name. ex: main or main.go                             |
 | Logs.Appender                        | true     | []string               | empty                                                  | Appender name.                                                   |
 
-**note: `jlog.Init` default create 'default' program name and 'console' appender name.**
+***Note:* `jlog.Init` default create 'default' program name and 'console' appender name.**
 
 ### Usage
 
@@ -634,17 +666,17 @@ You can override the basic setting by setting the env file name, env val or env 
 package main
 
 import (
-  "fmt"
-  "github.com/xjustloveux/jgo/jconf"
+	"fmt"
+	"github.com/xjustloveux/jgo/jconf"
 )
 
 func main() {
-  conf := jconf.New()
-  conf.SetFileName("default.json")
-  conf.SetEnvFileName("override.json")
-  if err := conf.Load(); err != nil {
-    fmt.Println(err)
-  }
+	conf := jconf.New()
+	conf.SetFileName("default.json")
+	conf.SetEnvFileName("override.json")
+	if err := conf.Load(); err != nil {
+		fmt.Println(err)
+	}
 }
 ```
 
@@ -666,18 +698,18 @@ func main() {
 package main
 
 import (
-  "fmt"
-  "github.com/xjustloveux/jgo/jconf"
+	"fmt"
+	"github.com/xjustloveux/jgo/jconf"
 )
 
 func main() {
-  conf := jconf.New()
-  conf.SetFileName("default.json")
-  conf.SetEnvVal("dev")
-  // Override file name is 'default-dev.json'.
-  if err := conf.Load(); err != nil {
-    fmt.Println(err)
-  }
+	conf := jconf.New()
+	conf.SetFileName("default.json")
+	conf.SetEnvVal("dev")
+	// Override file name is 'default-dev.json'.
+	if err := conf.Load(); err != nil {
+		fmt.Println(err)
+	}
 }
 ```
 
@@ -689,20 +721,20 @@ func main() {
 package main
 
 import (
-  "fmt"
-  "github.com/xjustloveux/jgo/jconf"
+	"fmt"
+	"github.com/xjustloveux/jgo/jconf"
 )
 
 func main() {
-  conf := jconf.New()
-  conf.SetFileName("default.json")
-  conf.SetEnvKey("goEnv")
-  // If the 'default.json' file or os have 'goEnv' environment variables.
-  // Override file name is 'default-$goEnv.json'.
-  // E.g. goEnv value is 'dev', then the override file name is 'default-dev.json'.
-  if err := conf.Load(); err != nil {
-    fmt.Println(err)
-  }
+	conf := jconf.New()
+	conf.SetFileName("default.json")
+	conf.SetEnvKey("goEnv")
+	// If the 'default.json' file or os have 'goEnv' environment variables.
+	// Override file name is 'default-$goEnv.json'.
+	// E.g. goEnv value is 'dev', then the override file name is 'default-dev.json'.
+	if err := conf.Load(); err != nil {
+		fmt.Println(err)
+	}
 }
 ```
 
@@ -714,19 +746,19 @@ func main() {
 package main
 
 import (
-  "fmt"
-  "github.com/xjustloveux/jgo/jconf"
+	"fmt"
+	"github.com/xjustloveux/jgo/jconf"
 )
 
 func main() {
-  conf := jconf.New()
-  conf.SetFileName("default.json")
-  // If the 'default.json' file or os have 'jEnv' environment variables.
-  // Override file name is 'default-$jEnv.json'.
-  // E.g. jEnv value is 'dev', then the override file name is 'default-dev.json'.
-  if err := conf.Load(); err != nil {
-    fmt.Println(err)
-  }
+	conf := jconf.New()
+	conf.SetFileName("default.json")
+	// If the 'default.json' file or os have 'jEnv' environment variables.
+	// Override file name is 'default-$jEnv.json'.
+	// E.g. jEnv value is 'dev', then the override file name is 'default-dev.json'.
+	if err := conf.Load(); err != nil {
+		fmt.Println(err)
+	}
 }
 ```
 
@@ -888,51 +920,93 @@ func main() {
 ### New
 
 ## jruntime
+
 ### GetFuncName
+
 ### GetCallerName
+
 ### GetCallerProgramName
+
 ### GetPkgName
+
 ### GetCallerPkgName
 
 ## jcast
 
 ### VerifyPtr
+
 ### Value
+
 ### Time
+
 ### TimeLoc
+
 ### TimeString
+
 ### TimeFormatString
+
 ### String
+
 ### Bool
+
 ### Int
+
 ### Int8
+
 ### Int16
+
 ### Int32
+
 ### Int64
+
 ### Uint
+
 ### Uint8
+
 ### Uint16
+
 ### Uint32
+
 ### Uint64
+
 ### Float32
+
 ### Float64
+
 ### InterfaceMapInterface
+
 ### StringMapInterface
+
 ### StringMapString
+
 ### SliceInterface
+
 ### SliceString
+
 ### SliceBool
+
 ### SliceInt
+
 ### SliceInt8
+
 ### SliceInt16
+
 ### SliceInt32
+
 ### SliceInt64
+
 ### SliceUint
+
 ### SliceUint8
+
 ### SliceUint16
+
 ### SliceUint32
+
 ### SliceUint64
+
 ### SliceFloat32
+
 ### SliceFloat64
 
 # License

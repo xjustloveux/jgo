@@ -24,6 +24,7 @@ func TestParseTag(t *testing.T) {
 		{"other", tagOther},
 		{"if", tagIf},
 		{"foreach", tagForeach},
+		{"where", tagWhere},
 		{"orderby", tagOrderBy},
 		{"unknown", tagUnknown},
 	}

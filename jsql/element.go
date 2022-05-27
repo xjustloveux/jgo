@@ -64,7 +64,6 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 				return "", "", errorf(errorWrongSql, e.tag.String())
 			}
 		}
-		query = trim(query)
 	case tagText:
 		query = e.text
 	case tagIf:
@@ -146,6 +145,32 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 			return "", "", errors(errorWrongTypeOfForeach)
 		}
 		query += e.attr["close"]
+	case tagWhere:
+		var err error
+		if query, order, err = nodesToQuery(e.nodes, param, page); err != nil {
+			return "", "", err
+		}
+		var sw bool
+		if sw, err = regexp.MatchString(fmt.Sprint("^", e.tag.String(), "[^A-Za-z0-9_]"), strings.ToLower(query)); err != nil {
+			return "", "", err
+		}
+		if !sw {
+			var sa bool
+			if sa, err = regexp.MatchString(fmt.Sprint("^", And.String(), "[^A-Za-z0-9_]"), strings.ToUpper(query)); err != nil {
+				return "", "", err
+			}
+			if sa {
+				query = trim(query[len(And.String()):])
+			}
+			var so bool
+			if so, err = regexp.MatchString(fmt.Sprint("^", Or.String(), "[^A-Za-z0-9_]"), strings.ToUpper(query)); err != nil {
+				return "", "", err
+			}
+			if so {
+				query = trim(query[len(Or.String()):])
+			}
+			query = fmt.Sprint("WHERE ", query)
+		}
 	case tagOrderBy:
 		var err error
 		if query, order, err = nodesToQuery(e.nodes, param, page); err != nil {
@@ -160,7 +185,7 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 			order = ""
 		}
 	}
-	return query, order, nil
+	return trim(query), trim(order), nil
 }
 
 func nodesToQuery(nodes []*element, param map[string]interface{}, page bool) (string, string, error) {
@@ -178,6 +203,7 @@ func nodesToQuery(nodes []*element, param map[string]interface{}, page bool) (st
 			if o != "" {
 				order = o
 			}
+			query = trim(query)
 		}
 	}
 	return query, order, nil
