@@ -408,7 +408,7 @@ func Bool(i interface{}) (bool, error) {
 func Int(i interface{}) (int, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(v, 0, strconv.IntSize); err == nil {
 			return int(pv), nil
 		}
 		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
@@ -457,7 +457,7 @@ func Int(i interface{}) (int, error) {
 func Int8(i interface{}) (int8, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(v, 0, 8); err == nil {
 			return int8(pv), nil
 		}
 		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
@@ -491,7 +491,7 @@ func Int8(i interface{}) (int8, error) {
 	case float64:
 		return int8(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(string(v), 0, 8); err == nil {
 			return int8(pv), nil
 		}
 		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
@@ -506,7 +506,7 @@ func Int8(i interface{}) (int8, error) {
 func Int16(i interface{}) (int16, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(v, 0, 16); err == nil {
 			return int16(pv), nil
 		}
 		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
@@ -540,7 +540,7 @@ func Int16(i interface{}) (int16, error) {
 	case float64:
 		return int16(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(string(v), 0, 16); err == nil {
 			return int16(pv), nil
 		}
 		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
@@ -555,7 +555,7 @@ func Int16(i interface{}) (int16, error) {
 func Int32(i interface{}) (int32, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(v, 0, 32); err == nil {
 			return int32(pv), nil
 		}
 		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
@@ -589,7 +589,7 @@ func Int32(i interface{}) (int32, error) {
 	case float64:
 		return int32(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(string(v), 0, 32); err == nil {
 			return int32(pv), nil
 		}
 		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
@@ -729,7 +729,7 @@ func Uint(i interface{}) (uint, error) {
 func Uint8(i interface{}) (uint8, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
+		if pv, err := strconv.ParseUint(v, 0, 8); err == nil {
 			if pv < 0 {
 				return 0, errors(errorNegative)
 			}
@@ -787,7 +787,7 @@ func Uint8(i interface{}) (uint8, error) {
 		}
 		return uint8(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
+		if pv, err := strconv.ParseUint(string(v), 0, 8); err == nil {
 			if pv < 0 {
 				return 0, errors(errorNegative)
 			}
@@ -805,7 +805,7 @@ func Uint8(i interface{}) (uint8, error) {
 func Uint16(i interface{}) (uint16, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
+		if pv, err := strconv.ParseUint(v, 0, 16); err == nil {
 			if pv < 0 {
 				return 0, errors(errorNegative)
 			}
@@ -863,7 +863,7 @@ func Uint16(i interface{}) (uint16, error) {
 		}
 		return uint16(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
+		if pv, err := strconv.ParseUint(string(v), 0, 16); err == nil {
 			if pv < 0 {
 				return 0, errors(errorNegative)
 			}
@@ -881,7 +881,7 @@ func Uint16(i interface{}) (uint16, error) {
 func Uint32(i interface{}) (uint32, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
+		if pv, err := strconv.ParseUint(v, 0, 32); err == nil {
 			if pv < 0 {
 				return 0, errors(errorNegative)
 			}
@@ -939,7 +939,7 @@ func Uint32(i interface{}) (uint32, error) {
 		}
 		return uint32(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
+		if pv, err := strconv.ParseUint(string(v), 0, 32); err == nil {
 			if pv < 0 {
 				return 0, errors(errorNegative)
 			}

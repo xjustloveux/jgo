@@ -119,7 +119,12 @@ func parseCronExpression(c string, min, max int, year bool, p func(string) int64
 				}
 			}
 			if hav {
-				nv := int(v)
+				var nv int
+				if v64, err := strconv.ParseInt(strconv.FormatInt(v, 10), 10, strconv.IntSize); err != nil {
+					return 0, err
+				} else {
+					nv = int(v64)
+				}
 				if year {
 					nv -= minYear
 				}
@@ -151,7 +156,13 @@ func parseCronExpression(c string, min, max int, year bool, p func(string) int64
 			if b64, err = strconv.ParseInt(str2, 10, 64); err != nil {
 				return 0, errorf(errorNotValidCronExpression, c)
 			}
-			b := int(b64)
+			var b int
+			var v64 int64
+			if v64, err = strconv.ParseInt(strconv.FormatInt(b64, 10), 10, strconv.IntSize); err != nil {
+				return 0, err
+			} else {
+				b = int(v64)
+			}
 			str2 = strings.Trim(arr2[0], " ")
 			var sn, en int
 			if str2 == "*" {
@@ -177,7 +188,11 @@ func parseCronExpression(c string, min, max int, year bool, p func(string) int64
 						}
 					}
 					if hav {
-						sn = int(v)
+						if v64, err = strconv.ParseInt(strconv.FormatInt(v, 10), 10, strconv.IntSize); err != nil {
+							return 0, err
+						} else {
+							sn = int(v64)
+						}
 						en = max
 						if year {
 							sn -= minYear
@@ -223,8 +238,17 @@ func getCronExpressionSE(arr []string, min, max int, year bool, p func(string) i
 			return 0, 0, false
 		}
 	}
-	sn = int(sn64)
-	en = int(en64)
+	var v64 int64
+	if v64, err = strconv.ParseInt(strconv.FormatInt(sn64, 10), 10, strconv.IntSize); err != nil {
+		return 0, 0, false
+	} else {
+		sn = int(v64)
+	}
+	if v64, err = strconv.ParseInt(strconv.FormatInt(en64, 10), 10, strconv.IntSize); err != nil {
+		return 0, 0, false
+	} else {
+		en = int(v64)
+	}
 	if year {
 		sn -= minYear
 		en -= minYear
