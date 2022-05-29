@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/xjustloveux/jgo/jtime"
+	"math"
 	"testing"
 	"time"
 )
@@ -386,211 +387,276 @@ func TestBool(t *testing.T) {
 }
 
 func TestInt(t *testing.T) {
+	testErr := "TEST ERROR:"
 	i := 7
 	f := 7.7
 	errStr := "Error String"
 	tests := []struct {
+		err    bool
 		input  interface{}
 		output int
 	}{
-		{"7", 7},
-		{true, 1},
-		{false, 0},
-		{i, 7},
-		{int8(i), 7},
-		{int16(i), 7},
-		{int32(i), 7},
-		{int64(i), 7},
-		{uint(i), 7},
-		{uint8(i), 7},
-		{uint16(i), 7},
-		{uint32(i), 7},
-		{uint64(i), 7},
-		{-7, -7},
-		{float32(f), 7},
-		{f, 7},
-		{[]byte{55}, 7},
-		{nil, 0},
-		{errStr, -1},
-		{[]byte(errStr), -1},
-		{time.Now(), -1},
+		{false, "7", 7},
+		{false, true, 1},
+		{false, false, 0},
+		{false, i, 7},
+		{false, int8(i), 7},
+		{false, int16(i), 7},
+		{false, int32(i), 7},
+		{false, int64(i), 7},
+		{false, uint(i), 7},
+		{false, uint8(i), 7},
+		{false, uint16(i), 7},
+		{false, uint32(i), 7},
+		{false, uint64(i), 7},
+		{false, -7, -7},
+		{false, float32(f), 7},
+		{false, f, 7},
+		{false, []byte{55}, 7},
+		{false, nil, 0},
+		{true, errStr, 0},
+		{true, []byte(errStr), 0},
+		{true, time.Now(), 0},
+		{true, uint64(math.MaxInt64 + 1), math.MaxInt64},
 	}
 	for _, test := range tests {
 		if v, err := Int(test.input); err != nil {
-			if test.output != -1 {
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if !test.err {
 				t.Error(err)
 			}
 		} else {
-			msg := fmt.Sprintf("%v != %v", v, test.output)
-			assert.Equal(t, test.output, v, msg)
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if test.err {
+				t.Error(fmt.Sprint(testErr, " Int must be return error"))
+			}
 		}
 	}
 }
 
 func TestInt8(t *testing.T) {
+	testErr := "TEST ERROR:"
 	i := 7
 	f := 7.7
 	errStr := "Error String"
 	tests := []struct {
+		err    bool
 		input  interface{}
 		output int8
 	}{
-		{"7", 7},
-		{true, 1},
-		{false, 0},
-		{i, 7},
-		{int8(i), 7},
-		{int16(i), 7},
-		{int32(i), 7},
-		{int64(i), 7},
-		{uint(i), 7},
-		{uint8(i), 7},
-		{uint16(i), 7},
-		{uint32(i), 7},
-		{uint64(i), 7},
-		{-7, -7},
-		{float32(f), 7},
-		{f, 7},
-		{[]byte{55}, 7},
-		{nil, 0},
-		{errStr, -1},
-		{[]byte(errStr), -1},
-		{time.Now(), -1},
+		{false, "7", 7},
+		{false, true, 1},
+		{false, false, 0},
+		{false, i, 7},
+		{false, int8(i), 7},
+		{false, int16(i), 7},
+		{false, int32(i), 7},
+		{false, int64(i), 7},
+		{false, uint(i), 7},
+		{false, uint8(i), 7},
+		{false, uint16(i), 7},
+		{false, uint32(i), 7},
+		{false, uint64(i), 7},
+		{false, -7, -7},
+		{false, float32(f), 7},
+		{false, f, 7},
+		{false, []byte{55}, 7},
+		{false, nil, 0},
+		{true, errStr, 0},
+		{true, []byte(errStr), 0},
+		{true, time.Now(), 0},
+		{true, -777, math.MinInt8},
+		{true, 777, math.MaxInt8},
+		{true, int16(-777), math.MinInt8},
+		{true, int16(777), math.MaxInt8},
+		{true, int32(-777), math.MinInt8},
+		{true, int32(777), math.MaxInt8},
+		{true, int64(-777), math.MinInt8},
+		{true, int64(777), math.MaxInt8},
+		{true, uint(777), math.MaxInt8},
+		{true, uint8(177), math.MaxInt8},
+		{true, uint16(777), math.MaxInt8},
+		{true, uint32(777), math.MaxInt8},
+		{true, uint64(777), math.MaxInt8},
+		{true, float32(-777.7), math.MinInt8},
+		{true, float32(777.7), math.MaxInt8},
+		{true, -777.7, math.MinInt8},
+		{true, 777.7, math.MaxInt8},
 	}
 	for _, test := range tests {
 		if v, err := Int8(test.input); err != nil {
-			if test.output != -1 {
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if !test.err {
 				t.Error(err)
 			}
 		} else {
-			msg := fmt.Sprintf("%v != %v", v, test.output)
-			assert.Equal(t, test.output, v, msg)
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if test.err {
+				t.Error(fmt.Sprint(testErr, " Int8 must be return error"))
+			}
 		}
 	}
 }
 
 func TestInt16(t *testing.T) {
+	testErr := "TEST ERROR:"
 	i := 7
 	f := 7.7
 	errStr := "Error String"
 	tests := []struct {
+		err    bool
 		input  interface{}
 		output int16
 	}{
-		{"7", 7},
-		{true, 1},
-		{false, 0},
-		{i, 7},
-		{int8(i), 7},
-		{int16(i), 7},
-		{int32(i), 7},
-		{int64(i), 7},
-		{uint(i), 7},
-		{uint8(i), 7},
-		{uint16(i), 7},
-		{uint32(i), 7},
-		{uint64(i), 7},
-		{-7, -7},
-		{float32(f), 7},
-		{f, 7},
-		{[]byte{55}, 7},
-		{nil, 0},
-		{errStr, -1},
-		{[]byte(errStr), -1},
-		{time.Now(), -1},
+		{false, "7", 7},
+		{false, true, 1},
+		{false, false, 0},
+		{false, i, 7},
+		{false, int8(i), 7},
+		{false, int16(i), 7},
+		{false, int32(i), 7},
+		{false, int64(i), 7},
+		{false, uint(i), 7},
+		{false, uint8(i), 7},
+		{false, uint16(i), 7},
+		{false, uint32(i), 7},
+		{false, uint64(i), 7},
+		{false, -7, -7},
+		{false, float32(f), 7},
+		{false, f, 7},
+		{false, []byte{55}, 7},
+		{false, nil, 0},
+		{true, errStr, 0},
+		{true, []byte(errStr), 0},
+		{true, time.Now(), 0},
+		{true, -77777, math.MinInt16},
+		{true, 77777, math.MaxInt16},
+		{true, int32(-77777), math.MinInt16},
+		{true, int32(77777), math.MaxInt16},
+		{true, int64(-77777), math.MinInt16},
+		{true, int64(77777), math.MaxInt16},
+		{true, uint(77777), math.MaxInt16},
+		{true, uint16(57777), math.MaxInt16},
+		{true, uint32(77777), math.MaxInt16},
+		{true, uint64(77777), math.MaxInt16},
+		{true, float32(-77777.7), math.MinInt16},
+		{true, float32(77777.7), math.MaxInt16},
+		{true, -77777.7, math.MinInt16},
+		{true, 77777.7, math.MaxInt16},
 	}
 	for _, test := range tests {
 		if v, err := Int16(test.input); err != nil {
-			if test.output != -1 {
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if !test.err {
 				t.Error(err)
 			}
 		} else {
-			msg := fmt.Sprintf("%v != %v", v, test.output)
-			assert.Equal(t, test.output, v, msg)
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if test.err {
+				t.Error(fmt.Sprint(testErr, " Int16 must be return error"))
+			}
 		}
 	}
 }
 
 func TestInt32(t *testing.T) {
+	testErr := "TEST ERROR:"
 	i := 7
 	f := 7.7
 	errStr := "Error String"
 	tests := []struct {
+		err    bool
 		input  interface{}
 		output int32
 	}{
-		{"7", 7},
-		{true, 1},
-		{false, 0},
-		{i, 7},
-		{int8(i), 7},
-		{int16(i), 7},
-		{int32(i), 7},
-		{int64(i), 7},
-		{uint(i), 7},
-		{uint8(i), 7},
-		{uint16(i), 7},
-		{uint32(i), 7},
-		{uint64(i), 7},
-		{-7, -7},
-		{float32(f), 7},
-		{f, 7},
-		{[]byte{55}, 7},
-		{nil, 0},
-		{errStr, -1},
-		{[]byte(errStr), -1},
-		{time.Now(), -1},
+		{false, "7", 7},
+		{false, true, 1},
+		{false, false, 0},
+		{false, i, 7},
+		{false, int8(i), 7},
+		{false, int16(i), 7},
+		{false, int32(i), 7},
+		{false, int64(i), 7},
+		{false, uint(i), 7},
+		{false, uint8(i), 7},
+		{false, uint16(i), 7},
+		{false, uint32(i), 7},
+		{false, uint64(i), 7},
+		{false, -7, -7},
+		{false, float32(f), 7},
+		{false, f, 7},
+		{false, []byte{55}, 7},
+		{false, nil, 0},
+		{true, errStr, 0},
+		{true, []byte(errStr), 0},
+		{true, time.Now(), 0},
+		{true, -7777777777, math.MinInt32},
+		{true, 7777777777, math.MaxInt32},
+		{true, int64(-7777777777), math.MinInt32},
+		{true, int64(7777777777), math.MaxInt32},
+		{true, uint(7777777777), math.MaxInt32},
+		{true, uint32(2777777777), math.MaxInt32},
+		{true, uint64(7777777777), math.MaxInt32},
 	}
 	for _, test := range tests {
 		if v, err := Int32(test.input); err != nil {
-			if test.output != -1 {
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if !test.err {
 				t.Error(err)
 			}
 		} else {
-			msg := fmt.Sprintf("%v != %v", v, test.output)
-			assert.Equal(t, test.output, v, msg)
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if test.err {
+				t.Error(fmt.Sprint(testErr, " Int32 must be return error"))
+			}
 		}
 	}
 }
 
 func TestInt64(t *testing.T) {
+	testErr := "TEST ERROR:"
 	i := 7
 	f := 7.7
 	errStr := "Error String"
 	tests := []struct {
+		err    bool
 		input  interface{}
 		output int64
 	}{
-		{"7", 7},
-		{true, 1},
-		{false, 0},
-		{i, 7},
-		{int8(i), 7},
-		{int16(i), 7},
-		{int32(i), 7},
-		{int64(i), 7},
-		{uint(i), 7},
-		{uint8(i), 7},
-		{uint16(i), 7},
-		{uint32(i), 7},
-		{uint64(i), 7},
-		{-7, -7},
-		{float32(f), 7},
-		{f, 7},
-		{[]byte{55}, 7},
-		{nil, 0},
-		{errStr, -1},
-		{[]byte(errStr), -1},
-		{time.Now(), -1},
+		{false, "7", 7},
+		{false, true, 1},
+		{false, false, 0},
+		{false, i, 7},
+		{false, int8(i), 7},
+		{false, int16(i), 7},
+		{false, int32(i), 7},
+		{false, int64(i), 7},
+		{false, uint(i), 7},
+		{false, uint8(i), 7},
+		{false, uint16(i), 7},
+		{false, uint32(i), 7},
+		{false, uint64(i), 7},
+		{false, -7, -7},
+		{false, float32(f), 7},
+		{false, f, 7},
+		{false, []byte{55}, 7},
+		{false, nil, 0},
+		{true, errStr, 0},
+		{true, []byte(errStr), 0},
+		{true, time.Now(), 0},
+		{true, uint64(math.MaxUint64), math.MaxInt64},
 	}
 	for _, test := range tests {
 		if v, err := Int64(test.input); err != nil {
-			if test.output != -1 {
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if !test.err {
 				t.Error(err)
 			}
 		} else {
-			msg := fmt.Sprintf("%v != %v", v, test.output)
-			assert.Equal(t, test.output, v, msg)
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if test.err {
+				t.Error(fmt.Sprint(testErr, " Int64 must be return error"))
+			}
 		}
 	}
 }
@@ -648,157 +714,193 @@ func TestUint(t *testing.T) {
 }
 
 func TestUint8(t *testing.T) {
+	testErr := "TEST ERROR:"
 	i := 7
 	ni := -7
 	f := 7.7
 	nf := -7.7
 	errStr := "Error String"
 	tests := []struct {
+		err    bool
 		input  interface{}
 		output uint8
 	}{
-		{"7", 7},
-		{true, 1},
-		{false, 0},
-		{i, 7},
-		{int8(i), 7},
-		{int16(i), 7},
-		{int32(i), 7},
-		{int64(i), 7},
-		{uint(i), 7},
-		{uint8(i), 7},
-		{uint16(i), 7},
-		{uint32(i), 7},
-		{uint64(i), 7},
-		{float32(f), 7},
-		{f, 7},
-		{[]byte{55}, 7},
-		{nil, 0},
-		{"-7", 99},
-		{errStr, 99},
-		{ni, 99},
-		{int8(ni), 99},
-		{int16(ni), 99},
-		{int32(ni), 99},
-		{int64(ni), 99},
-		{float32(nf), 99},
-		{nf, 99},
-		{[]byte("-7"), 99},
-		{[]byte(errStr), 99},
-		{time.Now(), 99},
+		{false, "7", 7},
+		{false, true, 1},
+		{false, false, 0},
+		{false, i, 7},
+		{false, int8(i), 7},
+		{false, int16(i), 7},
+		{false, int32(i), 7},
+		{false, int64(i), 7},
+		{false, uint(i), 7},
+		{false, uint8(i), 7},
+		{false, uint16(i), 7},
+		{false, uint32(i), 7},
+		{false, uint64(i), 7},
+		{false, float32(f), 7},
+		{false, f, 7},
+		{false, []byte{55}, 7},
+		{false, nil, 0},
+		{true, "-7", 0},
+		{true, errStr, 0},
+		{true, ni, 0},
+		{true, int8(ni), 0},
+		{true, int16(ni), 0},
+		{true, int32(ni), 0},
+		{true, int64(ni), 0},
+		{true, float32(nf), 0},
+		{true, nf, 0},
+		{true, []byte("-7"), 0},
+		{true, []byte(errStr), 0},
+		{true, time.Now(), 0},
+		{true, 277, math.MaxUint8},
+		{true, int16(777), math.MaxUint8},
+		{true, int32(777), math.MaxUint8},
+		{true, int64(777), math.MaxUint8},
+		{true, uint(777), math.MaxUint8},
+		{true, uint16(777), math.MaxUint8},
+		{true, uint32(777), math.MaxUint8},
+		{true, uint64(777), math.MaxUint8},
+		{true, float32(777.7), math.MaxUint8},
+		{true, 777.7, math.MaxUint8},
 	}
 	for _, test := range tests {
 		if v, err := Uint8(test.input); err != nil {
-			if test.output != 99 {
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if !test.err {
 				t.Error(err)
 			}
 		} else {
-			msg := fmt.Sprintf("%v != %v", v, test.output)
-			assert.Equal(t, test.output, v, msg)
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if test.err {
+				t.Error(fmt.Sprint(testErr, " Uint8 must be return error"))
+			}
 		}
 	}
 }
 
 func TestUint16(t *testing.T) {
+	testErr := "TEST ERROR:"
 	i := 7
 	ni := -7
 	f := 7.7
 	nf := -7.7
 	errStr := "Error String"
 	tests := []struct {
+		err    bool
 		input  interface{}
 		output uint16
 	}{
-		{"7", 7},
-		{true, 1},
-		{false, 0},
-		{i, 7},
-		{int8(i), 7},
-		{int16(i), 7},
-		{int32(i), 7},
-		{int64(i), 7},
-		{uint(i), 7},
-		{uint8(i), 7},
-		{uint16(i), 7},
-		{uint32(i), 7},
-		{uint64(i), 7},
-		{float32(f), 7},
-		{f, 7},
-		{[]byte{55}, 7},
-		{nil, 0},
-		{"-7", 99},
-		{errStr, 99},
-		{ni, 99},
-		{int8(ni), 99},
-		{int16(ni), 99},
-		{int32(ni), 99},
-		{int64(ni), 99},
-		{float32(nf), 99},
-		{nf, 99},
-		{[]byte("-7"), 99},
-		{[]byte(errStr), 99},
-		{time.Now(), 99},
+		{false, "7", 7},
+		{false, true, 1},
+		{false, false, 0},
+		{false, i, 7},
+		{false, int8(i), 7},
+		{false, int16(i), 7},
+		{false, int32(i), 7},
+		{false, int64(i), 7},
+		{false, uint(i), 7},
+		{false, uint8(i), 7},
+		{false, uint16(i), 7},
+		{false, uint32(i), 7},
+		{false, uint64(i), 7},
+		{false, float32(f), 7},
+		{false, f, 7},
+		{false, []byte{55}, 7},
+		{false, nil, 0},
+		{true, "-7", 0},
+		{true, errStr, 0},
+		{true, ni, 0},
+		{true, int8(ni), 0},
+		{true, int16(ni), 0},
+		{true, int32(ni), 0},
+		{true, int64(ni), 0},
+		{true, float32(nf), 0},
+		{true, nf, 0},
+		{true, []byte("-7"), 0},
+		{true, []byte(errStr), 0},
+		{true, time.Now(), 0},
+		{true, 77777, math.MaxUint16},
+		{true, int32(77777), math.MaxUint16},
+		{true, int64(77777), math.MaxUint16},
+		{true, uint(77777), math.MaxUint16},
+		{true, uint32(77777), math.MaxUint16},
+		{true, uint64(77777), math.MaxUint16},
+		{true, float32(77777.7), math.MaxUint16},
+		{true, 77777.7, math.MaxUint16},
 	}
 	for _, test := range tests {
 		if v, err := Uint16(test.input); err != nil {
-			if test.output != 99 {
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if !test.err {
 				t.Error(err)
 			}
 		} else {
-			msg := fmt.Sprintf("%v != %v", v, test.output)
-			assert.Equal(t, test.output, v, msg)
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if test.err {
+				t.Error(fmt.Sprint(testErr, " Uint16 must be return error"))
+			}
 		}
 	}
 }
 
 func TestUint32(t *testing.T) {
+	testErr := "TEST ERROR:"
 	i := 7
 	ni := -7
 	f := 7.7
 	nf := -7.7
 	errStr := "Error String"
 	tests := []struct {
+		err    bool
 		input  interface{}
 		output uint32
 	}{
-		{"7", 7},
-		{true, 1},
-		{false, 0},
-		{i, 7},
-		{int8(i), 7},
-		{int16(i), 7},
-		{int32(i), 7},
-		{int64(i), 7},
-		{uint(i), 7},
-		{uint8(i), 7},
-		{uint16(i), 7},
-		{uint32(i), 7},
-		{uint64(i), 7},
-		{float32(f), 7},
-		{f, 7},
-		{[]byte{55}, 7},
-		{nil, 0},
-		{"-7", 99},
-		{errStr, 99},
-		{ni, 99},
-		{int8(ni), 99},
-		{int16(ni), 99},
-		{int32(ni), 99},
-		{int64(ni), 99},
-		{float32(nf), 99},
-		{nf, 99},
-		{[]byte("-7"), 99},
-		{[]byte(errStr), 99},
-		{time.Now(), 99},
+		{false, "7", 7},
+		{false, true, 1},
+		{false, false, 0},
+		{false, i, 7},
+		{false, int8(i), 7},
+		{false, int16(i), 7},
+		{false, int32(i), 7},
+		{false, int64(i), 7},
+		{false, uint(i), 7},
+		{false, uint8(i), 7},
+		{false, uint16(i), 7},
+		{false, uint32(i), 7},
+		{false, uint64(i), 7},
+		{false, float32(f), 7},
+		{false, f, 7},
+		{false, []byte{55}, 7},
+		{false, nil, 0},
+		{true, "-7", 0},
+		{true, errStr, 0},
+		{true, ni, 0},
+		{true, int8(ni), 0},
+		{true, int16(ni), 0},
+		{true, int32(ni), 0},
+		{true, int64(ni), 0},
+		{true, float32(nf), 0},
+		{true, nf, 0},
+		{true, []byte("-7"), 0},
+		{true, []byte(errStr), 0},
+		{true, time.Now(), 0},
+		{true, 7777777777, math.MaxUint32},
+		{true, int64(7777777777), math.MaxUint32},
+		{true, uint64(7777777777), math.MaxUint32},
 	}
 	for _, test := range tests {
 		if v, err := Uint32(test.input); err != nil {
-			if test.output != 99 {
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if !test.err {
 				t.Error(err)
 			}
 		} else {
-			msg := fmt.Sprintf("%v != %v", v, test.output)
-			assert.Equal(t, test.output, v, msg)
+			assert.Equal(t, test.output, v, fmt.Sprintf("%v != %v", v, test.output))
+			if test.err {
+				t.Error(fmt.Sprint(testErr, " Uint32 must be return error"))
+			}
 		}
 	}
 }

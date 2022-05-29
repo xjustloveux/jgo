@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/xjustloveux/jgo/jruntime"
 	"github.com/xjustloveux/jgo/jtime"
+	"math"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -20,6 +21,7 @@ const (
 	errorInterfaceTo = jError("unable to cast %#v of type %T to %s")
 	errorParseTime   = jError("unable to parse time: %s")
 	errorNegative    = jError("unable to cast negative value")
+	errorOutRange    = jError("parsing %q: value out of range")
 )
 
 const (
@@ -410,8 +412,9 @@ func Int(i interface{}) (int, error) {
 	case string:
 		if pv, err := strconv.ParseInt(v, 0, strconv.IntSize); err == nil {
 			return int(pv), nil
+		} else {
+			return int(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -426,6 +429,14 @@ func Int(i interface{}) (int, error) {
 	case int32:
 		return int(v), nil
 	case int64:
+		if strconv.IntSize == 32 {
+			if v < math.MinInt32 {
+				return math.MinInt32, errorf(errorOutRange, v)
+			}
+			if v > math.MaxInt32 {
+				return math.MaxInt32, errorf(errorOutRange, v)
+			}
+		}
 		return int(v), nil
 	case uint:
 		return int(v), nil
@@ -434,8 +445,17 @@ func Int(i interface{}) (int, error) {
 	case uint16:
 		return int(v), nil
 	case uint32:
+		if strconv.IntSize == 32 && v > math.MaxInt32 {
+			return math.MaxInt32, errorf(errorOutRange, v)
+		}
 		return int(v), nil
 	case uint64:
+		if strconv.IntSize == 32 && v > math.MaxInt32 {
+			return math.MaxInt32, errorf(errorOutRange, v)
+		}
+		if strconv.IntSize == 64 && v > math.MaxInt64 {
+			return math.MaxInt64, errorf(errorOutRange, v)
+		}
 		return int(v), nil
 	case float32:
 		return int(v), nil
@@ -444,8 +464,9 @@ func Int(i interface{}) (int, error) {
 	case []byte:
 		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
 			return int(pv), nil
+		} else {
+			return int(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -459,42 +480,95 @@ func Int8(i interface{}) (int8, error) {
 	case string:
 		if pv, err := strconv.ParseInt(v, 0, 8); err == nil {
 			return int8(pv), nil
+		} else {
+			return int8(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
 		}
 		return 0, nil
 	case int:
+		if v < math.MinInt8 {
+			return math.MinInt8, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case int8:
 		return v, nil
 	case int16:
+		if v < math.MinInt8 {
+			return math.MinInt8, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case int32:
+		if v < math.MinInt8 {
+			return math.MinInt8, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case int64:
+		if v < math.MinInt8 {
+			return math.MinInt8, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case uint:
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case uint8:
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case uint16:
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case uint32:
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case uint64:
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case float32:
+		if v < math.MinInt8 {
+			return math.MinInt8, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case float64:
+		if v < math.MinInt8 {
+			return math.MinInt8, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt8 {
+			return math.MaxInt8, errorf(errorOutRange, v)
+		}
 		return int8(v), nil
 	case []byte:
 		if pv, err := strconv.ParseInt(string(v), 0, 8); err == nil {
 			return int8(pv), nil
+		} else {
+			return int8(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -508,42 +582,86 @@ func Int16(i interface{}) (int16, error) {
 	case string:
 		if pv, err := strconv.ParseInt(v, 0, 16); err == nil {
 			return int16(pv), nil
+		} else {
+			return int16(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
 		}
 		return 0, nil
 	case int:
+		if v < math.MinInt16 {
+			return math.MinInt16, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case int8:
 		return int16(v), nil
 	case int16:
 		return v, nil
 	case int32:
+		if v < math.MinInt16 {
+			return math.MinInt16, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case int64:
+		if v < math.MinInt16 {
+			return math.MinInt16, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case uint:
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case uint8:
 		return int16(v), nil
 	case uint16:
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case uint32:
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case uint64:
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case float32:
+		if v < math.MinInt16 {
+			return math.MinInt16, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case float64:
+		if v < math.MinInt16 {
+			return math.MinInt16, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt16 {
+			return math.MaxInt16, errorf(errorOutRange, v)
+		}
 		return int16(v), nil
 	case []byte:
 		if pv, err := strconv.ParseInt(string(v), 0, 16); err == nil {
 			return int16(pv), nil
+		} else {
+			return int16(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -557,14 +675,21 @@ func Int32(i interface{}) (int32, error) {
 	case string:
 		if pv, err := strconv.ParseInt(v, 0, 32); err == nil {
 			return int32(pv), nil
+		} else {
+			return int32(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
 		}
 		return 0, nil
 	case int:
+		if v < math.MinInt32 {
+			return math.MinInt32, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt32 {
+			return math.MaxInt32, errorf(errorOutRange, v)
+		}
 		return int32(v), nil
 	case int8:
 		return int32(v), nil
@@ -573,16 +698,31 @@ func Int32(i interface{}) (int32, error) {
 	case int32:
 		return v, nil
 	case int64:
+		if v < math.MinInt32 {
+			return math.MinInt32, errorf(errorOutRange, v)
+		}
+		if v > math.MaxInt32 {
+			return math.MaxInt32, errorf(errorOutRange, v)
+		}
 		return int32(v), nil
 	case uint:
+		if v > math.MaxInt32 {
+			return math.MaxInt32, errorf(errorOutRange, v)
+		}
 		return int32(v), nil
 	case uint8:
 		return int32(v), nil
 	case uint16:
 		return int32(v), nil
 	case uint32:
+		if v > math.MaxInt32 {
+			return math.MaxInt32, errorf(errorOutRange, v)
+		}
 		return int32(v), nil
 	case uint64:
+		if v > math.MaxInt32 {
+			return math.MaxInt32, errorf(errorOutRange, v)
+		}
 		return int32(v), nil
 	case float32:
 		return int32(v), nil
@@ -591,8 +731,9 @@ func Int32(i interface{}) (int32, error) {
 	case []byte:
 		if pv, err := strconv.ParseInt(string(v), 0, 32); err == nil {
 			return int32(pv), nil
+		} else {
+			return int32(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -604,10 +745,11 @@ func Int32(i interface{}) (int32, error) {
 func Int64(i interface{}) (int64, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(v, 0, 64); err == nil {
 			return pv, nil
+		} else {
+			return pv, err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -624,6 +766,9 @@ func Int64(i interface{}) (int64, error) {
 	case int64:
 		return v, nil
 	case uint:
+		if v > math.MaxInt64 {
+			return math.MaxInt64, errorf(errorOutRange, v)
+		}
 		return int64(v), nil
 	case uint8:
 		return int64(v), nil
@@ -632,16 +777,20 @@ func Int64(i interface{}) (int64, error) {
 	case uint32:
 		return int64(v), nil
 	case uint64:
+		if v > math.MaxInt64 {
+			return math.MaxInt64, errorf(errorOutRange, v)
+		}
 		return int64(v), nil
 	case float32:
 		return int64(v), nil
 	case float64:
 		return int64(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
+		if pv, err := strconv.ParseInt(string(v), 0, 64); err == nil {
 			return pv, nil
+		} else {
+			return pv, err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -653,13 +802,11 @@ func Int64(i interface{}) (int64, error) {
 func Uint(i interface{}) (uint, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
+		if pv, err := strconv.ParseUint(v, 0, strconv.IntSize); err == nil {
 			return uint(pv), nil
+		} else {
+			return uint(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -689,6 +836,9 @@ func Uint(i interface{}) (uint, error) {
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
+		if strconv.IntSize == 32 && v > math.MaxUint32 {
+			return math.MaxUint32, errorf(errorOutRange, v)
+		}
 		return uint(v), nil
 	case uint:
 		return v, nil
@@ -699,6 +849,9 @@ func Uint(i interface{}) (uint, error) {
 	case uint32:
 		return uint(v), nil
 	case uint64:
+		if strconv.IntSize == 32 && v > math.MaxUint32 {
+			return math.MaxUint32, errorf(errorOutRange, v)
+		}
 		return uint(v), nil
 	case float32:
 		if v < 0 {
@@ -711,13 +864,11 @@ func Uint(i interface{}) (uint, error) {
 		}
 		return uint(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
+		if pv, err := strconv.ParseUint(string(v), 0, strconv.IntSize); err == nil {
 			return uint(pv), nil
+		} else {
+			return uint(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -730,12 +881,10 @@ func Uint8(i interface{}) (uint8, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
 		if pv, err := strconv.ParseUint(v, 0, 8); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
 			return uint8(pv), nil
+		} else {
+			return uint8(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -744,6 +893,9 @@ func Uint8(i interface{}) (uint8, error) {
 	case int:
 		if v < 0 {
 			return 0, errors(errorNegative)
+		}
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case int8:
@@ -755,45 +907,70 @@ func Uint8(i interface{}) (uint8, error) {
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
+		}
 		return uint8(v), nil
 	case int32:
 		if v < 0 {
 			return 0, errors(errorNegative)
+		}
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case int64:
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
+		}
 		return uint8(v), nil
 	case uint:
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
+		}
 		return uint8(v), nil
 	case uint8:
 		return v, nil
 	case uint16:
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
+		}
 		return uint8(v), nil
 	case uint32:
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
+		}
 		return uint8(v), nil
 	case uint64:
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
+		}
 		return uint8(v), nil
 	case float32:
 		if v < 0 {
 			return 0, errors(errorNegative)
+		}
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case float64:
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
+		if v > math.MaxUint8 {
+			return math.MaxUint8, errorf(errorOutRange, v)
+		}
 		return uint8(v), nil
 	case []byte:
 		if pv, err := strconv.ParseUint(string(v), 0, 8); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
 			return uint8(pv), nil
+		} else {
+			return uint8(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -806,12 +983,10 @@ func Uint16(i interface{}) (uint16, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
 		if pv, err := strconv.ParseUint(v, 0, 16); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
 			return uint16(pv), nil
+		} else {
+			return uint16(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -820,6 +995,9 @@ func Uint16(i interface{}) (uint16, error) {
 	case int:
 		if v < 0 {
 			return 0, errors(errorNegative)
+		}
+		if v > math.MaxUint16 {
+			return math.MaxUint16, errorf(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case int8:
@@ -836,40 +1014,59 @@ func Uint16(i interface{}) (uint16, error) {
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
+		if v > math.MaxUint16 {
+			return math.MaxUint16, errorf(errorOutRange, v)
+		}
 		return uint16(v), nil
 	case int64:
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
+		if v > math.MaxUint16 {
+			return math.MaxUint16, errorf(errorOutRange, v)
+		}
 		return uint16(v), nil
 	case uint:
+		if v > math.MaxUint16 {
+			return math.MaxUint16, errorf(errorOutRange, v)
+		}
 		return uint16(v), nil
 	case uint8:
 		return uint16(v), nil
 	case uint16:
 		return v, nil
 	case uint32:
+		if v > math.MaxUint16 {
+			return math.MaxUint16, errorf(errorOutRange, v)
+		}
 		return uint16(v), nil
 	case uint64:
+		if v > math.MaxUint16 {
+			return math.MaxUint16, errorf(errorOutRange, v)
+		}
 		return uint16(v), nil
 	case float32:
 		if v < 0 {
 			return 0, errors(errorNegative)
+		}
+		if v > math.MaxUint16 {
+			return math.MaxUint16, errorf(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case float64:
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
+		if v > math.MaxUint16 {
+			return math.MaxUint16, errorf(errorOutRange, v)
+		}
 		return uint16(v), nil
 	case []byte:
 		if pv, err := strconv.ParseUint(string(v), 0, 16); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
 			return uint16(pv), nil
+		} else {
+			return uint16(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -882,12 +1079,10 @@ func Uint32(i interface{}) (uint32, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
 		if pv, err := strconv.ParseUint(v, 0, 32); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
 			return uint32(pv), nil
+		} else {
+			return uint32(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -896,6 +1091,9 @@ func Uint32(i interface{}) (uint32, error) {
 	case int:
 		if v < 0 {
 			return 0, errors(errorNegative)
+		}
+		if v > math.MaxUint32 {
+			return math.MaxUint32, errorf(errorOutRange, v)
 		}
 		return uint32(v), nil
 	case int8:
@@ -917,8 +1115,14 @@ func Uint32(i interface{}) (uint32, error) {
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
+		if v > math.MaxUint32 {
+			return math.MaxUint32, errorf(errorOutRange, v)
+		}
 		return uint32(v), nil
 	case uint:
+		if v > math.MaxUint32 {
+			return math.MaxUint32, errorf(errorOutRange, v)
+		}
 		return uint32(v), nil
 	case uint8:
 		return uint32(v), nil
@@ -927,6 +1131,9 @@ func Uint32(i interface{}) (uint32, error) {
 	case uint32:
 		return v, nil
 	case uint64:
+		if v > math.MaxUint32 {
+			return math.MaxUint32, errorf(errorOutRange, v)
+		}
 		return uint32(v), nil
 	case float32:
 		if v < 0 {
@@ -940,12 +1147,10 @@ func Uint32(i interface{}) (uint32, error) {
 		return uint32(v), nil
 	case []byte:
 		if pv, err := strconv.ParseUint(string(v), 0, 32); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
 			return uint32(pv), nil
+		} else {
+			return uint32(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -957,13 +1162,11 @@ func Uint32(i interface{}) (uint32, error) {
 func Uint64(i interface{}) (uint64, error) {
 	switch v := VerifyPtr(i).(type) {
 	case string:
-		if pv, err := strconv.ParseInt(v, 0, 0); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
-			return uint64(pv), nil
+		if pv, err := strconv.ParseUint(v, 0, 64); err == nil {
+			return pv, nil
+		} else {
+			return pv, err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -1015,13 +1218,11 @@ func Uint64(i interface{}) (uint64, error) {
 		}
 		return uint64(v), nil
 	case []byte:
-		if pv, err := strconv.ParseInt(string(v), 0, 0); err == nil {
-			if pv < 0 {
-				return 0, errors(errorNegative)
-			}
-			return uint64(pv), nil
+		if pv, err := strconv.ParseUint(string(v), 0, 64); err == nil {
+			return pv, nil
+		} else {
+			return pv, err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -1035,8 +1236,9 @@ func Float32(i interface{}) (float32, error) {
 	case string:
 		if pv, err := strconv.ParseFloat(v, 32); err == nil {
 			return float32(pv), nil
+		} else {
+			return float32(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -1069,8 +1271,9 @@ func Float32(i interface{}) (float32, error) {
 	case []byte:
 		if pv, err := strconv.ParseFloat(string(v), 32); err == nil {
 			return float32(pv), nil
+		} else {
+			return float32(pv), err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
@@ -1084,8 +1287,9 @@ func Float64(i interface{}) (float64, error) {
 	case string:
 		if pv, err := strconv.ParseFloat(v, 64); err == nil {
 			return pv, nil
+		} else {
+			return pv, err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case bool:
 		if v {
 			return 1, nil
@@ -1118,8 +1322,9 @@ func Float64(i interface{}) (float64, error) {
 	case []byte:
 		if pv, err := strconv.ParseFloat(string(v), 64); err == nil {
 			return pv, nil
+		} else {
+			return pv, err
 		}
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	case nil:
 		return 0, nil
 	default:
