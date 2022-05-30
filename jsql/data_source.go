@@ -52,7 +52,7 @@ func (ds *dataSource) open() error {
 			if ds.EncodeData != "" {
 				var err error
 				var encodeStr string
-				var dsm map[string]interface{}
+				dsm := make(map[string]interface{})
 				tds := dataSource{}.getDefault()
 				in := make([]reflect.Value, 1)
 				in[0] = reflect.ValueOf(ds.EncodeData)

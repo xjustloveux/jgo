@@ -212,7 +212,7 @@ func testSql2(t *testing.T) {
 		var query string
 		var args []interface{}
 		var err error
-		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Select, v.id, []map[string]interface{}{v.pm}); err != nil {
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Select, v.id, v.pm); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -222,22 +222,43 @@ func testSql2(t *testing.T) {
 }
 
 func testSql3(t *testing.T) {
-	pm1 := make(map[string]interface{})
-	pm1["COL1"] = "USR_ID"
-	pm1["COL2"] = "USR_STS"
-	pm1["SORT"] = "USR_ID"
-	pm2 := make(map[string]interface{})
-	pm2["COL1"] = "USR_ID"
-	pm2["COL2"] = "USE_STS"
-	pm2["SORT"] = "USR_ID"
-	pm3 := make(map[string]interface{})
-	pm3["COL1"] = "USER_ID"
-	pm3["COL2"] = "USER_STATUS"
-	pm3["SORT"] = "USER_ID"
+	type param struct {
+		COL1 string
+		COL2 string
+		SORT string
+	}
+	pm1 := param{"USR_ID", "USR_STS", "USR_ID"}
+	pm2 := param{"USR_ID", "USE_STS", "USR_ID"}
+	pm3 := param{"USER_ID", "USER_STATUS", "USER_ID"}
+	type u1 struct {
+		USR_ID  string
+		USR_STS string
+	}
+	type v1 struct {
+		Rows []u1
+	}
+	var l1 v1
+	type u2 struct {
+		USR_ID  string
+		USE_STS string
+	}
+	type v2 struct {
+		Rows []u2
+	}
+	var l2 v2
+	type u3 struct {
+		USER_ID     string
+		USER_STATUS string
+	}
+	type v3 struct {
+		Rows []u3
+	}
+	var l3 v3
 	tests := []struct {
 		a          *Agent
 		id         string
-		pm         map[string]interface{}
+		pm         param
+		v          interface{}
 		pageQuery  string
 		countQuery string
 		args       []interface{}
@@ -246,6 +267,7 @@ func testSql3(t *testing.T) {
 			&Agent{t: MySql},
 			"testMySql3",
 			pm1,
+			&l1,
 			`SELECT * FROM (SELECT (@i := @i + 1) AS ALLOWPAGINGID, table1.* FROM (SELECT *, 1 as ORDERBYID FROM (SELECT USR_ID, USR_STS FROM USR ORDER BY USR_ID DESC)  as  tbs1 ) as table1, (select @i := 0) temp ORDER BY ORDERBYID DESC ) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
 			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USR_ID, USR_STS FROM USR) data`,
 			make([]interface{}, 0),
@@ -254,6 +276,7 @@ func testSql3(t *testing.T) {
 			&Agent{t: MSSql},
 			"testMSSql3",
 			pm2,
+			&l2,
 			`SELECT * FROM (SELECT ROW_NUMBER() OVER( ORDER BY USR_ID DESC) AS ALLOWPAGINGID,* FROM (SELECT * FROM (SELECT USR_ID, USE_STS FROM USR) as tbs1) as table1) as table2 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
 			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USR_ID, USE_STS FROM USR) data`,
 			make([]interface{}, 0),
@@ -262,28 +285,34 @@ func testSql3(t *testing.T) {
 			&Agent{t: Oracle},
 			"testOracle3",
 			pm3,
+			&l3,
 			`SELECT t3.* FROM (SELECT t2.*, rownum as ALLOWPAGINGID FROM (SELECT t1.*, 1 as ORDERBYID FROM (SELECT USER_ID, USER_STATUS FROM M_USER ORDER BY USER_ID DESC) t1) t2 ORDER BY ORDERBYID) t3 WHERE ALLOWPAGINGID BETWEEN 6 AND 10`,
 			`SELECT COUNT(1) as TOTALRECORD FROM (SELECT USER_ID, USER_STATUS FROM M_USER) data`,
 			make([]interface{}, 0),
 		},
 	}
 	for _, v := range tests {
-		var elem *element
 		var err error
+		var pm map[string]interface{}
+		if pm, _, err = v.a.checkArgs(v.pm, v.v); err != nil {
+			t.Error(err)
+			continue
+		}
+		var elem *element
 		if elem, err = getElement(Select, v.id); err != nil {
 			t.Error(err)
 			continue
 		}
 		var query string
 		var order string
-		if query, order, err = elem.getSql(v.pm, true); err != nil {
+		if query, order, err = elem.getSql(pm, true); err != nil {
 			t.Error(err)
 			continue
 		}
 		var args []interface{}
 		pageQuery, countQuery := getPageSql(v.a.t, query, order, 6, 10)
-		pageQuery, args = v.a.getQueryAndArgs(pageQuery, v.pm)
-		countQuery, _ = v.a.getQueryAndArgs(countQuery, v.pm)
+		pageQuery, args = v.a.getQueryAndArgs(pageQuery, pm)
+		countQuery, _ = v.a.getQueryAndArgs(countQuery, pm)
 		assert.Equal(t, pageQuery, v.pageQuery, fmt.Sprintf("%v != %v", pageQuery, v.pageQuery))
 		assert.Equal(t, countQuery, v.countQuery, fmt.Sprintf("%v != %v", countQuery, v.countQuery))
 		assert.Equal(t, args, v.args, fmt.Sprintf("%v != %v", args, v.args))
@@ -404,7 +433,7 @@ func testSql5(t *testing.T) {
 		var query string
 		var args []interface{}
 		var err error
-		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Select, "testSelect5", []map[string]interface{}{v.pm}); err != nil {
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Select, "testSelect5", v.pm); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -468,7 +497,7 @@ func testSql6(t *testing.T) {
 		var query string
 		var args []interface{}
 		var err error
-		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Select, "testSelect6", []map[string]interface{}{v.pm}); err != nil {
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Select, "testSelect6", v.pm); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -527,7 +556,7 @@ func testSqlInsert1(t *testing.T) {
 		var query string
 		var args []interface{}
 		var err error
-		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Insert, "testInsert1", []map[string]interface{}{v.pm}); err != nil {
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Insert, "testInsert1", v.pm); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -584,7 +613,7 @@ func testSqlUpdate1(t *testing.T) {
 		var query string
 		var args []interface{}
 		var err error
-		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Update, "testUpdate1", []map[string]interface{}{v.pm}); err != nil {
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Update, "testUpdate1", v.pm); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -635,7 +664,7 @@ func testSqlDelete1(t *testing.T) {
 		var query string
 		var args []interface{}
 		var err error
-		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Delete, "testDelete1", []map[string]interface{}{v.pm}); err != nil {
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Delete, "testDelete1", v.pm); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -670,7 +699,7 @@ func testSqlOther1(t *testing.T) {
 		var query string
 		var args []interface{}
 		var err error
-		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Other, "testOther1", []map[string]interface{}{}); err != nil {
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Other, "testOther1", nil); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -705,7 +734,7 @@ func testSqlOther2(t *testing.T) {
 		var query string
 		var args []interface{}
 		var err error
-		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Other, "testOther2", []map[string]interface{}{}); err != nil {
+		if query, args, err = v.a.xmlAndParamsToQueryAndArgs(Other, "testOther2", nil); err != nil {
 			t.Error(err)
 			continue
 		}
@@ -1872,14 +1901,25 @@ func test3(t *testing.T) {
 	if agent, err := GetAgent(); err != nil {
 		t.Error(err)
 	} else {
-		params := make(map[string]interface{})
-		params["COL1"] = "USR_ID"
-		params["COL2"] = "USR_STS"
-		params["SORT"] = "USR_ID"
+		type param struct {
+			COL1 string
+			COL2 string
+			SORT string
+		}
+		pm := param{"USR_ID", "USR_STS", "USR_ID"}
+		type user struct {
+			USR_ID  string
+			USR_STS string
+		}
+		type userList struct {
+			Rows []user
+		}
+		var v userList
 		var res Result
-		if res, err = agent.QueryPage("testMySql3", 6, 10, params); err != nil {
+		if res, err = agent.QueryPage("testMySql3", 6, 10, pm, &v); err != nil {
 			t.Error(err)
 		} else {
+			fmt.Println(v)
 			for _, item := range res.Rows() {
 				fmt.Println(item)
 			}
@@ -1889,14 +1929,25 @@ func test3(t *testing.T) {
 	if agent, err := GetAgent("testMSSql"); err != nil {
 		t.Error(err)
 	} else {
-		params := make(map[string]interface{})
-		params["COL1"] = "USR_ID"
-		params["COL2"] = "USE_STS"
-		params["SORT"] = "USR_ID"
+		type param struct {
+			COL1 string
+			COL2 string
+			SORT string
+		}
+		pm := param{"USR_ID", "USE_STS", "USR_ID"}
+		type user struct {
+			USR_ID  string
+			USE_STS string
+		}
+		type userList struct {
+			Rows []user
+		}
+		var v userList
 		var res Result
-		if res, err = agent.QueryPage("testMSSql3", 6, 10, params); err != nil {
+		if res, err = agent.QueryPage("testMSSql3", 6, 10, pm, &v); err != nil {
 			t.Error(err)
 		} else {
+			fmt.Println(v)
 			for _, item := range res.Rows() {
 				fmt.Println(item)
 			}
@@ -1906,14 +1957,25 @@ func test3(t *testing.T) {
 	if agent, err := GetAgent("testOracle"); err != nil {
 		t.Error(err)
 	} else {
-		params := make(map[string]interface{})
-		params["COL1"] = "USER_ID"
-		params["COL2"] = "USER_STATUS"
-		params["SORT"] = "USER_ID"
+		type param struct {
+			COL1 string
+			COL2 string
+			SORT string
+		}
+		pm := param{"USER_ID", "USER_STATUS", "USER_ID"}
+		type user struct {
+			USER_ID     string
+			USER_STATUS string
+		}
+		type userList struct {
+			Rows []user
+		}
+		var v userList
 		var res Result
-		if res, err = agent.QueryPage("testOracle3", 6, 10, params); err != nil {
+		if res, err = agent.QueryPage("testOracle3", 6, 10, pm, &v); err != nil {
 			t.Error(err)
 		} else {
+			fmt.Println(v)
 			for _, item := range res.Rows() {
 				fmt.Println(item)
 			}

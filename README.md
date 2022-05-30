@@ -4,6 +4,7 @@
 [![Build Status](https://app.travis-ci.com/xjustloveux/jgo.svg?branch=master)](https://app.travis-ci.com/xjustloveux/jgo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xjustloveux/jgo)](https://goreportcard.com/report/github.com/xjustloveux/jgo)
 [![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/xjustloveux/jgo)](https://pkg.go.dev/mod/github.com/xjustloveux/jgo)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/xjustloveux/jgo/blob/master/LICENSE)
 
 ---
 
@@ -20,7 +21,6 @@
     * [jcron](#jcron)
 * [Environment](#Environment)
 * [Api](#Api)
-* [License](#License)
 
 # Overview
 
@@ -242,6 +242,35 @@ func example3() {
 			for _, item := range res.Rows() {
 				fmt.Println(item)
 			}
+		}
+	}
+
+	// you also can use struct
+	type Param struct {
+		COL1 string
+		COL2 string
+		SORT string
+	}
+	param2 := Param{
+		COL1: "COL_NAME1",
+		COL2: "COL_NAME2",
+		SORT: "SORT_COL_NAME",
+	}
+	type Data struct {
+		COL_NAME1 string
+		COL_NAME2 string
+	}
+	type List struct {
+		Rows []Data
+	}
+	var list List
+	if agent, err := jsql.GetAgent("exampleMSSql"); err != nil {
+		fmt.Println(err)
+	} else {
+		if _, err = agent.QueryPage("example3", 6, 10, param2, &list); err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(list)
 		}
 	}
 }
@@ -1008,9 +1037,3 @@ func main() {
 ### SliceFloat32
 
 ### SliceFloat64
-
-# License
-
----
-
-[MIT](https://github.com/xjustloveux/jgo/blob/master/LICENSE)

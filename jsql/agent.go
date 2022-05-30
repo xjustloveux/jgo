@@ -6,8 +6,10 @@ package jsql
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/xjustloveux/jgo/jcast"
+	"github.com/xjustloveux/jgo/jfile"
 	"github.com/xjustloveux/jgo/jtime"
 	"reflect"
 	"regexp"
@@ -90,26 +92,52 @@ func (a *Agent) Rollback() error {
 
 // Query executes a query that returns Result
 // the id are for xml select tag id
-// the param are for any placeholder parameters in the query
-func (a *Agent) Query(id string, param ...map[string]interface{}) (result Result, err error) {
+// the args are for any placeholder parameters in the query, or result struct point
+func (a *Agent) Query(id string, args ...interface{}) (result Result, err error) {
+	var param map[string]interface{}
+	var v interface{}
 	var query string
-	var args []interface{}
+	if param, v, err = a.checkArgs(args...); err != nil {
+		return nil, err
+	}
 	if query, args, err = a.xmlAndParamsToQueryAndArgs(Select, id, param); err != nil {
 		return nil, err
 	}
-	return a.QueryWithSql(query, args...)
+	if result, err = a.QueryWithSql(query, args...); err != nil {
+		return result, err
+	}
+	if v != nil {
+		m := map[string]interface{}{"Rows": result.Rows()}
+		if err = jfile.Convert(m, v); err != nil {
+			return result, err
+		}
+	}
+	return result, nil
 }
 
 // QueryTx executes a query that returns Result
 // the id are for xml select tag id
-// the param are for any placeholder parameters in the query
-func (a *Agent) QueryTx(id string, param ...map[string]interface{}) (result Result, err error) {
+// the args are for any placeholder parameters in the query, or result struct point
+func (a *Agent) QueryTx(id string, args ...interface{}) (result Result, err error) {
+	var param map[string]interface{}
+	var v interface{}
 	var query string
-	var args []interface{}
+	if param, v, err = a.checkArgs(args...); err != nil {
+		return nil, err
+	}
 	if query, args, err = a.xmlAndParamsToQueryAndArgs(Select, id, param); err != nil {
 		return nil, err
 	}
-	return a.QueryTxWithSql(query, args...)
+	if result, err = a.QueryTxWithSql(query, args...); err != nil {
+		return result, err
+	}
+	if v != nil {
+		m := map[string]interface{}{"Rows": result.Rows()}
+		if err = jfile.Convert(m, v); err != nil {
+			return result, err
+		}
+	}
+	return result, nil
 }
 
 // QueryWithSql executes a query that returns Result
@@ -134,26 +162,58 @@ func (a *Agent) QueryPrepareTx(id string, param map[string]interface{}, args ...
 
 // QueryRow executes a query that is expected to return at most one row
 // the id are for xml select tag id
-// the param are for any placeholder parameters in the query
-func (a *Agent) QueryRow(id string, param ...map[string]interface{}) (result Result, err error) {
+// the args are for any placeholder parameters in the query, or result struct point
+func (a *Agent) QueryRow(id string, args ...interface{}) (result Result, err error) {
+	var param map[string]interface{}
+	var v interface{}
 	var query string
-	var args []interface{}
+	if param, v, err = a.checkArgs(args...); err != nil {
+		return nil, err
+	}
 	if query, args, err = a.xmlAndParamsToQueryAndArgs(Select, id, param); err != nil {
 		return nil, err
 	}
-	return a.QueryRowWithSql(query, args...)
+	if result, err = a.QueryRowWithSql(query, args...); err != nil {
+		return result, err
+	}
+	if v != nil {
+		m := result.Row()
+		if m == nil {
+			m = make(map[string]interface{})
+		}
+		if err = jfile.Convert(m, v); err != nil {
+			return result, err
+		}
+	}
+	return result, nil
 }
 
 // QueryRowTx executes a query that is expected to return at most one row
 // the id are for xml select tag id
-// the param are for any placeholder parameters in the query
-func (a *Agent) QueryRowTx(id string, param ...map[string]interface{}) (result Result, err error) {
+// the args are for any placeholder parameters in the query, or result struct point
+func (a *Agent) QueryRowTx(id string, args ...interface{}) (result Result, err error) {
+	var param map[string]interface{}
+	var v interface{}
 	var query string
-	var args []interface{}
+	if param, v, err = a.checkArgs(args...); err != nil {
+		return nil, err
+	}
 	if query, args, err = a.xmlAndParamsToQueryAndArgs(Select, id, param); err != nil {
 		return nil, err
 	}
-	return a.QueryRowTxWithSql(query, args...)
+	if result, err = a.QueryRowTxWithSql(query, args...); err != nil {
+		return result, err
+	}
+	if v != nil {
+		m := result.Row()
+		if m == nil {
+			m = make(map[string]interface{})
+		}
+		if err = jfile.Convert(m, v); err != nil {
+			return result, err
+		}
+	}
+	return result, nil
 }
 
 // QueryRowWithSql executes a query that is expected to return at most one row
@@ -179,17 +239,17 @@ func (a *Agent) QueryRowPrepareTx(id string, param map[string]interface{}, args 
 // QueryPage executes a query that returns Result
 // the id are for xml select tag id
 // the start and end are for query start row and end row
-// the param are for any placeholder parameters in the query
-func (a *Agent) QueryPage(id string, start, end int64, param ...map[string]interface{}) (Result, error) {
-	return a.queryPage(true, id, start, end, param...)
+// the args are for any placeholder parameters in the query, or result struct point
+func (a *Agent) QueryPage(id string, start, end int64, args ...interface{}) (Result, error) {
+	return a.queryPage(true, id, start, end, args...)
 }
 
 // QueryPageTx executes a query that returns Result
 // the id are for xml select tag id
 // the start and end are for query start row and end row
-// the param are for any placeholder parameters in the query
-func (a *Agent) QueryPageTx(id string, start, end int64, param ...map[string]interface{}) (Result, error) {
-	return a.queryPage(false, id, start, end, param...)
+// the args are for any placeholder parameters in the query, or result struct point
+func (a *Agent) QueryPageTx(id string, start, end int64, args ...interface{}) (Result, error) {
+	return a.queryPage(false, id, start, end, args...)
 }
 
 // QueryPageWithSql executes a query that returns Result
@@ -217,13 +277,13 @@ func (a *Agent) ExecTxWithSql(query string, cond ...interface{}) (Result, error)
 }
 
 // Insert executes a query with db.Exec
-func (a *Agent) Insert(id string, param ...map[string]interface{}) (result Result, err error) {
-	return a.execOps(Insert, id, param...)
+func (a *Agent) Insert(id string, args ...interface{}) (result Result, err error) {
+	return a.execOps(Insert, id, args...)
 }
 
 // InsertTx executes a query with tx.Exec
-func (a *Agent) InsertTx(id string, param ...map[string]interface{}) (result Result, err error) {
-	return a.execTxOps(Insert, id, param...)
+func (a *Agent) InsertTx(id string, args ...interface{}) (result Result, err error) {
+	return a.execTxOps(Insert, id, args...)
 }
 
 // InsertPrepare creates a prepared statement for later queries or executions
@@ -237,13 +297,13 @@ func (a *Agent) InsertPrepareTx(id string, param map[string]interface{}, args ..
 }
 
 // Update executes a query with db.Exec
-func (a *Agent) Update(id string, param ...map[string]interface{}) (result Result, err error) {
-	return a.execOps(Update, id, param...)
+func (a *Agent) Update(id string, args ...interface{}) (result Result, err error) {
+	return a.execOps(Update, id, args...)
 }
 
 // UpdateTx executes a query with tx.Exec
-func (a *Agent) UpdateTx(id string, param ...map[string]interface{}) (result Result, err error) {
-	return a.execTxOps(Update, id, param...)
+func (a *Agent) UpdateTx(id string, args ...interface{}) (result Result, err error) {
+	return a.execTxOps(Update, id, args...)
 }
 
 // UpdatePrepare creates a prepared statement for later queries or executions
@@ -257,13 +317,13 @@ func (a *Agent) UpdatePrepareTx(id string, param map[string]interface{}, args ..
 }
 
 // Delete executes a query with db.Exec
-func (a *Agent) Delete(id string, param ...map[string]interface{}) (result Result, err error) {
-	return a.execOps(Delete, id, param...)
+func (a *Agent) Delete(id string, args ...interface{}) (result Result, err error) {
+	return a.execOps(Delete, id, args...)
 }
 
 // DeleteTx executes a query with tx.Exec
-func (a *Agent) DeleteTx(id string, param ...map[string]interface{}) (result Result, err error) {
-	return a.execTxOps(Delete, id, param...)
+func (a *Agent) DeleteTx(id string, args ...interface{}) (result Result, err error) {
+	return a.execTxOps(Delete, id, args...)
 }
 
 // DeletePrepare creates a prepared statement for later queries or executions
@@ -277,13 +337,13 @@ func (a *Agent) DeletePrepareTx(id string, param map[string]interface{}, args ..
 }
 
 // Other executes a query with db.Exec
-func (a *Agent) Other(id string, param ...map[string]interface{}) (result Result, err error) {
-	return a.execOps(Other, id, param...)
+func (a *Agent) Other(id string, args ...interface{}) (result Result, err error) {
+	return a.execOps(Other, id, args...)
 }
 
 // OtherTx executes a query with tx.Exec
-func (a *Agent) OtherTx(id string, param ...map[string]interface{}) (result Result, err error) {
-	return a.execTxOps(Other, id, param...)
+func (a *Agent) OtherTx(id string, args ...interface{}) (result Result, err error) {
+	return a.execTxOps(Other, id, args...)
 }
 
 // OtherPrepare creates a prepared statement for later queries or executions
@@ -296,11 +356,39 @@ func (a *Agent) OtherPrepareTx(id string, param map[string]interface{}, args ...
 	return a.execPrepareTxOps(Other, id, param, args...)
 }
 
+func (a *Agent) checkArgs(args ...interface{}) (map[string]interface{}, interface{}, error) {
+	var pm map[string]interface{}
+	var v interface{}
+	for _, arg := range args {
+		switch reflect.TypeOf(arg).Kind() {
+		case reflect.Map:
+			if m, err := jcast.StringMapInterface(arg); err != nil {
+				return nil, nil, err
+			} else {
+				pm = m
+			}
+		case reflect.Struct:
+			var err error
+			var b []byte
+			if b, err = json.Marshal(&arg); err != nil {
+				return nil, nil, err
+			}
+			pm = make(map[string]interface{})
+			if err = jfile.Decode(jfile.Json.String(), b, pm); err != nil {
+				return nil, nil, err
+			}
+		case reflect.Ptr:
+			v = arg
+		}
+	}
+	return pm, v, nil
+}
+
 func (a *Agent) queryPrepareMS(single bool, id string, param map[string]interface{}, args ...[]interface{}) (result []Result, err error) {
 	var query string
 	pm := make([]map[string]interface{}, 1)
 	pm[0] = param
-	if query, _, err = a.xmlAndParamsToQueryAndArgs(Select, id, pm); err != nil {
+	if query, _, err = a.xmlAndParamsToQueryAndArgs(Select, id, param); err != nil {
 		return nil, err
 	}
 	return a.queryPrepare(single, query, args...)
@@ -308,26 +396,30 @@ func (a *Agent) queryPrepareMS(single bool, id string, param map[string]interfac
 
 func (a *Agent) queryPrepareTxMS(single bool, id string, param map[string]interface{}, args ...[]interface{}) (result []Result, err error) {
 	var query string
-	pm := make([]map[string]interface{}, 1)
-	pm[0] = param
-	if query, _, err = a.xmlAndParamsToQueryAndArgs(Select, id, pm); err != nil {
+	if query, _, err = a.xmlAndParamsToQueryAndArgs(Select, id, param); err != nil {
 		return nil, err
 	}
 	return a.queryPrepareTx(single, query, args...)
 }
 
-func (a *Agent) execOps(ops Operations, id string, param ...map[string]interface{}) (result Result, err error) {
+func (a *Agent) execOps(ops Operations, id string, args ...interface{}) (result Result, err error) {
+	var param map[string]interface{}
+	if param, _, err = a.checkArgs(args...); err != nil {
+		return nil, err
+	}
 	var query string
-	var args []interface{}
 	if query, args, err = a.xmlAndParamsToQueryAndArgs(ops, id, param); err != nil {
 		return nil, err
 	}
 	return a.exec(query, args...)
 }
 
-func (a *Agent) execTxOps(ops Operations, id string, param ...map[string]interface{}) (result Result, err error) {
+func (a *Agent) execTxOps(ops Operations, id string, args ...interface{}) (result Result, err error) {
+	var param map[string]interface{}
+	if param, _, err = a.checkArgs(args...); err != nil {
+		return nil, err
+	}
 	var query string
-	var args []interface{}
 	if query, args, err = a.xmlAndParamsToQueryAndArgs(ops, id, param); err != nil {
 		return nil, err
 	}
@@ -336,9 +428,7 @@ func (a *Agent) execTxOps(ops Operations, id string, param ...map[string]interfa
 
 func (a *Agent) execPrepareOps(ops Operations, id string, param map[string]interface{}, args ...[]interface{}) (result []Result, err error) {
 	var query string
-	pm := make([]map[string]interface{}, 1)
-	pm[0] = param
-	if query, _, err = a.xmlAndParamsToQueryAndArgs(ops, id, pm); err != nil {
+	if query, _, err = a.xmlAndParamsToQueryAndArgs(ops, id, param); err != nil {
 		return nil, err
 	}
 	return a.execPrepare(query, args...)
@@ -346,9 +436,7 @@ func (a *Agent) execPrepareOps(ops Operations, id string, param map[string]inter
 
 func (a *Agent) execPrepareTxOps(ops Operations, id string, param map[string]interface{}, args ...[]interface{}) (result []Result, err error) {
 	var query string
-	pm := make([]map[string]interface{}, 1)
-	pm[0] = param
-	if query, _, err = a.xmlAndParamsToQueryAndArgs(ops, id, pm); err != nil {
+	if query, _, err = a.xmlAndParamsToQueryAndArgs(ops, id, param); err != nil {
 		return nil, err
 	}
 	return a.execPrepareTx(query, args...)
@@ -366,16 +454,15 @@ func (a *Agent) getXmlAndParam(ops Operations, id string, param []map[string]int
 	return elem, pm, nil
 }
 
-func (a *Agent) xmlAndParamsToQueryAndArgs(ops Operations, id string, param []map[string]interface{}) (query string, args []interface{}, err error) {
+func (a *Agent) xmlAndParamsToQueryAndArgs(ops Operations, id string, param map[string]interface{}) (query string, args []interface{}, err error) {
 	var elem *element
-	var pm map[string]interface{}
-	if elem, pm, err = a.getXmlAndParam(ops, id, param); err != nil {
+	if elem, err = getElement(ops, id); err != nil {
 		return "", nil, err
 	}
-	if query, _, err = elem.getSql(pm, false); err != nil {
+	if query, _, err = elem.getSql(param, false); err != nil {
 		return "", nil, err
 	}
-	query, args = a.getQueryAndArgs(query, pm)
+	query, args = a.getQueryAndArgs(query, param)
 	return trim(query), args, nil
 }
 
@@ -422,22 +509,34 @@ func (a *Agent) queryTx(single bool, query string, args ...interface{}) (result 
 	return a.getResult(rows, single)
 }
 
-func (a *Agent) queryPage(ct bool, id string, start, end int64, param ...map[string]interface{}) (result Result, err error) {
+func (a *Agent) queryPage(ct bool, id string, start, end int64, args ...interface{}) (result Result, err error) {
+	var param map[string]interface{}
+	var v interface{}
+	if param, v, err = a.checkArgs(args...); err != nil {
+		return nil, err
+	}
 	var elem *element
-	var pm map[string]interface{}
-	if elem, pm, err = a.getXmlAndParam(Select, id, param); err != nil {
+	if elem, err = getElement(Select, id); err != nil {
 		return nil, err
 	}
 	var query string
 	var order string
-	if query, order, err = elem.getSql(pm, true); err != nil {
+	if query, order, err = elem.getSql(param, true); err != nil {
 		return nil, err
 	}
-	var args []interface{}
 	pageQuery, countQuery := getPageSql(a.t, query, order, start, end)
-	pageQuery, args = a.getQueryAndArgs(pageQuery, pm)
-	countQuery, _ = a.getQueryAndArgs(countQuery, pm)
-	return a.queryPageWithSql(ct, pageQuery, countQuery, start, end, args...)
+	pageQuery, args = a.getQueryAndArgs(pageQuery, param)
+	countQuery, _ = a.getQueryAndArgs(countQuery, param)
+	if result, err = a.queryPageWithSql(ct, pageQuery, countQuery, start, end, args...); err != nil {
+		return result, err
+	}
+	if v != nil {
+		m := map[string]interface{}{"Rows": result.Rows()}
+		if err = jfile.Convert(m, v); err != nil {
+			return result, err
+		}
+	}
+	return result, nil
 }
 
 func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, end int64, args ...interface{}) (result Result, err error) {
