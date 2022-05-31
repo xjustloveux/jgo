@@ -48,9 +48,6 @@ const (
 	errorDecodeFuncType              = jError("decode function input params must be (string), output params must be (string, error)")
 
 	errorWrongTypeOfForeach = jError("wrong params type of tags <foreach>, type must be []string or map[string]string")
-	errorWrongNumOfForeach  = jError("wrong number of tags <foreach>")
-	errorWrongNumOfIf       = jError("wrong number of tags <if>")
-	errorWrongNumOfOrderBy  = jError("wrong number of tags <orderBy>")
 	errorWrongSql           = jError("wrong %q sql statements")
 
 	errorOprValLenZero               = jError("operators %q, the value length is zero")
@@ -449,7 +446,7 @@ func toElement(path string) (dao *element, err error) {
 		switch t := token.(type) {
 		case xml.StartElement:
 			name := t.Name.Local
-			switch tn := ParseTag(name); tn {
+			switch tn := parseTag(name); tn {
 			case tagDao:
 				if dao == nil {
 					dao = &element{id: "", tag: tn, nodes: make([]*element, 0)}

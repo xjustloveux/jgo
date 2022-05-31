@@ -27,7 +27,7 @@ func (t tag) String() string {
 	return string(t)
 }
 
-func ParseTag(str string) tag {
+func parseTag(str string) tag {
 	switch strings.ToLower(str) {
 	case "dao":
 		return tagDao

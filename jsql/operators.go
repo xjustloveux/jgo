@@ -69,6 +69,7 @@ func (o Operators) String() string {
 	}
 }
 
+// ParseOperators takes a string Operators and returns the Operators constant.
 func ParseOperators(o string) (Operators, error) {
 	switch strings.ToLower(o) {
 	case "equal":

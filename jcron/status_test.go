@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style.
 // license that can be found in the LICENSE file.
 
-package jsql
+package jcron
 
 import (
 	"fmt"
@@ -10,26 +10,18 @@ import (
 	"testing"
 )
 
-func TestParseTag(t *testing.T) {
+func TestParseStatus(t *testing.T) {
 	tests := []struct {
 		input  string
-		output tag
+		output Status
 	}{
-		{"dao", tagDao},
-		{"text", tagText},
-		{"select", tagSelect},
-		{"insert", tagInsert},
-		{"update", tagUpdate},
-		{"delete", tagDelete},
-		{"other", tagOther},
-		{"if", tagIf},
-		{"foreach", tagForeach},
-		{"where", tagWhere},
-		{"orderby", tagOrderBy},
-		{"unknown", tagUnknown},
+		{"stop", Stop},
+		{"run", Run},
+		{"syncwait", SyncWait},
+		{"unknown", Unknown},
 	}
 	for _, v := range tests {
-		output := parseTag(v.input)
+		output := parseStatus(v.input)
 		assert.Equal(t, output, v.output, fmt.Sprintf("%v != %v", output, v.output))
 	}
 }

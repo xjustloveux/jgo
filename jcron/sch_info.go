@@ -10,4 +10,5 @@ type SchInfo struct {
 	JobName string
 	JobData map[string]interface{}
 	Desc    string
+	Status  string
 }

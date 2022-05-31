@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	errorNotValidStatus         = jError("not a valid status %q")
 	errorNotValidCronExpression = jError("not a valid CronExpression %q")
 	errorJobNil                 = jError("job is nil")
 	errorFuncNil                = jError("function is nil")
@@ -161,6 +160,10 @@ func AddSchedule(sch *SchInfo) (err error) {
 	if cron, err = ParseCronExpression(sch.Cron); err != nil {
 		return err
 	}
+	sts := parseStatus(sch.Status)
+	if sts != Stop {
+		sts = Run
+	}
 	s := &schedule{
 		name:           sch.Name,
 		cronExpression: sch.Cron,
@@ -168,7 +171,7 @@ func AddSchedule(sch *SchInfo) (err error) {
 		job:            sch.JobName,
 		data:           sch.JobData,
 		desc:           sch.Desc,
-		status:         Run,
+		status:         sts,
 	}
 	if status == Run {
 		inCh <- channel{

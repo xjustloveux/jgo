@@ -4,6 +4,8 @@
 
 package jcron
 
+import "strings"
+
 type Status int
 
 const (
@@ -12,3 +14,16 @@ const (
 	SyncWait
 	Unknown = -1
 )
+
+func parseStatus(str string) Status {
+	switch strings.ToLower(str) {
+	case "stop":
+		return Stop
+	case "run":
+		return Run
+	case "syncwait":
+		return SyncWait
+	default:
+		return Unknown
+	}
+}

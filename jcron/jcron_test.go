@@ -144,7 +144,7 @@ func TestCron(t *testing.T) {
 	m = make(map[string]interface{})
 	m["event"] = "schedule"
 	m["test"] = t
-	if err := AddSchedule(&SchInfo{Name: "Sch03", Cron: "*/2 * * * * ?", JobName: "Job03", JobData: m}); err != nil {
+	if err := AddSchedule(&SchInfo{Name: "Sch03", Cron: "*/2 * * * * ?", JobName: "Job03", JobData: m, Status: "Run"}); err != nil {
 		t.Error(err)
 	}
 	if _, err := GetSchedule("Sch02"); err != nil {
@@ -187,7 +187,7 @@ func job01(m map[string]interface{}) {
 		if j == "Job02" && event.(string) == "schedule" {
 			data := make(map[string]interface{})
 			data["event"] = "schedule"
-			if err = AddSchedule(&SchInfo{Name: "Sch02", Cron: "3,7,11/2,32-57/7 * * * * ? *", JobName: "Job04", JobData: data, Desc: "this is schedule 02-----------"}); err != nil {
+			if err = AddSchedule(&SchInfo{Name: "Sch02", Cron: "3,7,11/2,32-57/7 * * * * ? *", JobName: "Job04", JobData: data, Desc: "this is schedule 02-----------", Status: "Run"}); err != nil {
 				t.Error(err)
 			}
 		}
