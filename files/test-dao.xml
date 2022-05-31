@@ -13,7 +13,7 @@
     <select id="testMySql2">
         SELECT * FROM USR
         <where>
-            USR_STS = @{USR_STS}
+            OR USR_STS = @{USR_STS}
             <if test="!nil(USR_ID) and USR_ID != ''">
                 AND USR_ID = @{USR_ID}
             </if>
@@ -22,7 +22,7 @@
     <select id="testMSSql2">
         SELECT * FROM USR
         <where>
-            USE_STS = @{USE_STS}
+            OR USE_STS = @{USE_STS}
             <if test="!nil(USR_ID) and USR_ID != ''">
                 AND USR_ID = @{USR_ID}
             </if>
@@ -31,7 +31,7 @@
     <select id="testOracle2">
         SELECT * FROM M_USER
         <where>
-            USER_STATUS = @{USER_STATUS}
+            OR USER_STATUS = @{USER_STATUS}
             <if test="!nil(USER_ID) and USER_ID != ''">
                 AND USER_ID = @{USER_ID}
             </if>
@@ -107,7 +107,8 @@
         <!--comment-->
         FROM ${TABLE}
         --comment
-        WHERE ${COL} = @{VAL}
+        <where>
+        AND ${COL} = @{VAL}
         <!--
         <![CDATA[AND ${COL2} >= @{VAL2}]]>
         -->
@@ -145,6 +146,10 @@
         </if>
         comment
         -->
+        </where>
+        <orderBy>
+            ${COL} DESC
+        </orderBy>
     </select>
 
     <insert id="testInsert1">

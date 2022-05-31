@@ -472,24 +472,21 @@ func testSql6(t *testing.T) {
 			&Agent{t: MySql},
 			"testSelect6",
 			pm1,
-			`SELECT * FROM USR
-                WHERE USR_SEQ = ?`,
+			`SELECT * FROM USR WHERE USR_SEQ = ? ORDER BY USR_SEQ DESC`,
 			[]interface{}{pm1["VAL"]},
 		},
 		{
 			&Agent{t: MSSql},
 			"testSelect6",
 			pm2,
-			`SELECT * FROM USR
-                WHERE USR_SEQ = @p1`,
+			`SELECT * FROM USR WHERE USR_SEQ = @p1 ORDER BY USR_SEQ DESC`,
 			[]interface{}{pm2["VAL"]},
 		},
 		{
 			&Agent{t: Oracle},
 			"testSelect6",
 			pm3,
-			`SELECT * FROM M_USER
-                WHERE USER_ID = :0`,
+			`SELECT * FROM M_USER WHERE USER_ID = :0 ORDER BY USER_ID DESC`,
 			[]interface{}{pm3["VAL"]},
 		},
 	}
@@ -896,34 +893,34 @@ func testSqlTable4(t *testing.T) {
 			"USR_SEQ",
 			make([]interface{}, 0),
 			``,
-			[]interface{}{1},
+			[]interface{}{1, 2},
 		},
 		{
 			false,
 			&Agent{t: MySql},
 			"USR",
 			"USR_SEQ",
-			[]interface{}{1},
-			`SELECT * FROM USR WHERE 1 = 1 AND USR_SEQ IN (?)`,
-			[]interface{}{1},
+			[]interface{}{1, 2},
+			`SELECT * FROM USR WHERE 1 = 1 AND USR_SEQ IN (?, ?)`,
+			[]interface{}{1, 2},
 		},
 		{
 			false,
 			&Agent{t: MSSql},
 			"USR",
 			"USR_SEQ",
-			[]interface{}{2},
-			`SELECT * FROM USR WHERE 1 = 1 AND USR_SEQ IN (@p1)`,
-			[]interface{}{2},
+			[]interface{}{1, 2},
+			`SELECT * FROM USR WHERE 1 = 1 AND USR_SEQ IN (@p1, @p2)`,
+			[]interface{}{1, 2},
 		},
 		{
 			false,
 			&Agent{t: Oracle},
 			"M_USER",
 			"USER_ID",
-			[]interface{}{"Z00000000"},
-			`SELECT * FROM M_USER WHERE 1 = 1 AND USER_ID IN (:0)`,
-			[]interface{}{"Z00000000"},
+			[]interface{}{"Z00000000", "Z12345678"},
+			`SELECT * FROM M_USER WHERE 1 = 1 AND USER_ID IN (:0, :1)`,
+			[]interface{}{"Z00000000", "Z12345678"},
 		},
 	}
 	for _, v := range tests {
@@ -1610,9 +1607,13 @@ func testSqlTable17(t *testing.T) {
 		}
 		if v.am != nil {
 			ta.AddMap(v.am)
+			ta.AddMap(v.am)
+			ta.SetMap(v.am)
 		}
 		if v.sm != nil {
 			ta.AddMap(v.sm)
+			ta.AddMap(v.sm)
+			ta.SetMap(v.sm)
 		}
 		if query, args, err := ta.getInsert(); err != nil {
 			t.Error(err)
@@ -2486,9 +2487,9 @@ func testTable4(t *testing.T) {
 		val   []interface{}
 	}{
 		{true, "testMySql", "USR", "USR_SEQ", make([]interface{}, 0)},
-		{false, "testMySql", "USR", "USR_SEQ", []interface{}{1}},
-		{false, "testMSSql", "USR", "USR_SEQ", []interface{}{2}},
-		{false, "testOracle", "M_USER", "USER_ID", []interface{}{"Z00000000"}},
+		{false, "testMySql", "USR", "USR_SEQ", []interface{}{1, 2}},
+		{false, "testMSSql", "USR", "USR_SEQ", []interface{}{1, 2}},
+		{false, "testOracle", "M_USER", "USER_ID", []interface{}{"Z00000000", "Z12345678"}},
 	}
 	for _, v := range tests {
 		ta := &TableAgent{DSKey: v.dsKey, Table: v.table}
@@ -2862,8 +2863,12 @@ func testTable17(t *testing.T) {
 		}
 		if v.am != nil {
 			ta.AddMap(v.am)
+			ta.AddMap(v.am)
+			ta.SetMap(v.am)
 		}
 		if v.sm != nil {
+			ta.AddMap(v.sm)
+			ta.AddMap(v.sm)
 			ta.SetMap(v.sm)
 		}
 		if res, err := ta.Insert(); err != nil {
