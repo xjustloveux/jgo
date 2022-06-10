@@ -68,14 +68,16 @@ func toStringMap(i interface{}) (map[string]interface{}, error) {
 		return nil, err
 	} else {
 		for k, v := range m {
-			if reflect.TypeOf(v).Kind() == reflect.Map {
-				if m[k], err = toStringMap(v); err != nil {
-					return nil, err
+			if v != nil {
+				if reflect.TypeOf(v).Kind() == reflect.Map {
+					if m[k], err = toStringMap(v); err != nil {
+						return nil, err
+					}
 				}
-			}
-			if reflect.TypeOf(v).Kind() == reflect.Slice {
-				if m[k], err = checkSliceToStringMap(v); err != nil {
-					return nil, err
+				if reflect.TypeOf(v).Kind() == reflect.Slice {
+					if m[k], err = checkSliceToStringMap(v); err != nil {
+						return nil, err
+					}
 				}
 			}
 		}
@@ -90,14 +92,16 @@ func checkSliceToStringMap(v interface{}) ([]interface{}, error) {
 		return nil, err
 	}
 	for si, sv := range s {
-		if reflect.TypeOf(sv).Kind() == reflect.Map {
-			if s[si], err = toStringMap(sv); err != nil {
-				return nil, err
+		if sv != nil {
+			if reflect.TypeOf(sv).Kind() == reflect.Map {
+				if s[si], err = toStringMap(sv); err != nil {
+					return nil, err
+				}
 			}
-		}
-		if reflect.TypeOf(sv).Kind() == reflect.Slice {
-			if s[si], err = checkSliceToStringMap(sv); err != nil {
-				return nil, err
+			if reflect.TypeOf(sv).Kind() == reflect.Slice {
+				if s[si], err = checkSliceToStringMap(sv); err != nil {
+					return nil, err
+				}
 			}
 		}
 	}
