@@ -169,7 +169,9 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 			if so {
 				query = trim(query[len(Or.String()):])
 			}
-			query = fmt.Sprint("WHERE ", query)
+			if len(query) > 0 {
+				query = fmt.Sprint("WHERE ", query)
+			}
 		}
 	case tagOrderBy:
 		var err error
@@ -181,7 +183,9 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 			order = query
 			query = ""
 		} else {
-			query = fmt.Sprint("ORDER BY ", query)
+			if len(query) > 0 {
+				query = fmt.Sprint("ORDER BY ", query)
+			}
 			order = ""
 		}
 	}
