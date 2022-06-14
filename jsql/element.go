@@ -41,9 +41,11 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 				return "", "", err
 			}
 			for k, v := range param {
-				if reflect.TypeOf(v).String() == "time.Time" {
-					if param[k], err = jcast.TimeString(v); err != nil {
-						return "", "", err
+				if v != nil {
+					if reflect.TypeOf(v).String() == "time.Time" {
+						if param[k], err = jcast.TimeString(v); err != nil {
+							return "", "", err
+						}
 					}
 				}
 			}
@@ -53,9 +55,11 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 		}
 		if param != nil {
 			for k, v := range param {
-				if reflect.TypeOf(v).Kind() == reflect.String {
-					query = strings.ReplaceAll(query, fmt.Sprint("${", k, "}"), v.(string))
-					order = strings.ReplaceAll(order, fmt.Sprint("${", k, "}"), v.(string))
+				if v != nil {
+					if reflect.TypeOf(v).Kind() == reflect.String {
+						query = strings.ReplaceAll(query, fmt.Sprint("${", k, "}"), v.(string))
+						order = strings.ReplaceAll(order, fmt.Sprint("${", k, "}"), v.(string))
+					}
 				}
 			}
 		}
