@@ -1,7 +1,7 @@
 # jgo
 
 [![codecov](https://codecov.io/gh/xjustloveux/jgo/branch/master/graph/badge.svg?token=RCO5VO2YU6)](https://codecov.io/gh/xjustloveux/jgo)
-[![Build Status](https://app.travis-ci.com/xjustloveux/jgo.svg?branch=master)](https://app.travis-ci.com/xjustloveux/jgo)
+[![Build Status](https://github.com/xjustloveux/jgo/actions/workflows/go.yml/badge.svg)](https://github.com/xjustloveux/jgo/actions/workflows/go.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xjustloveux/jgo)](https://goreportcard.com/report/github.com/xjustloveux/jgo)
 [![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/xjustloveux/jgo)](https://pkg.go.dev/mod/github.com/xjustloveux/jgo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/xjustloveux/jgo/blob/master/LICENSE)
