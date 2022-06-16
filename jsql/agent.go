@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"github.com/xjustloveux/jgo/jcast"
 	"github.com/xjustloveux/jgo/jfile"
-	"github.com/xjustloveux/jgo/jtime"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -777,23 +776,10 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 			dbType := colType.DatabaseTypeName()
 			switch colType.ScanType().String() {
 			case "time.Time":
-				switch dbType {
-				case "DATETIME":
-					record[colType.Name()] = rowValue[i].(time.Time).Format(jtime.DateTime)
-				case "DATE":
-					record[colType.Name()] = rowValue[i].(time.Time).Format(jtime.Date)
-				default:
-					record[colType.Name()] = rowValue[i].(time.Time).Format(jtime.DateTime)
-				}
+				fallthrough
 			case "sql.NullTime":
-				switch dbType {
-				case "DATETIME":
-					record[colType.Name()] = rowValue[i].(time.Time).Format(jtime.DateTime)
-				case "DATE":
-					record[colType.Name()] = rowValue[i].(time.Time).Format(jtime.Date)
-				default:
-					record[colType.Name()] = rowValue[i].(time.Time).Format(jtime.DateTime)
-				}
+				record[colType.Name()] = rowValue[i].(time.Time)
+				break
 			case "int64":
 				fallthrough
 			case "sql.NullInt64":
