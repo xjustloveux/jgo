@@ -450,11 +450,8 @@ func Int(i interface{}) (int, error) {
 		}
 		return int(v), nil
 	case uint64:
-		if strconv.IntSize == 32 && v > math.MaxInt32 {
-			return math.MaxInt32, errorf(errorOutRange, v)
-		}
-		if strconv.IntSize == 64 && v > math.MaxInt64 {
-			return math.MaxInt64, errorf(errorOutRange, v)
+		if v > math.MaxInt {
+			return math.MaxInt, errorf(errorOutRange, v)
 		}
 		return int(v), nil
 	case float32:
@@ -766,7 +763,7 @@ func Int64(i interface{}) (int64, error) {
 	case int64:
 		return v, nil
 	case uint:
-		if v > math.MaxInt64 {
+		if strconv.IntSize == 64 && v > math.MaxInt64 {
 			return math.MaxInt64, errorf(errorOutRange, v)
 		}
 		return int64(v), nil
@@ -1092,7 +1089,7 @@ func Uint32(i interface{}) (uint32, error) {
 		if v < 0 {
 			return 0, errors(errorNegative)
 		}
-		if v > math.MaxUint32 {
+		if strconv.IntSize == 64 && v > math.MaxUint32 {
 			return math.MaxUint32, errorf(errorOutRange, v)
 		}
 		return uint32(v), nil
