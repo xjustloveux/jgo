@@ -13,11 +13,11 @@
         }
       },
       "output": {
-        "p": "${path}/sys/%Y-%m-%d/system.log",
-        "utc": false,
+        "p": "${path}/sys/%yyyy-%MM-%dd/system.log",
         "linkName": "${path}/sys/system",
-        "rotationSize": 100,
-        "rotationSizeUnit": "KB"
+        "rotationSize": 1,
+        "rotationSizeUnit": "KB",
+        "rotationCount": 5
       }
     },
     "test": {
@@ -29,11 +29,11 @@
         }
       },
       "output": {
-        "p": "${path}/sys/%Y-%m-%d/system.log",
-        "utc": true,
-        "linkName": "${path}/sys/system",
+        "p": "${path}/sys/%yyyy-%MM-%dd/test.log",
+        "clock": "UTC",
+        "linkName": "${path}/sys/test",
         "maxAge": 0,
-        "rotationSize": 100,
+        "rotationSize": 1,
         "rotationSizeUnit": "KB",
         "rotationCount": 5
       }
@@ -45,7 +45,7 @@
         "test", "default"
       ],
       "appender": [
-        "console", "console"
+        "console", "sys", "test"
       ]
     }
   ]

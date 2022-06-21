@@ -4,11 +4,14 @@
 
 package jlog
 
-import "time"
+import (
+	"time"
+)
 
-type output struct {
+type Output struct {
+	Name                 string
 	P                    string
-	UTC                  bool
+	Clock                string
 	LinkName             string
 	MaxAge               time.Duration
 	MaxAgeDuration       string
@@ -16,13 +19,15 @@ type output struct {
 	RotationTimeDuration string
 	RotationSize         int64
 	RotationSizeUnit     string
-	RotationCount        uint
+	RotationCount        int
+	Handler              string
 }
 
-func (o output) getDefault() *output {
-	return &output{
+func (o Output) getDefault() *Output {
+	return &Output{
+		Name:                 "",
 		P:                    "",
-		UTC:                  false,
+		Clock:                "Local",
 		LinkName:             "",
 		MaxAge:               365,
 		MaxAgeDuration:       "Day",
@@ -31,5 +36,6 @@ func (o output) getDefault() *output {
 		RotationSize:         10,
 		RotationSizeUnit:     "MB",
 		RotationCount:        0,
+		Handler:              "",
 	}
 }

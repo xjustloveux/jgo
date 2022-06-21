@@ -4,10 +4,6 @@
 
 package jlog
 
-type configData struct {
-	Debug    bool
-	Params   map[string]string
-	Appender map[string]map[string]interface{}
-	Logs     []*logs
-	appender map[string]*appender
+type Handler interface {
+	Handle(event *Event)
 }

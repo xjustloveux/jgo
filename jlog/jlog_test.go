@@ -9,8 +9,16 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/xjustloveux/jgo/jfile"
+	"github.com/xjustloveux/jgo/jtime"
+	"os"
+	"sync"
 	"testing"
+	"time"
 )
+
+type testHandler struct{}
+
+func (h *testHandler) Handle(event *Event) {}
 
 func TestLog(t *testing.T) {
 	testErr := "TEST ERROR:"
@@ -35,6 +43,34 @@ func TestLog(t *testing.T) {
 		t.Error(fmt.Sprint(testErr, " Init must be return error"))
 	}
 	SetFileName("../files/test-jlog.json")
+	AddWriter("test", os.Stdout)
+	AddHandler("test", &testHandler{})
+	o := Output{}.getDefault()
+	o.MaxAgeDuration = "Unknown"
+	if _, err := NewRotateLogs("", o, make(map[string]string)); err == nil {
+		t.Error(fmt.Sprint(testErr, " NewRotateLogs must be return error"))
+	}
+	o.MaxAgeDuration = "Day"
+	o.RotationSizeUnit = "Unknown"
+	if _, err := NewRotateLogs("", o, make(map[string]string)); err == nil {
+		t.Error(fmt.Sprint(testErr, " NewRotateLogs must be return error"))
+	}
+	o.RotationSizeUnit = "MB"
+	o.RotationTimeDuration = "Unknown"
+	if _, err := NewRotateLogs("", o, make(map[string]string)); err == nil {
+		t.Error(fmt.Sprint(testErr, " NewRotateLogs must be return error"))
+	}
+	o.RotationTimeDuration = "Hour"
+	o.Handler = "test"
+	if _, err := NewRotateLogs("", o, make(map[string]string)); err != nil {
+		t.Error(err)
+	}
+	o.Handler = ""
+	o.Clock = "ERROR"
+	if _, err := NewRotateLogs("", o, make(map[string]string)); err == nil {
+		t.Error(fmt.Sprint(testErr, " NewRotateLogs must be return error"))
+	}
+	o.Clock = "Local"
 	if err := Init(); err != nil {
 		t.Error(err)
 		return
@@ -43,20 +79,6 @@ func TestLog(t *testing.T) {
 	inPath := GetParam("path")
 	outPath := "../log"
 	assert.Equal(t, inPath, outPath, fmt.Sprintf("%v != %v", outPath, inPath))
-	GetAppender()
-	if _, err := NewAppender(Default); err == nil {
-		t.Error(fmt.Sprint(testErr, " NewAppender must be return error"))
-	}
-	if ta, err := NewAppender("jlog_test.go"); err != nil {
-		t.Error(err)
-	} else {
-		ta.ClearLogger()
-		l := GetLogger(console)
-		ta.AddLogger(l)
-		ta2 := GetAppender()
-		//assert.Equal(t, da, ta, fmt.Sprintf("%v != %v", ta, da))
-		assert.Equal(t, ta2, ta, fmt.Sprintf("%v != %v", ta, ta2))
-	}
 	Log(InfoLevel, "test")
 	Print("test")
 	Error("test")
@@ -88,6 +110,32 @@ func TestLog(t *testing.T) {
 	Log(InfoLevel, Fields{"test": "test"}, "test", nil)
 	Log(InfoLevel, logrus.Fields{"test": "test"}, "test", nil)
 	Printf("test")
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
+	go func() {
+		defer func() {
+			wg.Done()
+		}()
+		i := 0
+		for i < 10 {
+			Infoln("thread1")
+			i++
+			<-time.After(jtime.Millisecond * 123)
+		}
+	}()
+	wg.Add(1)
+	go func() {
+		defer func() {
+			wg.Done()
+		}()
+		i := 0
+		for i < 10 {
+			Infoln("thread2")
+			i++
+			<-time.After(jtime.Millisecond * 234)
+		}
+	}()
+	wg.Wait()
 }
 
 func logFn() []interface{} {
