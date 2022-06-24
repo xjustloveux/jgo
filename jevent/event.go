@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT-style.
 // license that can be found in the LICENSE file.
 
-package jcron
+package jevent
 
-type configData struct {
-	Schedule []*SchInfo
-}
+type Event func(...interface{})

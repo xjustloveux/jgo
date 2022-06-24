@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/xjustloveux/jgo/jcast"
 	"github.com/xjustloveux/jgo/jconf"
+	"github.com/xjustloveux/jgo/jevent"
 	"github.com/xjustloveux/jgo/jfile"
 	"os"
 	"regexp"
@@ -67,9 +68,9 @@ const (
 
 var (
 	conf       = jconf.New()
+	subject    = jevent.New()
 	mux        = new(sync.RWMutex)
 	cd         *configData
-	logFunc    func(...interface{})
 	decodeFunc func(string) (string, error)
 	dsMap      map[string]*dataSource
 	selectMap  map[string]*element
@@ -128,9 +129,9 @@ func DisableEnv() {
 	conf.DisableEnv()
 }
 
-// SetLogFunc set fmt.Println log function
-func SetLogFunc(f func(...interface{})) {
-	logFunc = f
+// SubscribeSql subscribe sql event
+func SubscribeSql(e jevent.Event) jevent.Subscription {
+	return subject.Subscribe(e)
 }
 
 // Init initialize
@@ -138,7 +139,7 @@ func Init() error {
 	if err := conf.Load(); err != nil {
 		return err
 	}
-	cd = &configData{Debug: false}
+	cd = &configData{}
 	if err := conf.Convert(cd); err != nil {
 		return err
 	}
@@ -195,15 +196,6 @@ func errorf(e jError, args ...interface{}) error {
 
 func errors(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
-}
-
-func fmtPrintln(args ...interface{}) {
-	if cd.Debug {
-		fmt.Println(args...)
-	}
-	if logFunc != nil {
-		logFunc(args...)
-	}
 }
 
 func createDataSource() error {

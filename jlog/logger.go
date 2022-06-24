@@ -101,7 +101,7 @@ func (l *logger) ClearLogger() {
 	l.logs = make(map[string]*logrus.Logger)
 }
 
-func (l *logger) addLogger(name string, a *appender, param map[string]string) error {
+func (l *logger) addLogger(an string, pn string, a *appender, param map[string]string) error {
 	log := logrus.New()
 	switch strings.ToUpper(a.Formatter.Type) {
 	case "TEXT":
@@ -112,12 +112,12 @@ func (l *logger) addLogger(name string, a *appender, param map[string]string) er
 	log.SetLevel(a.getLogrusLevel())
 	if a.Output.Name != "" && writer[a.Output.Name] != nil {
 		log.SetOutput(writer[a.Output.Name])
-	} else if w, err := NewRotateLogs(name, a.Output, param); err == nil {
+	} else if w, err := NewRotateLogs(pn, a.Output, param); err == nil {
 		log.SetOutput(w)
 	} else {
 		return err
 	}
-	l.logs[name] = log
+	l.logs[an] = log
 	return nil
 }
 

@@ -1,5 +1,6 @@
-# jgo
+[![JGo Web](https://jgo.dev/assets/images/logo_300.svg)](https://jgo.dev/)
 
+[![JGo release](https://img.shields.io/github/v/release/xjustloveux/jgo)](https://github.com/xjustloveux/jgo/releases)
 [![codecov](https://codecov.io/gh/xjustloveux/jgo/branch/master/graph/badge.svg?token=RCO5VO2YU6)](https://codecov.io/gh/xjustloveux/jgo)
 [![Build Status](https://github.com/xjustloveux/jgo/actions/workflows/go.yml/badge.svg)](https://github.com/xjustloveux/jgo/actions/workflows/go.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xjustloveux/jgo)](https://goreportcard.com/report/github.com/xjustloveux/jgo)
@@ -8,34 +9,34 @@
 
 ---
 
-<a href="https://dream-ja.com/">
-  <img alt="JaJa" align="right" width="30%" height="150px" src="https://dream-ja.com/assets/svg/logo-white.svg">
-</a>
-
 * [Overview](#Overview)
 * [Middlewares](#Middlewares)
 * [Installation](#Installation)
 * [Example](#Example)
     * [jsql](#jsql)
-    * [jlog](#jlog)
     * [jcron](#jcron)
+    * [jlog](#jlog)
+    * [jfile](#jfile)
+    * [jtime](#jtime)
 * [Environment](#Environment)
-* [Api](#Api)
 
 # Overview
 
 ---
 
-Jgo provides an easier configuration for writing sql, log, and cron jobs.
+JGo provides an easier configuration for writing sql, log, and cron jobs.
+
+JGo Web：[https://jgo.dev](https://jgo.dev)
+
+JGo Web Project：[https://github.com/xjustloveux/jgo.web](https://github.com/xjustloveux/jgo.web)
 
 # Middlewares
 
 ---
 
-**Jgo minimizes dependencies on third-party middleware to avoid conflicts.**
+**JGo minimizes dependencies on third-party middleware to avoid conflicts.**
 
-jlog import two third-party middlewares that [logrus](https://github.com/sirupsen/logrus)
-and [file-rotatelogs](https://github.com/lestrrat-go/file-rotatelogs).
+jlog only import [logrus](https://github.com/sirupsen/logrus) middleware.
 
 jsql only import [govaluate](https://github.com/Knetic/govaluate) middleware, but it is designed on the basis
 of [mysql](https://github.com/go-sql-driver/mysql), [go-mssqldb](https://github.com/denisenkom/go-mssqldb)
@@ -62,7 +63,6 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
 
 | Property Name                      | Required | Type                   | Default Value | Comment                                                                                                                                                                                                                                                                                                  |
 |------------------------------------|----------|------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Debug                              | false    | bool                   | false         | When set true that will print the error sql.                                                                                                                                                                                                                                                             |
 | DaoPath                            | true     | string                 | empty         | It your xml files folder path.                                                                                                                                                                                                                                                                           |
 | Default                            | true     | string                 | empty         | It your default DataSource name.                                                                                                                                                                                                                                                                         |
 | DataSource                         | true     | map[string]interface{} | empty         |                                                                                                                                                                                                                                                                                                          |
@@ -419,143 +419,6 @@ func example7() {
 | orderBy  | 3 up  |           |          |        |                                                                                                          |
 |          |       | last      | false    | bool   | for QueryPage                                                                                            |
 
-## jlog
-
-### Configuration
-
-Configuration file default `json` format, you can use `jlog.SetFormat` to set you want, but you must be used
-[jfile.RegisterCodec](#RegisterCodec) register codec.
-
-| Property Name                        | Required | Type                   | Default Value                                          | Comment                                                          |
-|--------------------------------------|----------|------------------------|--------------------------------------------------------|------------------------------------------------------------------|
-| Debug                                | false    | bool                   | false                                                  | When set true that will print the jlog error.                    |
-| Params                               | false    | map[string]interface{} | empty                                                  | `Appender.Output.P` or `Appender.Output.LinkName` replace params |
-| Appender                             | true     | map[string]interface{} | empty                                                  |                                                                  |
-| Appender.Level                       | false    | string                 | info                                                   | `logrus.Level`                                                   |
-| Appender.Formatter                   | false    | *formatter             | default formatter                                      |                                                                  |
-| Appender.Formatter.Type              | false    | string                 | TEXT                                                   | `TEXT`, `JSON`                                                   |
-| Appender.Formatter.Text              | false    | *logrus.TextFormatter  | &logrus.TextFormatter{TimestampFormat: jtime.DateTime} |                                                                  |
-| Appender.Formatter.Json              | false    | *logrus.JSONFormatter  | &logrus.JSONFormatter{TimestampFormat: jtime.DateTime} |                                                                  |
-| Appender.Output                      | true     | *output                | default output                                         |                                                                  |
-| Appender.Output.P                    | true     | string                 | empty                                                  | file-rotatelogs `.New(P, ...)`                                   |
-| Appender.Output.UTC                  | false    | bool                   | false                                                  | file-rotatelogs `.WithClock`                                     |
-| Appender.Output.LinkName             | false    | string                 | empty                                                  | file-rotatelogs `.WithLinkName`                                  |
-| Appender.Output.MaxAge               | false    | time.Duration          | 365                                                    | file-rotatelogs `.WithMaxAge`                                    |
-| Appender.Output.MaxAgeDuration       | false    | string                 | Day                                                    | Nanosecond, Microsecond, Millisecond, Second, Minute, Hour, Day  |
-| Appender.Output.RotationTime         | false    | time.Duration          | 24                                                     | file-rotatelogs .WithRotationTime                                |
-| Appender.Output.RotationTimeDuration | false    | string                 | Hour                                                   | Nanosecond, Microsecond, Millisecond, Second, Minute, Hour, Day  |
-| Appender.Output.RotationSize         | false    | int64                  | 10                                                     | file-rotatelogs .WithRotationSize                                |
-| Appender.Output.RotationSizeUnit     | false    | string                 | MB                                                     | Byte, Kb, KB, Mb, MB, Gb, GB, Tb, TB, Pb, PB, Eb, EB             |
-| Appender.Output.RotationCount        | false    | uint                   | 0                                                      | file-rotatelogs `.WithRotationCount`                             |
-| Logs                                 | true     | []*logs                | empty                                                  |                                                                  |
-| Logs.Program                         | true     | []string               | empty                                                  | go program name. ex: main or main.go                             |
-| Logs.Appender                        | true     | []string               | empty                                                  | Appender name.                                                   |
-
-***Note:* `jlog.Init` default create 'default' program name and 'console' appender name.**
-
-### Usage
-
-#### log.json
-
-```json
-{
-  "params": {
-    "path": "/log"
-  },
-  "appender": {
-    "sys": {
-      "level": "Error",
-      "formatter": {
-        "type": "JSON"
-      },
-      "output": {
-        "p": "${path}/sys/%Y-%m-%d/system.log",
-        "utc": false,
-        "linkName": "${path}/sys/system",
-        "rotationSize": 100,
-        "rotationSizeUnit": "KB"
-      }
-    },
-    "web": {
-      "formatter": {
-        "text": {
-          "timestampFormat": "2006-01-02"
-        }
-      },
-      "output": {
-        "p": "${path}/web/%Y-%m-%d/website.log",
-        "linkName": "${path}/web/website"
-      }
-    }
-  },
-  "logs": [
-    {
-      "program": [
-        "program1",
-        "main"
-      ],
-      "appender": [
-        "sys"
-      ]
-    },
-    {
-      "program": [
-        "program2"
-      ],
-      "appender": [
-        "console",
-        "web"
-      ]
-    },
-    {
-      "program": [
-        "pkg:packageName"
-      ],
-      "appender": [
-        "console",
-        "sys"
-      ]
-    }
-  ]
-}
-```
-
-#### main.go
-
-sys appender log
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/xjustloveux/jgo/jlog"
-	"time"
-)
-
-func main() {
-	if err := jlog.Init(); err != nil {
-		fmt.Println(err)
-		return
-	}
-	jlog.Info("info message")
-	jlog.Warn(time.Now())
-	jlog.Error(fmt.Errorf("error message"))
-}
-```
-
-#### program2.go
-
-console and web appender log
-
-```go
-package main
-
-func example() {
-	jlog.Info("this is program2")
-}
-```
-
 ## jcron
 
 ### Configuration
@@ -565,7 +428,6 @@ Configuration file default `json` format, you can use `jcron.SetFormat` to set y
 
 | Property Name    | Required | Type                   | Default Value | Comment                                        |
 |------------------|----------|------------------------|---------------|------------------------------------------------|
-| Debug            | false    | bool                   | false         | When set true that will print the jcron error. |
 | Schedule         | true     | []*SchInfo             | empty         |                                                |
 | Schedule.Name    | true     | string                 | empty         | schedule name.                                 |
 | Schedule.Cron    | true     | string                 | empty         | [CronExpression](#CronExpression).             |
@@ -652,6 +514,240 @@ func Job02(data map[string]interface{}) {
 | Month        | true     | 1-12 or January-December or JAN-DEC | ,-*/                       |
 | Day of week  | true     | 0-6 or Sunday-Saturday or SUN-SAT   | ,-*/?                      |
 | Year         | false    | 2020-2080                           | ,-*/                       |
+
+## jlog
+
+### Configuration
+
+Configuration file default `json` format, you can use `jlog.SetFormat` to set you want, but you must be used
+[jfile.RegisterCodec](#RegisterCodec) register codec.
+
+| Property Name                        | Required | Type                   | Default Value                                          | Comment                                                                                                              |
+|--------------------------------------|----------|------------------------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| Params                               | false    | map[string]interface{} | empty                                                  | `Appender.Output.P` and `Appender.Output.LinkName` replace params                                                    |
+| Appender                             | true     | map[string]interface{} | empty                                                  |                                                                                                                      |
+| Appender.Level                       | false    | string                 | info                                                   | `logrus.Level`                                                                                                       |
+| Appender.Formatter                   | false    | *formatter             | default formatter                                      |                                                                                                                      |
+| Appender.Formatter.Type              | false    | string                 | TEXT                                                   | `TEXT`, `JSON`                                                                                                       |
+| Appender.Formatter.Text              | false    | *logrus.TextFormatter  | &logrus.TextFormatter{TimestampFormat: jtime.DateTime} |                                                                                                                      |
+| Appender.Formatter.Json              | false    | *logrus.JSONFormatter  | &logrus.JSONFormatter{TimestampFormat: jtime.DateTime} |                                                                                                                      |
+| Appender.Output                      | true     | *output                | default output                                         |                                                                                                                      |
+| Appender.Output.Name                 | false    | string                 | empty                                                  | writer name. you can use `.AddWriter` add writer before `.Init`                                                      |
+| Appender.Output.P                    | true     | string                 | empty                                                  | log file path. default `${Program}` tag replace program name. time format refer to [FormatString](#FormatString)     |
+| Appender.Output.Clock                | false    | string                 | Local                                                  | `*time.Location` string, use for file path time format.                                                              |
+| Appender.Output.LinkName             | false    | string                 | empty                                                  | symlink file path. default `${Program}` tag replace program name. time format refer to [FormatString](#FormatString) |
+| Appender.Output.MaxAge               | false    | time.Duration          | 365                                                    | MaxAge number                                                                                                        |
+| Appender.Output.MaxAgeDuration       | false    | string                 | Day                                                    | Nanosecond, Microsecond, Millisecond, Second, Minute, Hour, Day                                                      |
+| Appender.Output.RotationTime         | false    | time.Duration          | 24                                                     | RotationTime number                                                                                                  |
+| Appender.Output.RotationTimeDuration | false    | string                 | Hour                                                   | Nanosecond, Microsecond, Millisecond, Second, Minute, Hour, Day                                                      |
+| Appender.Output.RotationSize         | false    | int64                  | 10                                                     | RotationSize number                                                                                                  |
+| Appender.Output.RotationSizeUnit     | false    | string                 | MB                                                     | Byte, Kb, KB, Mb, MB, Gb, GB, Tb, TB, Pb, PB, Eb, EB                                                                 |
+| Appender.Output.RotationCount        | false    | int                    | 0                                                      | RotationCount number                                                                                                 |
+| Appender.Output.Handler              | false    | string                 | empty                                                  | handler name. you can use `.AddHandler` add handler before `.Init`                                                   |
+| Logs                                 | true     | []*logs                | empty                                                  |                                                                                                                      |
+| Logs.Program                         | true     | []string               | empty                                                  | go program name. ex: `main` or `main.go` or `pkg:sample`                                                             |
+| Logs.Appender                        | true     | []string               | empty                                                  | Appender name.                                                                                                       |
+
+***Note:* `jlog.Init` default create 'default' program name and 'console' appender name.**
+
+### Usage
+
+#### log.json
+
+```json
+{
+  "params": {
+    "path": "/log"
+  },
+  "appender": {
+    "sys": {
+      "level": "Error",
+      "formatter": {
+        "type": "JSON"
+      },
+      "output": {
+        "p": "${path}/sys/%yyyy-%MM-%dd/system.log",
+        "utc": false,
+        "linkName": "${path}/sys/system",
+        "rotationSize": 100,
+        "rotationSizeUnit": "KB"
+      }
+    },
+    "web": {
+      "formatter": {
+        "text": {
+          "timestampFormat": "2006-01-02"
+        }
+      },
+      "output": {
+        "p": "${path}/web/%yyyy-%MM-%dd/website.log",
+        "linkName": "${path}/web/website"
+      }
+    }
+  },
+  "logs": [
+    {
+      "program": [
+        "program1",
+        "main"
+      ],
+      "appender": [
+        "sys"
+      ]
+    },
+    {
+      "program": [
+        "program2"
+      ],
+      "appender": [
+        "console",
+        "web"
+      ]
+    },
+    {
+      "program": [
+        "pkg:packageName"
+      ],
+      "appender": [
+        "console",
+        "sys"
+      ]
+    }
+  ]
+}
+```
+
+#### main.go
+
+sys appender log
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/xjustloveux/jgo/jlog"
+	"time"
+)
+
+func main() {
+	if err := jlog.Init(); err != nil {
+		fmt.Println(err)
+		return
+	}
+	jlog.Info("info message")
+	jlog.Warn(time.Now())
+	jlog.Error(fmt.Errorf("error message"))
+}
+```
+
+#### program2.go
+
+console and web appender log
+
+```go
+package main
+
+func example() {
+	jlog.Info("this is program2")
+}
+```
+
+## jfile
+
+### Convert
+
+```go
+type Example struct{
+str string
+}
+
+m := make(map[string]interface{})
+m["str"] = "example"
+ex := Example{}
+
+jfile.Convert(m, &ex)
+```
+
+### RegisterCodec
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"github.com/xjustloveux/jgo/jfile"
+)
+
+type jsonCodec struct{}
+
+func (jsonCodec) Encode(m map[string]interface{}) ([]byte, error) {
+	return json.MarshalIndent(m, "", "  ")
+}
+
+func (jsonCodec) Decode(b []byte, m map[string]interface{}) error {
+	return json.Unmarshal(b, &m)
+}
+
+func main() {
+	jfile.RegisterCodec(jfile.Json.String(), jsonCodec{})
+}
+```
+
+## jtime
+
+### FormatString
+
+E.g. 2022-06-20 14:44:55.012345678 -0700 MST IN America/Phoenix Location
+
+| Pattern | Description                                | E.g.            |
+|---------|--------------------------------------------|-----------------|
+| %d      | day in month, 1-31                         | 20              |
+| %dd     | day in month, 01-31                        | 20              |
+| %ddd    | day in week, Sun-Mon                       | Mon             |
+| %dddd   | day in week, Sunday-Monday                 | Monday          |
+| %D      | day in year, 1-366                         | 171             |
+| %DD     | day in year, 01-366                        | 171             |
+| %DDD    | day in year, 001-366                       | 171             |
+| %f      | nanosecond, 0-9999                         | 0               |
+| %ff     | nanosecond, 00-9999                        | 01              |
+| %fff    | nanosecond, 000-9999                       | 012             |
+| %ffff   | nanosecond, 0000-9999                      | 0123            |
+| %F      | nanosecond, -9999                          |                 |
+| %FF     | nanosecond, -9999                          | 01              |
+| %FFF    | nanosecond, -9999                          | 012             |
+| %FFFF   | nanosecond, -9999                          | 0123            |
+| %g      | Era designator, A.D. or B.C.               | A.D.            |
+| %h      | hour in day, 0-11                          | 2               |
+| %hh     | hour in day, 00-11                         | 02              |
+| %H      | hour in day, 0-23                          | 14              |
+| %HH     | hour in day, 00-23                         | 14              |
+| %k      | hour in day, 1-12                          | 2               |
+| %kk     | hour in day, 01-12                         | 02              |
+| %K      | hour in day, 1-24                          | 14              |
+| %KK     | hour in day, 01-24                         | 14              |
+| %l      | time zone name                             | America/Phoenix |
+| %m      | minute in hour, 0-59                       | 44              |
+| %mm     | minute in hour, 00-59                      | 44              |
+| %M      | month in year, 1-12                        | 6               |
+| %MM     | month in year, 01-12                       | 06              |
+| %MMM    | month in year, Jan-Dec                     | Jun             |
+| %MMMM   | month in year, January-December            | June            |
+| %s      | second in minute, 0-59                     | 55              |
+| %ss     | second in minute, 00-59                    | 55              |
+| %t      | AM/PM marker                               | P               |
+| %tt     | AM/PM marker                               | PM              |
+| %w      | week in year, 1-53                         | 25              |
+| %W      | day in week, 0-6                           | 1               |
+| %y      | year                                       | 22              |
+| %yy     | year                                       | 22              |
+| %yyy    | year                                       | 2022            |
+| %yyyy   | year                                       | 2022            |
+| %z      | time zone offset from UTC, hour            | -7              |
+| %zz     | time zone offset from UTC, hour            | -07             |
+| %zzz    | time zone offset from UTC, hour and minute | -07:00          |
+| %zzzz   | time zone offset from UTC, second          | -25200          |
+| %Z      | time zone name                             | MST             |
 
 # Environment
 
@@ -790,250 +886,3 @@ func main() {
 	}
 }
 ```
-
-# Api
-
----
-
-## jfile
-
-### Load
-
-```go
-jfile.Load("C:/example.txt")
-```
-
-### Convert
-
-```go
-type Example struct{
-str string
-}
-
-m := make(map[string]interface{})
-m["str"] = "example"
-ex := Example{}
-
-jfile.Convert(m, &ex)
-```
-
-### RegisterCodec
-
-```go
-package main
-
-import (
-	"encoding/json"
-	"github.com/xjustloveux/jgo/jfile"
-)
-
-type jsonCodec struct{}
-
-func (jsonCodec) Encode(m map[string]interface{}) ([]byte, error) {
-	return json.MarshalIndent(m, "", "  ")
-}
-
-func (jsonCodec) Decode(b []byte, m map[string]interface{}) error {
-	return json.Unmarshal(b, &m)
-}
-
-func main() {
-	jfile.RegisterCodec(jfile.Json.String(), jsonCodec{})
-}
-```
-
-### GetCodec
-
-```go
-jfile.GetCodec(jfile.Json.String())
-```
-
-### Encode
-
-```go
-m := make(map[string]interface{})
-jfile.Encode(jfile.Json.String(), m)
-```
-
-### Decode
-
-```go
-package main
-
-import (
-	"github.com/xjustloveux/jgo/jfile"
-)
-
-func main() {
-	var err error
-	var b []byte
-	if b, err = jfile.Load("C:/example.json"); err != nil {
-		return
-	}
-	m := make(map[string]interface{})
-	if err = jfile.Decode(jfile.Json.String(), b, m); err != nil {
-		return
-	}
-}
-```
-
-### ParseSizeUnit
-
-```go
-jfile.ParseSizeUnit("MB")
-```
-
-## jtime
-
-### ParseTimeDuration
-
-```go
-jtime.ParseTimeDuration("Day")
-```
-
-## jslice
-
-### Filter
-
-```go
-package main
-
-import (
-	"github.com/xjustloveux/jgo/jslice"
-)
-
-func main() {
-	s := []int{1, 3, 5, 7, 9, 11, 13, 15, 17, 19}
-	jslice.Filter(s, func(i interface{}) bool {
-		if v, ok := i.(int); ok {
-			return v > 10
-		}
-		return false
-	})
-}
-```
-
-### Insert
-
-```go
-package main
-
-import (
-	"github.com/xjustloveux/jgo/jslice"
-)
-
-func main() {
-	s := []int{1, 3, 5, 7, 9, 11, 13, 15, 17, 19}
-	jslice.Insert(3, s, 6)
-}
-```
-
-### InsertAll
-
-```go
-package main
-
-import (
-	"github.com/xjustloveux/jgo/jslice"
-)
-
-func main() {
-	s1 := []int{1, 3, 5, 7, 9, 11, 13, 15, 17, 19}
-	s2 := []int{2, 4, 6}
-	jslice.InsertAll(3, s1, s2)
-}
-```
-
-## jconf
-
-### New
-
-## jruntime
-
-### GetFuncName
-
-### GetCallerName
-
-### GetCallerProgramName
-
-### GetPkgName
-
-### GetCallerPkgName
-
-## jcast
-
-### VerifyPtr
-
-### Value
-
-### Time
-
-### TimeLoc
-
-### TimeString
-
-### TimeFormatString
-
-### String
-
-### Bool
-
-### Int
-
-### Int8
-
-### Int16
-
-### Int32
-
-### Int64
-
-### Uint
-
-### Uint8
-
-### Uint16
-
-### Uint32
-
-### Uint64
-
-### Float32
-
-### Float64
-
-### InterfaceMapInterface
-
-### StringMapInterface
-
-### StringMapString
-
-### SliceInterface
-
-### SliceString
-
-### SliceBool
-
-### SliceInt
-
-### SliceInt8
-
-### SliceInt16
-
-### SliceInt32
-
-### SliceInt64
-
-### SliceUint
-
-### SliceUint8
-
-### SliceUint16
-
-### SliceUint32
-
-### SliceUint64
-
-### SliceFloat32
-
-### SliceFloat64

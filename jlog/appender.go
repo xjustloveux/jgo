@@ -23,7 +23,7 @@ func (a appender) getDefault() *appender {
 func (a *appender) getLogrusLevel() logrus.Level {
 	if _, err := logrus.ParseLevel(a.Level); err != nil {
 		a.Level = "info"
-		fmtPrintln(err)
+		subject.Next(err)
 	}
 	lv, _ := logrus.ParseLevel(a.Level)
 	return lv

@@ -140,8 +140,8 @@ func formatString(format, str string, t time.Time) string {
 	case "ffff":
 		l := len(format)
 		s := fmt.Sprintf("%v", t.Nanosecond())
-		for len(s) < l {
-			s = fmt.Sprint(s, "0")
+		for len(s) < 9 {
+			s = fmt.Sprint("0", s)
 		}
 		str = strings.ReplaceAll(str, fmt.Sprint(k, format), s[:l])
 	case "F":
@@ -153,8 +153,8 @@ func formatString(format, str string, t time.Time) string {
 	case "FFFF":
 		l := len(format)
 		s := fmt.Sprintf("%v", t.Nanosecond())
-		for len(s) < l {
-			s = fmt.Sprint(s, "0")
+		for len(s) < 9 {
+			s = fmt.Sprint("0", s)
 		}
 		s = s[:l]
 		if i, err := strconv.ParseInt(s, 0, 64); err != nil {
@@ -188,7 +188,15 @@ func formatString(format, str string, t time.Time) string {
 	case "k":
 		fallthrough
 	case "kk":
-		s := fmt.Sprintf("%v", (t.Hour()+1)%12)
+		h := t.Hour()
+		if h%12 == 0 && h/12 > 0 {
+			h = 12
+		} else if h < 12 {
+			h = h%12 + 1
+		} else {
+			h = h % 12
+		}
+		s := fmt.Sprintf("%v", h)
 		for len(s) < len(format) {
 			s = fmt.Sprint("0", s)
 		}
@@ -196,7 +204,11 @@ func formatString(format, str string, t time.Time) string {
 	case "K":
 		fallthrough
 	case "KK":
-		s := fmt.Sprintf("%v", t.Hour()+1)
+		h := t.Hour()
+		if h == 0 {
+			h = 24
+		}
+		s := fmt.Sprintf("%v", h)
 		for len(s) < len(format) {
 			s = fmt.Sprint("0", s)
 		}
@@ -244,8 +256,20 @@ func formatString(format, str string, t time.Time) string {
 	case "yyy":
 		fallthrough
 	case "yyyy":
-		t.Zone()
-		str = strings.ReplaceAll(str, fmt.Sprint(k, format), t.Format("2006")[:len(format)])
+		l := len(format)
+		y := t.Year()
+		negative := y < 0
+		if negative {
+			y = y * -1
+		}
+		if l <= 2 {
+			y = y % 100
+		}
+		sy := fmt.Sprintf("%v", y)
+		for len(sy) < l {
+			sy = fmt.Sprint("0", sy)
+		}
+		str = strings.ReplaceAll(str, fmt.Sprint(k, format), sy)
 	case "z":
 		fallthrough
 	case "zz":
@@ -260,11 +284,11 @@ func formatString(format, str string, t time.Time) string {
 		min := sec / 60
 		hour := min / 60
 		s := fmt.Sprintf("%v", hour)
-		for len(s) < l && len(s) < 3 {
+		for len(s) < l && len(s) < 2 {
 			s = fmt.Sprint("0", s)
 		}
 		if l >= 3 {
-			m := fmt.Sprintf("%v", min)
+			m := fmt.Sprintf("%v", min-hour*60)
 			for len(m) < 2 {
 				m = fmt.Sprint("0", m)
 			}

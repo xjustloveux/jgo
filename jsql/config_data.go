@@ -5,7 +5,6 @@
 package jsql
 
 type configData struct {
-	Debug      bool
 	DaoPath    string
 	Default    string
 	DataSource map[string]interface{}

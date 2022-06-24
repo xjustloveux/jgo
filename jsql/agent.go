@@ -489,8 +489,8 @@ func (a *Agent) query(single bool, query string, args ...interface{}) (result Re
 		return nil, errors(errorDBNil)
 	}
 	var rows *sql.Rows
+	subject.Next(query)
 	if rows, err = a.db.Query(query, args...); err != nil {
-		fmtPrintln(query)
 		return nil, err
 	}
 	return a.getResult(rows, single)
@@ -501,8 +501,8 @@ func (a *Agent) queryTx(single bool, query string, args ...interface{}) (result 
 		return nil, errors(errorDbNotBegin)
 	}
 	var rows *sql.Rows
+	subject.Next(query)
 	if rows, err = a.tx.Query(query, args...); err != nil {
-		fmtPrintln(query)
 		return nil, err
 	}
 	return a.getResult(rows, single)
@@ -553,8 +553,8 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 	}
 	var resPage Result
 	var resCount Result
+	subject.Next(pageQuery)
 	if resPage, err = a.queryTx(false, pageQuery, args...); err != nil {
-		fmtPrintln(pageQuery)
 		return nil, err
 	}
 	if res, ok := resPage.(agentResult); ok {
@@ -563,8 +563,8 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 			delete(res.rows[i], orderById)
 		}
 	}
+	subject.Next(countQuery)
 	if resCount, err = a.queryTx(true, countQuery, args...); err != nil {
-		fmtPrintln(countQuery)
 		return nil, err
 	}
 	if ct {
@@ -595,8 +595,8 @@ func (a *Agent) exec(query string, args ...interface{}) (result Result, err erro
 		return nil, errors(errorDBNil)
 	}
 	var res sql.Result
+	subject.Next(query)
 	if res, err = a.db.Exec(query, args...); err != nil {
-		fmtPrintln(query)
 		return nil, err
 	}
 	id := lastInsertId{id: -1, err: nil}
@@ -617,8 +617,8 @@ func (a *Agent) execTx(query string, args ...interface{}) (result Result, err er
 		return nil, errors(errorDbNotBegin)
 	}
 	var res sql.Result
+	subject.Next(query)
 	if res, err = a.tx.Exec(query, args...); err != nil {
-		fmtPrintln(query)
 		return nil, err
 	}
 	id := lastInsertId{id: -1, err: nil}
@@ -639,8 +639,8 @@ func (a *Agent) queryPrepare(single bool, query string, args ...[]interface{}) (
 		return nil, errors(errorDBNil)
 	}
 	var stmt *sql.Stmt
+	subject.Next(query)
 	if stmt, err = a.db.Prepare(query); err != nil {
-		fmtPrintln(query)
 		return nil, err
 	}
 	return a.stmtQuery(single, stmt, args...)
@@ -651,8 +651,8 @@ func (a *Agent) queryPrepareTx(single bool, query string, args ...[]interface{})
 		return nil, errors(errorDbNotBegin)
 	}
 	var stmt *sql.Stmt
+	subject.Next(query)
 	if stmt, err = a.tx.Prepare(query); err != nil {
-		fmtPrintln(query)
 		return nil, err
 	}
 	return a.stmtQuery(single, stmt, args...)
@@ -684,8 +684,8 @@ func (a *Agent) execPrepare(query string, args ...[]interface{}) (result []Resul
 		return nil, errors(errorDBNil)
 	}
 	var stmt *sql.Stmt
+	subject.Next(query)
 	if stmt, err = a.db.Prepare(query); err != nil {
-		fmtPrintln(query)
 		return nil, err
 	}
 	return a.stmtExec(stmt, args...)
@@ -696,8 +696,8 @@ func (a *Agent) execPrepareTx(query string, args ...[]interface{}) (result []Res
 		return nil, errors(errorDbNotBegin)
 	}
 	var stmt *sql.Stmt
+	subject.Next(query)
 	if stmt, err = a.tx.Prepare(query); err != nil {
-		fmtPrintln(query)
 		return nil, err
 	}
 	return a.stmtExec(stmt, args...)

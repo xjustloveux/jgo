@@ -27,7 +27,7 @@ func TestCron(t *testing.T) {
 	assert.Equal(t, inEnvVal, outEnvVal, fmt.Sprintf("%v != %v", outEnvVal, inEnvVal))
 	DisableEnv()
 	EnableEnv()
-	SetLogFunc(func(i ...interface{}) {})
+	SubscribeLog(func(i ...interface{}) {})
 	if err := Init(); err == nil {
 		t.Error(fmt.Sprint(testErr, " Init must be return error"))
 	}

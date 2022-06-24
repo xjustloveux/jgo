@@ -311,7 +311,7 @@ func (s *schedule) getNext(t time.Time) time.Time {
 	year := s.getNum(t.Year()-minYear, s.cron.year) + minYear
 	if v := year - t.Year(); v > 0 {
 		if t, err = s.getTime(t.Year()+v, 1, 1, 0, 0, 0); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 			s.status = Stop
 			return t
 		}
@@ -323,13 +323,13 @@ func (s *schedule) getNext(t time.Time) time.Time {
 	month := s.getNum(nm, s.cron.month)
 	if v := month - nm; v > 0 {
 		if t, err = s.getTime(t.Year(), nm+v, 1, 0, 0, 0); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 			s.status = Stop
 			return t
 		}
 	} else if v < 0 {
 		if t, err = s.getTime(t.Year()+1, 1, 1, 0, 0, 0); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 			s.status = Stop
 			return t
 		}
@@ -342,13 +342,13 @@ func (s *schedule) getNext(t time.Time) time.Time {
 			t = t.Add(time.Duration(v) * jtime.Day)
 			if m != t.Month() {
 				if t, err = s.getTime(t.Year(), int(t.Month()), 1, 0, 0, 0); err != nil {
-					fmtPrintln(err)
+					subject.Next(err)
 					s.status = Stop
 					return t
 				}
 				return s.getNext(t)
 			} else if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), 0, 0, 0); err != nil {
-				fmtPrintln(err)
+				subject.Next(err)
 				s.status = Stop
 				return t
 			}
@@ -361,7 +361,7 @@ func (s *schedule) getNext(t time.Time) time.Time {
 				tm = 1
 			}
 			if t, err = s.getTime(ty, tm, 1, 0, 0, 0); err != nil {
-				fmtPrintln(err)
+				subject.Next(err)
 				s.status = Stop
 				return t
 			}
@@ -375,13 +375,13 @@ func (s *schedule) getNext(t time.Time) time.Time {
 			t = t.Add(time.Duration(v) * jtime.Day)
 			if m != t.Month() {
 				if t, err = s.getTime(t.Year(), int(t.Month()), 1, 0, 0, 0); err != nil {
-					fmtPrintln(err)
+					subject.Next(err)
 					s.status = Stop
 					return t
 				}
 				return s.getNext(t)
 			} else if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), 0, 0, 0); err != nil {
-				fmtPrintln(err)
+				subject.Next(err)
 				s.status = Stop
 				return t
 			}
@@ -390,12 +390,12 @@ func (s *schedule) getNext(t time.Time) time.Time {
 			t = t.Add(time.Duration(v) * jtime.Day)
 			if m != t.Month() {
 				if t, err = s.getTime(t.Year(), int(t.Month()), 1, 0, 0, 0); err != nil {
-					fmtPrintln(err)
+					subject.Next(err)
 					s.status = Stop
 					return t
 				}
 			} else if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), 0, 0, 0); err != nil {
-				fmtPrintln(err)
+				subject.Next(err)
 				s.status = Stop
 				return t
 			}
@@ -406,14 +406,14 @@ func (s *schedule) getNext(t time.Time) time.Time {
 	if v := hr - t.Hour(); v > 0 {
 		t = t.Add(time.Duration(v) * jtime.Hour)
 		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), 0, 0); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 			s.status = Stop
 			return t
 		}
 	} else if v < 0 {
 		t = t.Add(jtime.Day)
 		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), 0, 0, 0); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 			s.status = Stop
 			return t
 		}
@@ -423,14 +423,14 @@ func (s *schedule) getNext(t time.Time) time.Time {
 	if v := min - t.Minute(); v > 0 {
 		t = t.Add(time.Duration(v) * jtime.Minute)
 		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), t.Minute(), 0); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 			s.status = Stop
 			return t
 		}
 	} else if v < 0 {
 		t = t.Add(jtime.Hour)
 		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), 0, 0); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 			s.status = Stop
 			return t
 		}
@@ -442,7 +442,7 @@ func (s *schedule) getNext(t time.Time) time.Time {
 	} else if v < 0 {
 		t = t.Add(jtime.Minute)
 		if t, err = s.getTime(t.Year(), int(t.Month()), t.Day(), t.Hour(), t.Minute(), 0); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 			s.status = Stop
 			return t
 		}

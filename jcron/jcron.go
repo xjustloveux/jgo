@@ -7,6 +7,7 @@ package jcron
 import (
 	"fmt"
 	"github.com/xjustloveux/jgo/jconf"
+	"github.com/xjustloveux/jgo/jevent"
 	"github.com/xjustloveux/jgo/jfile"
 	"sort"
 	"sync"
@@ -35,12 +36,12 @@ const (
 
 var (
 	conf      = jconf.New()
+	subject   = jevent.New()
 	mux       = new(sync.RWMutex)
 	cd        = &configData{}
 	status    = Stop
 	wg        = new(sync.WaitGroup)
 	wgTrigger = new(sync.WaitGroup)
-	logFunc   func(...interface{})
 	jobs      map[string]Job
 	totalSch  map[string]*schedule
 	runSch    []*schedule
@@ -98,9 +99,9 @@ func DisableEnv() {
 	conf.DisableEnv()
 }
 
-// SetLogFunc set fmt.Println log function
-func SetLogFunc(f func(...interface{})) {
-	logFunc = f
+// SubscribeLog subscribe log event
+func SubscribeLog(e jevent.Event) jevent.Subscription {
+	return subject.Subscribe(e)
 }
 
 // Init initialize
@@ -108,7 +109,7 @@ func Init() error {
 	if err := conf.Load(); err != nil {
 		return err
 	}
-	cd = &configData{Debug: false}
+	cd = &configData{}
 	if err := conf.Convert(cd); err != nil {
 		return err
 	}
@@ -362,15 +363,6 @@ func errorf(e jError, args ...interface{}) error {
 
 func errors(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
-}
-
-func fmtPrintln(args ...interface{}) {
-	if cd.Debug {
-		fmt.Println(args...)
-	}
-	if logFunc != nil {
-		logFunc(args...)
-	}
 }
 
 func createSchedule() error {

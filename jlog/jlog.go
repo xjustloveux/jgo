@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/xjustloveux/jgo/jcast"
 	"github.com/xjustloveux/jgo/jconf"
+	"github.com/xjustloveux/jgo/jevent"
 	"github.com/xjustloveux/jgo/jfile"
 	"github.com/xjustloveux/jgo/jruntime"
 	"github.com/xjustloveux/jgo/jtime"
@@ -34,8 +35,8 @@ const (
 
 var (
 	conf    = jconf.New()
+	subject = jevent.New()
 	cd      *configData
-	logFunc func(...interface{})
 	mux     = new(sync.RWMutex)
 	fileMap = make(map[string]*logFile)
 	writer  = make(map[string]io.Writer)
@@ -93,9 +94,9 @@ func DisableEnv() {
 	conf.DisableEnv()
 }
 
-// SetLogFunc set fmt.Println log function
-func SetLogFunc(f func(...interface{})) {
-	logFunc = f
+// SubscribeLog subscribe log event
+func SubscribeLog(e jevent.Event) jevent.Subscription {
+	return subject.Subscribe(e)
 }
 
 // NewRotateLogs create new rotate logs
@@ -169,7 +170,7 @@ func Init() error {
 	if err := conf.Load(); err != nil {
 		return err
 	}
-	cd = &configData{Debug: false}
+	cd = &configData{}
 	if err := conf.Convert(cd); err != nil {
 		return err
 	}
@@ -453,15 +454,6 @@ func errors(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
 }
 
-func fmtPrintln(args ...interface{}) {
-	if cd.Debug {
-		fmt.Println(args...)
-	}
-	if logFunc != nil {
-		logFunc(args...)
-	}
-}
-
 func createLogger() error {
 	cd.appender = make(map[string]*appender)
 	for k, v := range cd.Appender {
@@ -494,7 +486,7 @@ func createLogger() error {
 			}
 			for _, av := range cl.Appender {
 				if a := cd.appender[av]; a != nil {
-					if err := log.addLogger(av, a, cd.Params); err != nil {
+					if err := log.addLogger(av, pn, a, cd.Params); err != nil {
 						return err
 					}
 				}
@@ -507,10 +499,10 @@ func createLogger() error {
 func loggerCall(pn, fn, pkg string, args ...interface{}) {
 	l := GetLogger(pn, fmt.Sprint(pkgKey, pkg))
 	if l == nil {
-		fmtPrintln(errors(errorLoggerNil))
+		subject.Next(errors(errorLoggerNil))
 	} else {
 		if err := l.Call(fn, args...); err != nil {
-			fmtPrintln(err)
+			subject.Next(err)
 		}
 	}
 }
@@ -540,6 +532,7 @@ func removeFile(name string) error {
 		if err := fileMap[name].close(true); err != nil {
 			return err
 		}
+		delete(fileMap, name)
 	}
 	return nil
 }
