@@ -2,4 +2,11 @@
 // Use of this source code is governed by a MIT-style.
 // license that can be found in the LICENSE file.
 
+// Package jgo
+//
+// Jgo provides an easier configuration for writing sql, log, and cron jobs.
+//
+// Jgo minimizes dependencies on third-party middleware to avoid conflicts.
+//
+// package: jcast, jconf, jcron, jevent, jfile, jlog, jruntime, jslice, jsql, jtime
 package jgo
