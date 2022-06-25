@@ -34,8 +34,9 @@ func (r *RotateLogs) Write(p []byte) (n int, err error) {
 	defer func() {
 		r.mux.Unlock()
 	}()
-	now := time.Now()
-	base := now.In(time.UTC).Truncate(r.rotationTime).In(r.clock)
+	now := time.Now().In(r.clock)
+	base := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.UTC).Truncate(r.rotationTime)
+	base = time.Date(base.Year(), base.Month(), base.Day(), base.Hour(), base.Minute(), base.Second(), base.Nanosecond(), r.clock)
 	fName := filepath.Clean(jtime.FormatString(r.fileName, base))
 	if fName != r.current {
 		if err = removeFile(r.current); err != nil {

@@ -1,3 +1,10 @@
+# v1.1.3 (2022.06.26)
+Changes：
+* Update CHANGELOG.md
+
+Bug Fixes：
+* Fixed jlog rotate time bug
+
 # v1.1.2 (2022.06.26)
 Changes：
 * Update README.md and CHANGELOG.md
