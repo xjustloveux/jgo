@@ -1,3 +1,10 @@
+# v1.1.4 (2022.06.26)
+Changes：
+* Update CHANGELOG.md
+
+Bug Fixes：
+* Fixed jlog replace program name have '.go' string
+
 # v1.1.3 (2022.06.26)
 Changes：
 * Update CHANGELOG.md

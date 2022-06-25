@@ -112,7 +112,7 @@ func (l *logger) addLogger(an string, pn string, a *appender, param map[string]s
 	log.SetLevel(a.getLogrusLevel())
 	if a.Output.Name != "" && writer[a.Output.Name] != nil {
 		log.SetOutput(writer[a.Output.Name])
-	} else if w, err := NewRotateLogs(pn, a.Output, param); err == nil {
+	} else if w, err := NewRotateLogs(strings.Trim(pn, ".go"), a.Output, param); err == nil {
 		log.SetOutput(w)
 	} else {
 		return err
