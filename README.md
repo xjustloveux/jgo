@@ -19,7 +19,7 @@
     * [jfile](#jfile)
     * [jtime](#jtime)
 * [Environment](#Environment)
-* [Api](#Api)
+* [API](#API)
 
 # Overview
 
@@ -888,7 +888,7 @@ func main() {
 }
 ```
 
-# Api
+# API
 
 ---
 
