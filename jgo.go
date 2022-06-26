@@ -4,9 +4,9 @@
 
 // Package jgo
 //
-// Jgo provides an easier configuration for writing sql, log, and cron jobs.
+// JGo provides an easier configuration for writing sql, log, and cron jobs.
 //
-// Jgo minimizes dependencies on third-party middleware to avoid conflicts.
+// JGo minimizes dependencies on third-party middleware to avoid conflicts.
 //
 // package: jcast, jconf, jcron, jevent, jfile, jlog, jruntime, jslice, jsql, jtime
 package jgo
