@@ -1,21 +1,12 @@
 # v1.1.4 (2022.06.26)
-Changes：
-* Update CHANGELOG.md
-
 Bug Fixes：
 * Fixed jlog replace program name have '.go' string
 
 # v1.1.3 (2022.06.26)
-Changes：
-* Update CHANGELOG.md
-
 Bug Fixes：
 * Fixed jlog rotate time bug
 
 # v1.1.2 (2022.06.26)
-Changes：
-* Update README.md and CHANGELOG.md
-
 Remove：
 * Remove doc.go
 
@@ -24,7 +15,6 @@ Bug Fixes：
 
 # v1.1.1 (2022.06.24)
 Changes：
-* Update README.md
 * jsql, jcron and jlog change log function to subscribe event
 
 New Features：
@@ -55,9 +45,6 @@ Changes：
 * jsql result change time string to time
 
 # v1.0.10 (2022.06.14)
-Changes：
-* Update README.md
-
 New Features：
 * Create go ci action and change travis to github action 
 
@@ -77,9 +64,6 @@ New Features：
 * Add jcron schedule default status features
 
 # v1.0.7 (2022.05.30)
-Changes：
-* Update README.md
-
 New Features：
 * Add codecov ci action
 * Add jcast deploy different platform max size type check
@@ -89,15 +73,11 @@ Bug Fixes：
 * Fixed jcast and jcron.CronExpression security build problem
 
 # v1.0.6 (2022.05.27)
-Changes：
-* Update README.md
-
 New Features：
 * Add jsql xml where tag
 
 # v1.0.5 (2022.05.26)
 Changes：
-* Update README.md
 * Change jsql load xml use from struct to xml tag
 
 New Features：
@@ -113,9 +93,6 @@ Bug Fixes：
 * Fixed jsql xml remove comment bug
 
 # v1.0.3 (2022.05.25)
-Changes：
-* Update README.md
-
 New Features：
 * Add jcast.StringMapString
 
@@ -125,7 +102,6 @@ Bug Fixes：
 
 # v1.0.2 (2022.05.19)
 Changes：
-* Update README.md and doc.go
 * CronExpression time type and operation mode change
 * jlog most common function argument change
 
@@ -142,9 +118,6 @@ Bug Fixes：
 * Fixed jlog.appender write function use file-rotatelogs package bug
 
 # v1.0.1 (2022.05.16)
-Changes：
-* Update README.md and doc.go
-
 New Features：
 * Add travis ci
 * jcast.Value add []bool type
