@@ -81,24 +81,26 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
 
 ### Usage
 
-#### sql.json
+#### config.json
 
 ```json
 {
-  "daoPath": "dao/",
-  "default": "exampleMySql",
-  "dataSource": {
-    "exampleMySql": {
-      "type": "MySql",
-      "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true"
-    },
-    "exampleMSSql": {
-      "type": "MSSql",
-      "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True"
-    },
-    "exampleOracle": {
-      "type": "Oracle",
-      "dsn": "user/password@192.168.1.1:1521/ORCLCDB"
+  "db": {
+    "daoPath": "dao/",
+    "default": "exampleMySql",
+    "dataSource": {
+      "exampleMySql": {
+        "type": "MySql",
+        "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true"
+      },
+      "exampleMSSql": {
+        "type": "MSSql",
+        "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True"
+      },
+      "exampleOracle": {
+        "type": "Oracle",
+        "dsn": "user/password@192.168.1.1:1521/ORCLCDB"
+      }
     }
   }
 }
@@ -438,28 +440,30 @@ Configuration file default `json` format, you can use `jcron.SetFormat` to set y
 
 ### Usage
 
-#### log.json
+#### config.json
 
 ```json
 {
-  "schedule": [
-    {
-      "Name": "Sch01",
-      "Cron": "7-43/13 * * * * ? *",
-      "JobName": "Job01",
-      "JobData": {
-        "data": "val"
+  "cron": {
+    "schedule": [
+      {
+        "Name": "Sch01",
+        "Cron": "7-43/13 * * * * ? *",
+        "JobName": "Job01",
+        "JobData": {
+          "data": "val"
+        },
+        "Desc": "this is schedule 01-----------"
       },
-      "Desc": "this is schedule 01-----------"
-    },
-    {
-      "Name": "Sch02",
-      "Cron": "3,7,11,32-57/7 * * * * ? *",
-      "JobName": "Job02",
-      "JobData": {},
-      "Desc": "this is schedule 02-----------"
-    }
-  ]
+      {
+        "Name": "Sch02",
+        "Cron": "3,7,11,32-57/7 * * * * ? *",
+        "JobName": "Job02",
+        "JobData": {},
+        "Desc": "this is schedule 02-----------"
+      }
+    ]
+  }
 }
 ```
 
@@ -553,68 +557,70 @@ Configuration file default `json` format, you can use `jlog.SetFormat` to set yo
 
 ### Usage
 
-#### log.json
+#### config.json
 
 ```json
 {
-  "params": {
-    "path": "/log"
-  },
-  "appender": {
-    "sys": {
-      "level": "Error",
-      "formatter": {
-        "type": "JSON"
-      },
-      "output": {
-        "p": "${path}/sys/%yyyy-%MM-%dd/system.log",
-        "utc": false,
-        "linkName": "${path}/sys/system",
-        "rotationSize": 100,
-        "rotationSizeUnit": "KB"
-      }
+  "log": {
+    "params": {
+      "path": "/log"
     },
-    "web": {
-      "formatter": {
-        "text": {
-          "timestampFormat": "2006-01-02"
+    "appender": {
+      "sys": {
+        "level": "Error",
+        "formatter": {
+          "type": "JSON"
+        },
+        "output": {
+          "p": "${path}/sys/%yyyy-%MM-%dd/system.log",
+          "utc": false,
+          "linkName": "${path}/sys/system",
+          "rotationSize": 100,
+          "rotationSizeUnit": "KB"
         }
       },
-      "output": {
-        "p": "${path}/web/%yyyy-%MM-%dd/website.log",
-        "linkName": "${path}/web/website"
+      "web": {
+        "formatter": {
+          "text": {
+            "timestampFormat": "2006-01-02"
+          }
+        },
+        "output": {
+          "p": "${path}/web/%yyyy-%MM-%dd/website.log",
+          "linkName": "${path}/web/website"
+        }
       }
-    }
-  },
-  "logs": [
-    {
-      "program": [
-        "program1",
-        "main"
-      ],
-      "appender": [
-        "sys"
-      ]
     },
-    {
-      "program": [
-        "program2"
-      ],
-      "appender": [
-        "console",
-        "web"
-      ]
-    },
-    {
-      "program": [
-        "pkg:packageName"
-      ],
-      "appender": [
-        "console",
-        "sys"
-      ]
-    }
-  ]
+    "logs": [
+      {
+        "program": [
+          "program1",
+          "main"
+        ],
+        "appender": [
+          "sys"
+        ]
+      },
+      {
+        "program": [
+          "program2"
+        ],
+        "appender": [
+          "console",
+          "web"
+        ]
+      },
+      {
+        "program": [
+          "pkg:packageName"
+        ],
+        "appender": [
+          "console",
+          "sys"
+        ]
+      }
+    ]
+  }
 }
 ```
 

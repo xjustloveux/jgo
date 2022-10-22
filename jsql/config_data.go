@@ -5,6 +5,10 @@
 package jsql
 
 type configData struct {
+	Db *configPack
+}
+
+type configPack struct {
 	DaoPath    string
 	Default    string
 	DataSource map[string]interface{}

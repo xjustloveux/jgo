@@ -1,13 +1,15 @@
 {
-  "schedule": [
-    {
-      "Name": "Sch01",
-      "Cron": "99 * * * * ? *",
-      "JobName": "Job01",
-      "JobData": {
-        "data": "val"
-      },
-      "Desc": "this is schedule 01-----------"
-    }
-  ]
+  "cron": {
+    "schedule": [
+      {
+        "Name": "Sch01",
+        "Cron": "99 * * * * ? *",
+        "JobName": "Job01",
+        "JobData": {
+          "data": "val"
+        },
+        "Desc": "this is schedule 01-----------"
+      }
+    ]
+  }
 }

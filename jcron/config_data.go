@@ -5,5 +5,9 @@
 package jcron
 
 type configData struct {
+	Cron *configPack
+}
+
+type configPack struct {
 	Schedule []*SchInfo
 }

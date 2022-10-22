@@ -36,11 +36,11 @@ func TestSql(t *testing.T) {
 	if err := Init(); err == nil {
 		t.Error(fmt.Sprint(testErr, " Init must be return error"))
 	}
-	SetFileName("../files/test-jsql-error.json")
+	SetFileName("../files/test-jconf-error.json")
 	if err := Init(); err == nil {
 		t.Error(fmt.Sprint(testErr, " Init must be return error"))
 	}
-	SetFileName("../files/test-jsql.json")
+	SetFileName("../files/test-jconf.json")
 	if err := Init(); err != nil {
 		t.Error(err)
 	}

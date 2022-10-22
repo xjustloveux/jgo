@@ -59,7 +59,7 @@ const (
 
 const (
 	pkgName       = "jsql"
-	fileName      = "sql.json"
+	fileName      = "config.json"
 	totalRecord   = "TOTALRECORD"
 	allowPagingId = "ALLOWPAGINGID"
 	orderById     = "ORDERBYID"
@@ -70,7 +70,8 @@ var (
 	conf       = jconf.New()
 	subject    = jevent.New()
 	mux        = new(sync.RWMutex)
-	cd         *configData
+	data       *configData
+	pack       *configPack
 	decodeFunc func(string) (string, error)
 	dsMap      map[string]*dataSource
 	selectMap  map[string]*element
@@ -139,10 +140,11 @@ func Init() error {
 	if err := conf.Load(); err != nil {
 		return err
 	}
-	cd = &configData{}
-	if err := conf.Convert(cd); err != nil {
+	data = &configData{}
+	if err := conf.Convert(data); err != nil {
 		return err
 	}
+	pack = data.Db
 	if err := createDataSource(); err != nil {
 		return err
 	}
@@ -151,12 +153,12 @@ func Init() error {
 
 // GetDaoPath returns conf.DaoPath
 func GetDaoPath() string {
-	return cd.DaoPath
+	return pack.DaoPath
 }
 
 // GetDefaultDataSource returns json default data source
 func GetDefaultDataSource() string {
-	return cd.Default
+	return pack.Default
 }
 
 // SetDecodeFunc set decode data source name or data source json string function
@@ -212,7 +214,7 @@ func createDataSource() error {
 		}
 	}
 	dsMap = make(map[string]*dataSource)
-	for dk, dv := range cd.DataSource {
+	for dk, dv := range pack.DataSource {
 		var dm map[string]interface{}
 		if dm, err = jcast.StringMapInterface(dv); err != nil {
 			return err

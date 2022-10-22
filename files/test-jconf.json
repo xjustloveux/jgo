@@ -48,5 +48,105 @@
   "sliceFloat": [
     7.7,
     -7.7
-  ]
+  ],
+  "log": {
+    "params": {
+      "path": "../log"
+    },
+    "appender": {
+      "sys": {
+        "level": "Error",
+        "formatter": {
+          "type": "JSON",
+          "json": {
+            "timestampFormat": "2006-01-02"
+          }
+        },
+        "output": {
+          "p": "${path}/sys/%yyyy-%MM-%dd/system.log",
+          "linkName": "${path}/sys/system",
+          "rotationSize": 1,
+          "rotationSizeUnit": "KB",
+          "rotationCount": 5
+        }
+      },
+      "test": {
+        "level": "Test",
+        "formatter": {
+          "type": "TEXT",
+          "json": {
+            "timestampFormat": "2006-01-02"
+          }
+        },
+        "output": {
+          "p": "${path}/sys/%yyyy-%MM-%dd/test.log",
+          "clock": "UTC",
+          "linkName": "${path}/sys/test",
+          "maxAge": 0,
+          "rotationSize": 1,
+          "rotationSizeUnit": "KB",
+          "rotationCount": 5
+        }
+      }
+    },
+    "logs": [
+      {
+        "program": [
+          "test", "default"
+        ],
+        "appender": [
+          "console", "sys", "test"
+        ]
+      }
+    ]
+  },
+  "db": {
+    "daoPath": "../files/",
+    "default": "testMySql",
+    "dataSource": {
+      "testMySql": {
+        "type": "MySql",
+        "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true"
+      },
+      "testMSSql": {
+        "type": "MSSql",
+        "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True"
+      },
+      "testOracle": {
+        "type": "Oracle",
+        "dsn": "user/password@192.168.1.1:1521/ORCLCDB"
+      }
+    }
+  },
+  "cron": {
+    "schedule": [
+      {
+        "Name": "Sch01",
+        "Cron": "1/3,2-43/13 * * * * ? *",
+        "JobName": "Job01",
+        "JobData": {
+          "event": "schedule"
+        },
+        "Desc": "this is schedule 01-----------"
+      },
+      {
+        "Name": "Sch02",
+        "Cron": "3,7,11/2,32-57/7 * * * * ? *",
+        "JobName": "Job02",
+        "JobData": {
+          "event": "schedule"
+        },
+        "Desc": "this is schedule 02-----------"
+      },
+      {
+        "Name": "Sch99",
+        "Cron": "* * * * * ? *",
+        "JobName": "Job99",
+        "JobData": {
+          "event": "schedule"
+        },
+        "Desc": "this is schedule 99-----------"
+      }
+    ]
+  }
 }

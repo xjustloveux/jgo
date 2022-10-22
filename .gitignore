@@ -13,7 +13,6 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-files/test-jsql-dev.json
 coverage
-files/test-jlog-dev.json
 log/
+.idea/

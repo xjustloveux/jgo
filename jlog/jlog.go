@@ -27,7 +27,7 @@ const (
 
 const (
 	pkgName  = "jlog"
-	fileName = "log.json"
+	fileName = "config.json"
 	console  = "console"
 	Default  = "default"
 	pkgKey   = "pkg:"
@@ -36,7 +36,8 @@ const (
 var (
 	conf    = jconf.New()
 	subject = jevent.New()
-	cd      *configData
+	data    *configData
+	pack    *configPack
 	mux     = new(sync.RWMutex)
 	fileMap = make(map[string]*logFile)
 	writer  = make(map[string]io.Writer)
@@ -170,10 +171,11 @@ func Init() error {
 	if err := conf.Load(); err != nil {
 		return err
 	}
-	cd = &configData{}
-	if err := conf.Convert(cd); err != nil {
+	data = &configData{}
+	if err := conf.Convert(data); err != nil {
 		return err
 	}
+	pack = data.Log
 	if err := createLogger(); err != nil {
 		return err
 	}
@@ -182,7 +184,7 @@ func Init() error {
 
 // GetParam returns conf.Params with key
 func GetParam(key string) string {
-	return cd.Params[key]
+	return pack.Params[key]
 }
 
 // GetLogger returns *logger with program file or package name.
@@ -455,23 +457,23 @@ func errors(e jError) error {
 }
 
 func createLogger() error {
-	cd.appender = make(map[string]*appender)
-	for k, v := range cd.Appender {
-		cd.appender[k] = appender{}.getDefault()
-		if err := jfile.Convert(v, cd.appender[k]); err != nil {
+	pack.appender = make(map[string]*appender)
+	for k, v := range pack.Appender {
+		pack.appender[k] = appender{}.getDefault()
+		if err := jfile.Convert(v, pack.appender[k]); err != nil {
 			return err
 		}
 	}
-	if cd.appender[console] == nil {
-		cd.appender[console] = appender{}.getDefault()
-		cd.appender[console].Level = "Debug"
-		cd.appender[console].Output.Name = console
+	if pack.appender[console] == nil {
+		pack.appender[console] = appender{}.getDefault()
+		pack.appender[console].Level = "Debug"
+		pack.appender[console].Output.Name = console
 	}
-	cd.Logs = append(cd.Logs, &logs{
+	pack.Logs = append(pack.Logs, &logs{
 		Program:  []string{Default},
 		Appender: []string{console},
 	})
-	for _, cl := range cd.Logs {
+	for _, cl := range pack.Logs {
 		for _, pv := range cl.Program {
 			var pn string
 			if pv == Default || strings.Index(pv, pkgKey) == 0 {
@@ -485,8 +487,8 @@ func createLogger() error {
 				logMap[pn] = log
 			}
 			for _, av := range cl.Appender {
-				if a := cd.appender[av]; a != nil {
-					if err := log.addLogger(av, pn, a, cd.Params); err != nil {
+				if a := pack.appender[av]; a != nil {
+					if err := log.addLogger(av, pn, a, pack.Params); err != nil {
 						return err
 					}
 				}

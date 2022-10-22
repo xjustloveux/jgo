@@ -29,7 +29,7 @@ const (
 
 const (
 	pkgName  = "jcron"
-	fileName = "cron.json"
+	fileName = "config.json"
 	minYear  = 2020
 	maxYear  = 2080
 )
@@ -38,7 +38,8 @@ var (
 	conf      = jconf.New()
 	subject   = jevent.New()
 	mux       = new(sync.RWMutex)
-	cd        = &configData{}
+	data      = &configData{}
+	pack      *configPack
 	status    = Stop
 	wg        = new(sync.WaitGroup)
 	wgTrigger = new(sync.WaitGroup)
@@ -109,10 +110,11 @@ func Init() error {
 	if err := conf.Load(); err != nil {
 		return err
 	}
-	cd = &configData{}
-	if err := conf.Convert(cd); err != nil {
+	data = &configData{}
+	if err := conf.Convert(data); err != nil {
 		return err
 	}
+	pack = data.Cron
 	if err := createSchedule(); err != nil {
 		return err
 	}
@@ -370,7 +372,7 @@ func createSchedule() error {
 	jobs = make(map[string]Job)
 	totalSch = make(map[string]*schedule)
 	runSch = make([]*schedule, 0)
-	for _, info := range cd.Schedule {
+	for _, info := range pack.Schedule {
 		if err := AddSchedule(info); err != nil {
 			return err
 		}

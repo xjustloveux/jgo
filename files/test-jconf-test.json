@@ -69,5 +69,25 @@
       7.7
     ]
   },
-  "slice2": [1, 2, 3, 4, 5]
+  "slice2": [1, 2, 3, 4, 5],
+  "log": {
+    "logs": [
+      {
+        "program": [
+          "test", "default"
+        ],
+        "appender": [
+          "console", "console"
+        ]
+      },
+      {
+        "program": [
+          "pkg:jlog"
+        ],
+        "appender": [
+          "sys"
+        ]
+      }
+    ]
+  }
 }

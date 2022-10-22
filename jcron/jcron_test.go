@@ -35,7 +35,7 @@ func TestCron(t *testing.T) {
 	if err := Init(); err == nil {
 		t.Error(fmt.Sprint(testErr, " Init must be return error"))
 	}
-	SetFileName("../files/test-jcron.json")
+	SetFileName("../files/test-jconf.json")
 	if err := Init(); err != nil {
 		t.Error(err)
 	}

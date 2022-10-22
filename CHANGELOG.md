@@ -1,3 +1,12 @@
+# v1.2.0 (2022.10.22)
+Changes：
+* jsql, jcron and jlog change default load filename to 'config.json'
+* jsql config data need under the 'db' tag name
+* jcron config data need under the 'cron' tag name
+* jlog config data need under the 'log' tag name
+* Update golang version to 1.19
+* Update sirupsen/logrus version to v1.9.0
+
 # v1.1.4 (2022.06.26)
 Bug Fixes：
 * Fixed jlog replace program name have '.go' string

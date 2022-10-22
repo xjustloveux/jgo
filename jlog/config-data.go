@@ -5,6 +5,10 @@
 package jlog
 
 type configData struct {
+	Log *configPack
+}
+
+type configPack struct {
 	Params   map[string]string
 	Appender map[string]map[string]interface{}
 	Logs     []*logs
