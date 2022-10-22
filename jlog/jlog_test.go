@@ -38,11 +38,12 @@ func TestLog(t *testing.T) {
 	if err := Init(); err == nil {
 		t.Error(fmt.Sprint(testErr, " Init must be return error"))
 	}
-	SetFileName("../files/test-jconf-error.json")
+	SetRoot("../files/")
+	SetFileName("test-jconf-error.json")
 	if err := Init(); err == nil {
 		t.Error(fmt.Sprint(testErr, " Init must be return error"))
 	}
-	SetFileName("../files/test-jconf.json")
+	SetFileName("test-jconf.json")
 	AddWriter("test", os.Stdout)
 	AddHandler("test", &testHandler{})
 	o := Output{}.getDefault()

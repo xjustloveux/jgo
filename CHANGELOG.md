@@ -1,3 +1,8 @@
+# v1.2.1 (2022.10.22)
+Changes：
+* jconf add root path and default value './config/'
+* jsql, jcron and jlog can use SetRoot change root path value
+
 # v1.2.0 (2022.10.22)
 Changes：
 * jsql, jcron and jlog change default load filename to 'config.json'

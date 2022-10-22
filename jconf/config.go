@@ -22,6 +22,10 @@ type Config interface {
 	FileName() string
 	// SetFileName set file name
 	SetFileName(string)
+	// Root returns root path
+	Root() string
+	// SetRoot set root path
+	SetRoot(string)
 	// EnvFileName returns env file name
 	EnvFileName() string
 	// SetEnvFileName set env file name
@@ -112,6 +116,7 @@ type Config interface {
 type config struct {
 	format      jfile.Format
 	fileName    string
+	root        string
 	envFileName string
 	data        map[string]interface{}
 	env         bool
@@ -133,6 +138,14 @@ func (c *config) FileName() string {
 
 func (c *config) SetFileName(name string) {
 	c.fileName = name
+}
+
+func (c *config) Root() string {
+	return c.fileName
+}
+
+func (c *config) SetRoot(root string) {
+	c.root = root
 }
 
 func (c *config) EnvFileName() string {
@@ -172,7 +185,7 @@ func (c *config) Load() (err error) {
 		return errors(errorFileNameEmpty)
 	}
 	var b []byte
-	if b, err = jfile.Load(c.fileName); err != nil {
+	if b, err = jfile.Load(fmt.Sprint(c.root, c.fileName)); err != nil {
 		return err
 	}
 	if err = jfile.Decode(c.format.String(), b, c.data); err != nil {
@@ -180,7 +193,7 @@ func (c *config) Load() (err error) {
 	}
 	if c.env {
 		if c.envFileName != "" {
-			if b, err = jfile.Load(c.envFileName); err != nil {
+			if b, err = jfile.Load(fmt.Sprint(c.root, c.envFileName)); err != nil {
 				return err
 			}
 		} else {
@@ -218,7 +231,7 @@ func (c *config) Load() (err error) {
 			for _, s := range ext {
 				path = fmt.Sprint(path, s)
 			}
-			if b, err = jfile.Load(path); err != nil {
+			if b, err = jfile.Load(fmt.Sprint(c.root, path)); err != nil {
 				return err
 			}
 		}

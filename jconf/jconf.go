@@ -29,6 +29,7 @@ func New() Config {
 	return &config{
 		format:      jfile.Json,
 		fileName:    "",
+		root:        "./config/",
 		envFileName: "",
 		data:        make(map[string]interface{}),
 		env:         true,

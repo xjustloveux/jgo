@@ -60,6 +60,11 @@ func SetFileName(name string) {
 	conf.SetFileName(name)
 }
 
+// SetRoot set config root path
+func SetRoot(root string) {
+	conf.SetRoot(root)
+}
+
 // SetEnvFileName set config env file name
 func SetEnvFileName(name string) {
 	conf.SetEnvFileName(name)

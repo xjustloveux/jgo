@@ -27,11 +27,12 @@ func TestNew(t *testing.T) {
 	if err := conf.Load(); err == nil {
 		t.Error(fmt.Sprint(testErr, " conf.Load must be return error"))
 	}
-	conf.SetFileName("../files/error.json")
+	conf.SetRoot("../files/")
+	conf.SetFileName("error.json")
 	if err := conf.Load(); err == nil {
 		t.Error(fmt.Sprint(testErr, " conf.Load must be return error"))
 	}
-	inFileName := "../files/test-jconf.json"
+	inFileName := "test-jconf.json"
 	conf.SetFileName(inFileName)
 	outFileName := conf.FileName()
 	assert.Equal(t, inFileName, outFileName, fmt.Sprintf("%v != %v", outFileName, inFileName))
