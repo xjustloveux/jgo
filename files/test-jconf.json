@@ -106,15 +106,18 @@
     "dataSource": {
       "testMySql": {
         "type": "MySql",
-        "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true"
+        "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true",
+        "dbName": "DBName"
       },
       "testMSSql": {
         "type": "MSSql",
-        "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True"
+        "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True",
+        "dbName": "DBName"
       },
       "testOracle": {
         "type": "Oracle",
-        "dsn": "user/password@192.168.1.1:1521/ORCLCDB"
+        "dsn": "user/password@192.168.1.1:1521/ORCLCDB",
+        "dbName": "DBName"
       }
     }
   },

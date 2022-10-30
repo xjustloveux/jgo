@@ -70,6 +70,7 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
 | DataSource.Type                    | true     | string                 | empty         | You can set `MySql`, `MSSql` or `Oracle`, others as long as the sql parameter supports '?'.                                                                                                                                                                                                              |
 | DataSource.DSN                     | true     | string                 | empty         | DataSourceName. If you have information security considerations, you can encrypt the DataSource into a string, and set the decryption function.                                                                                                                                                          |
 | DataSource.DN                      | false    | string                 | empty         | DriverName. If your type is `MySql`, `MSSql` or `Oracle`, the DriverName default use [mysql](https://github.com/go-sql-driver/mysql), [go-mssqldb](https://github.com/denisenkom/go-mssqldb) and [go-oci8](https://github.com/mattn/go-oci8) driver. You also can set this value to use your DriverName. |
+| DataSource.DbName                  | false    | string                 | empty         | It your db name.                                                                                                                                                                                                                                                                                         |
 | DataSource.ConnMaxLifetime         | false    | time.Duration          | 120           |                                                                                                                                                                                                                                                                                                          |
 | DataSource.ConnMaxLifetimeDuration | false    | string                 | Second        | Nanosecond, Microsecond, Millisecond, Second, Minute, Hour, Day                                                                                                                                                                                                                                          |
 | DataSource.ConnMaxIdleTime         | false    | time.Duration          | 0             |                                                                                                                                                                                                                                                                                                          |
@@ -91,15 +92,18 @@ Configuration file default `json` format, you can use `jsql.SetFormat` to set yo
     "dataSource": {
       "exampleMySql": {
         "type": "MySql",
-        "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true"
+        "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true",
+        "dbName": "exampleMySql"
       },
       "exampleMSSql": {
         "type": "MSSql",
-        "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True"
+        "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True",
+        "dbName": "exampleMSSql"
       },
       "exampleOracle": {
         "type": "Oracle",
-        "dsn": "user/password@192.168.1.1:1521/ORCLCDB"
+        "dsn": "user/password@192.168.1.1:1521/ORCLCDB",
+        "dbName": "exampleOracle"
       }
     }
   }
@@ -346,6 +350,7 @@ func example6() {
 	if agent, err := jsql.GetAgent(); err != nil {
 		fmt.Println(err)
 	} else {
+		// or you can use agent.UseTx easier
 		if _, err = agent.Begin(); err != nil {
 			fmt.Println(err)
 		} else {
@@ -764,11 +769,7 @@ jsql, jlog, jcron, jconf support environment variables.
 
 Config required to be set file name, this file will be basic setting.
 
-jsql default file name is 'sql.json'.
-
-jlog default file name is 'log.json'.
-
-jcron default file name is 'cron.json'.
+jsql, jlog, jcron default file name is 'config.json'.
 
 You can override the basic setting by setting the env file name, env val or env key.
 

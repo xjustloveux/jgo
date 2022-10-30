@@ -16,6 +16,7 @@ type dataSource struct {
 	Type                    string
 	DSN                     string
 	DN                      string
+	DbName                  string
 	ConnMaxLifetime         time.Duration
 	ConnMaxLifetimeDuration string
 	ConnMaxIdleTime         time.Duration

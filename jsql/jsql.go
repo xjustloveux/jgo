@@ -30,14 +30,15 @@ const (
 	errorNotValidDbType    = jError("not a valid db Type %q")
 	errorNotValidOperators = jError("not a valid Operators %q")
 
-	errorUnknownDataSource = jError("unknown data source %q")
-	errorUnknownSelectId   = jError("unknown select id %q")
-	errorUnknownInsertId   = jError("unknown insert id %q")
-	errorUnknownUpdateId   = jError("unknown update id %q")
-	errorUnknownDeleteId   = jError("unknown delete id %q")
-	errorUnknownOtherId    = jError("unknown other id %q")
-	errorUnknownOps        = jError("unknown Operations")
-	errorUnknownOpr        = jError("unknown Operators")
+	errorUnknownDataSource            = jError("unknown data source %q")
+	errorUnknownSelectId              = jError("unknown select id %q")
+	errorUnknownInsertId              = jError("unknown insert id %q")
+	errorUnknownUpdateId              = jError("unknown update id %q")
+	errorUnknownDeleteId              = jError("unknown delete id %q")
+	errorUnknownOtherId               = jError("unknown other id %q")
+	errorUnknownOps                   = jError("unknown Operations")
+	errorUnknownOpr                   = jError("unknown Operators")
+	errorUnknownSqlTypeForAgentTables = jError("unknown sql type, you can use args input query statement")
 
 	errorDbAlreadyOpen = jError("db has already been open")
 	errorDbNotOpen     = jError("db has not been opened")
@@ -166,6 +167,11 @@ func GetDefaultDataSource() string {
 	return pack.Default
 }
 
+// GetDataSource returns json data source
+func GetDataSource() map[string]interface{} {
+	return pack.DataSource
+}
+
 // SetDecodeFunc set decode data source name or data source json string function
 func SetDecodeFunc(f func(string) (string, error)) {
 	decodeFunc = f
@@ -194,7 +200,7 @@ func GetAgent(dsKey ...string) (*Agent, error) {
 			return nil, err
 		}
 	}
-	return &Agent{db: ds.db, t: t}, nil
+	return &Agent{db: ds.db, t: t, dbName: ds.DbName}, nil
 }
 
 func errorf(e jError, args ...interface{}) error {

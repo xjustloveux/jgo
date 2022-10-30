@@ -1,3 +1,9 @@
+# v1.2.2 (2022.10.30)
+New Features：
+* Add jsql.GetDataSource function
+* Add jsql config data 'dbName'
+* Add jsql Agent.UseTx, Agent.Tables, Agent.TablesTx, Agent.TableSchema and Agent.TableSchemaTx function
+
 # v1.2.1 (2022.10.22)
 Changes：
 * jconf add root path and default value './config/'

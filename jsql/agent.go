@@ -17,9 +17,10 @@ import (
 )
 
 type Agent struct {
-	db *sql.DB
-	t  Type
-	tx *sql.Tx
+	db     *sql.DB
+	t      Type
+	tx     *sql.Tx
+	dbName string
 }
 
 // DB returns this Agent *sql.DB
@@ -35,6 +36,11 @@ func (a *Agent) Tx() *sql.Tx {
 // DBType returns this Agent db Type
 func (a *Agent) DBType() Type {
 	return a.t
+}
+
+// DbName returns this Agent db name
+func (a *Agent) DbName() string {
+	return a.dbName
 }
 
 // Ping same as sql.DB.Ping
@@ -86,6 +92,28 @@ func (a *Agent) Rollback() error {
 		return err
 	}
 	a.tx = nil
+	return nil
+}
+
+// UseTx start a transaction as a block, return error will roll back, otherwise to commit
+func (a *Agent) UseTx(f func() error) error {
+	if _, err := a.Begin(); err != nil {
+		return err
+	} else {
+		defer func() {
+			if err != nil {
+				if e := a.Rollback(); e != nil {
+					fmt.Println(e)
+				}
+			}
+		}()
+		if err = f(); err != nil {
+			return err
+		}
+		if err = a.Commit(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -353,6 +381,142 @@ func (a *Agent) OtherPrepare(id string, param map[string]interface{}, args ...[]
 // OtherPrepareTx creates a prepared statement for later queries or executions
 func (a *Agent) OtherPrepareTx(id string, param map[string]interface{}, args ...[]interface{}) (result []Result, err error) {
 	return a.execPrepareTxOps(Other, id, param, args...)
+}
+
+// Tables returns table name list
+// or you can use args input query statement
+func (a *Agent) Tables(args ...interface{}) ([]string, error) {
+	query := ""
+	param := make([]interface{}, 0)
+	if len(args) > 0 {
+		query = jcast.String(args[0])
+		param = args[1:]
+	} else {
+		switch a.t {
+		case MySql:
+			query = sqlQueryTablesMySql
+			param = append(param, a.DbName())
+		case MSSql:
+			query = sqlQueryTablesMSSql
+		case Oracle:
+			query = sqlQueryTablesOracle
+		default:
+			return nil, errors(errorUnknownSqlTypeForAgentTables)
+		}
+	}
+	if result, err := a.QueryWithSql(query, param...); err != nil {
+		return nil, err
+	} else {
+		list := make([]string, len(result.Rows()))
+		for i, v := range result.Rows() {
+			list[i] = jcast.String(v)
+		}
+		return list, nil
+	}
+}
+
+// TablesTx returns table name list
+// or you can use args input query statement
+func (a *Agent) TablesTx(args ...interface{}) ([]string, error) {
+	query := ""
+	param := make([]interface{}, 0)
+	if len(args) > 0 {
+		query = jcast.String(args[0])
+		param = args[1:]
+	} else {
+		switch a.t {
+		case MySql:
+			query = sqlQueryTablesMySql
+			param = append(param, a.DbName())
+		case MSSql:
+			query = sqlQueryTablesMSSql
+		case Oracle:
+			query = sqlQueryTablesOracle
+		default:
+			return nil, errors(errorUnknownSqlTypeForAgentTables)
+		}
+	}
+	if result, err := a.QueryTxWithSql(query, param...); err != nil {
+		return nil, err
+	} else {
+		list := make([]string, len(result.Rows()))
+		for i, v := range result.Rows() {
+			list[i] = jcast.String(v)
+		}
+		return list, nil
+	}
+}
+
+// TableSchema return table schema
+// or you can use args input query statement
+func (a *Agent) TableSchema(table string, args ...interface{}) ([]TableSchema, error) {
+	query := ""
+	param := make([]interface{}, 0)
+	if len(args) > 0 {
+		query = jcast.String(args[0])
+		param = args[1:]
+	} else {
+		switch a.t {
+		case MySql:
+			query = sqlQueryTableSchemaMySql
+			param = append(param, a.DbName(), table)
+		case MSSql:
+			query = sqlQueryTableSchemaMSSql
+			param = append(param, table)
+		case Oracle:
+			query = sqlQueryTableSchemaOracle
+			param = append(param, a.DbName(), table)
+		default:
+			return nil, errors(errorUnknownSqlTypeForAgentTables)
+		}
+	}
+	if result, err := a.QueryWithSql(query, param...); err != nil {
+		return nil, err
+	} else {
+		list := make([]TableSchema, len(result.Rows()))
+		for i, v := range result.Rows() {
+			if err = jfile.Convert(v, list[i]); err != nil {
+				return nil, err
+			}
+		}
+		return list, nil
+	}
+}
+
+// TableSchemaTx return table schema
+// or you can use args input query statement
+func (a *Agent) TableSchemaTx(table string, args ...interface{}) ([]TableSchema, error) {
+	query := ""
+	param := make([]interface{}, 0)
+	if len(args) > 0 {
+		query = jcast.String(args[0])
+		param = args[1:]
+	} else {
+		switch a.t {
+		case MySql:
+			query = sqlQueryTableSchemaMySql
+			param = append(param, a.DbName(), table)
+		case MSSql:
+			query = sqlQueryTableSchemaMSSql
+			param = append(param, table)
+		case Oracle:
+			query = sqlQueryTableSchemaOracle
+			param = append(param, a.DbName(), table)
+		default:
+			return nil, errors(errorUnknownSqlTypeForAgentTables)
+		}
+	}
+	if result, err := a.QueryTxWithSql(query, param...); err != nil {
+		return nil, err
+	} else {
+		list := make([]TableSchema, len(result.Rows()))
+		for i, v := range result.Rows() {
+			if err = jfile.Convert(v, list[i]); err != nil {
+				return nil, err
+			}
+		}
+		return list, nil
+	}
 }
 
 func (a *Agent) checkArgs(args ...interface{}) (map[string]interface{}, interface{}, error) {
