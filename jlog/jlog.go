@@ -457,7 +457,7 @@ func Traceln(args ...interface{}) {
 	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
 }
 
-func errors(e jError) error {
+func errorStr(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
 }
 
@@ -506,7 +506,7 @@ func createLogger() error {
 func loggerCall(pn, fn, pkg string, args ...interface{}) {
 	l := GetLogger(pn, fmt.Sprint(pkgKey, pkg))
 	if l == nil {
-		subject.Next(errors(errorLoggerNil))
+		subject.Next(errorStr(errorLoggerNil))
 	} else {
 		if err := l.Call(fn, args...); err != nil {
 			subject.Next(err)

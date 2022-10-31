@@ -301,7 +301,7 @@ func TimeLoc(i interface{}, loc *time.Location) (time.Time, error) {
 	case []byte:
 		return strToTime(string(v), loc)
 	default:
-		return time.Time{}, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return time.Time{}, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -401,7 +401,7 @@ func Bool(i interface{}) (bool, error) {
 		return strconv.ParseBool(string(v))
 	case nil:
 	default:
-		return false, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return false, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 	return false, nil
 }
@@ -431,10 +431,10 @@ func Int(i interface{}) (int, error) {
 	case int64:
 		if strconv.IntSize == 32 {
 			if v < math.MinInt32 {
-				return math.MinInt32, errorf(errorOutRange, v)
+				return math.MinInt32, errorFmt(errorOutRange, v)
 			}
 			if v > math.MaxInt32 {
-				return math.MaxInt32, errorf(errorOutRange, v)
+				return math.MaxInt32, errorFmt(errorOutRange, v)
 			}
 		}
 		return int(v), nil
@@ -446,12 +446,12 @@ func Int(i interface{}) (int, error) {
 		return int(v), nil
 	case uint32:
 		if strconv.IntSize == 32 && v > math.MaxInt32 {
-			return math.MaxInt32, errorf(errorOutRange, v)
+			return math.MaxInt32, errorFmt(errorOutRange, v)
 		}
 		return int(v), nil
 	case uint64:
 		if v > math.MaxInt {
-			return math.MaxInt, errorf(errorOutRange, v)
+			return math.MaxInt, errorFmt(errorOutRange, v)
 		}
 		return int(v), nil
 	case float32:
@@ -467,7 +467,7 @@ func Int(i interface{}) (int, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -487,77 +487,77 @@ func Int8(i interface{}) (int8, error) {
 		return 0, nil
 	case int:
 		if v < math.MinInt8 {
-			return math.MinInt8, errorf(errorOutRange, v)
+			return math.MinInt8, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case int8:
 		return v, nil
 	case int16:
 		if v < math.MinInt8 {
-			return math.MinInt8, errorf(errorOutRange, v)
+			return math.MinInt8, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case int32:
 		if v < math.MinInt8 {
-			return math.MinInt8, errorf(errorOutRange, v)
+			return math.MinInt8, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case int64:
 		if v < math.MinInt8 {
-			return math.MinInt8, errorf(errorOutRange, v)
+			return math.MinInt8, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case uint:
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case uint8:
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case uint16:
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case uint32:
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case uint64:
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case float32:
 		if v < math.MinInt8 {
-			return math.MinInt8, errorf(errorOutRange, v)
+			return math.MinInt8, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case float64:
 		if v < math.MinInt8 {
-			return math.MinInt8, errorf(errorOutRange, v)
+			return math.MinInt8, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt8 {
-			return math.MaxInt8, errorf(errorOutRange, v)
+			return math.MaxInt8, errorFmt(errorOutRange, v)
 		}
 		return int8(v), nil
 	case []byte:
@@ -569,7 +569,7 @@ func Int8(i interface{}) (int8, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -589,10 +589,10 @@ func Int16(i interface{}) (int16, error) {
 		return 0, nil
 	case int:
 		if v < math.MinInt16 {
-			return math.MinInt16, errorf(errorOutRange, v)
+			return math.MinInt16, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case int8:
@@ -601,56 +601,56 @@ func Int16(i interface{}) (int16, error) {
 		return v, nil
 	case int32:
 		if v < math.MinInt16 {
-			return math.MinInt16, errorf(errorOutRange, v)
+			return math.MinInt16, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case int64:
 		if v < math.MinInt16 {
-			return math.MinInt16, errorf(errorOutRange, v)
+			return math.MinInt16, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case uint:
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case uint8:
 		return int16(v), nil
 	case uint16:
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case uint32:
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case uint64:
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case float32:
 		if v < math.MinInt16 {
-			return math.MinInt16, errorf(errorOutRange, v)
+			return math.MinInt16, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case float64:
 		if v < math.MinInt16 {
-			return math.MinInt16, errorf(errorOutRange, v)
+			return math.MinInt16, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt16 {
-			return math.MaxInt16, errorf(errorOutRange, v)
+			return math.MaxInt16, errorFmt(errorOutRange, v)
 		}
 		return int16(v), nil
 	case []byte:
@@ -662,7 +662,7 @@ func Int16(i interface{}) (int16, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -682,10 +682,10 @@ func Int32(i interface{}) (int32, error) {
 		return 0, nil
 	case int:
 		if v < math.MinInt32 {
-			return math.MinInt32, errorf(errorOutRange, v)
+			return math.MinInt32, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt32 {
-			return math.MaxInt32, errorf(errorOutRange, v)
+			return math.MaxInt32, errorFmt(errorOutRange, v)
 		}
 		return int32(v), nil
 	case int8:
@@ -696,15 +696,15 @@ func Int32(i interface{}) (int32, error) {
 		return v, nil
 	case int64:
 		if v < math.MinInt32 {
-			return math.MinInt32, errorf(errorOutRange, v)
+			return math.MinInt32, errorFmt(errorOutRange, v)
 		}
 		if v > math.MaxInt32 {
-			return math.MaxInt32, errorf(errorOutRange, v)
+			return math.MaxInt32, errorFmt(errorOutRange, v)
 		}
 		return int32(v), nil
 	case uint:
 		if v > math.MaxInt32 {
-			return math.MaxInt32, errorf(errorOutRange, v)
+			return math.MaxInt32, errorFmt(errorOutRange, v)
 		}
 		return int32(v), nil
 	case uint8:
@@ -713,12 +713,12 @@ func Int32(i interface{}) (int32, error) {
 		return int32(v), nil
 	case uint32:
 		if v > math.MaxInt32 {
-			return math.MaxInt32, errorf(errorOutRange, v)
+			return math.MaxInt32, errorFmt(errorOutRange, v)
 		}
 		return int32(v), nil
 	case uint64:
 		if v > math.MaxInt32 {
-			return math.MaxInt32, errorf(errorOutRange, v)
+			return math.MaxInt32, errorFmt(errorOutRange, v)
 		}
 		return int32(v), nil
 	case float32:
@@ -734,7 +734,7 @@ func Int32(i interface{}) (int32, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -764,7 +764,7 @@ func Int64(i interface{}) (int64, error) {
 		return v, nil
 	case uint:
 		if strconv.IntSize == 64 && String(v) != String(int64(v)) {
-			return math.MaxInt64, errorf(errorOutRange, v)
+			return math.MaxInt64, errorFmt(errorOutRange, v)
 		}
 		return int64(v), nil
 	case uint8:
@@ -775,7 +775,7 @@ func Int64(i interface{}) (int64, error) {
 		return int64(v), nil
 	case uint64:
 		if v > math.MaxInt64 {
-			return math.MaxInt64, errorf(errorOutRange, v)
+			return math.MaxInt64, errorFmt(errorOutRange, v)
 		}
 		return int64(v), nil
 	case float32:
@@ -791,7 +791,7 @@ func Int64(i interface{}) (int64, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -811,30 +811,30 @@ func Uint(i interface{}) (uint, error) {
 		return 0, nil
 	case int:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint(v), nil
 	case int8:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint(v), nil
 	case int16:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint(v), nil
 	case int32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint(v), nil
 	case int64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if strconv.IntSize == 32 && v > math.MaxUint32 {
-			return math.MaxUint32, errorf(errorOutRange, v)
+			return math.MaxUint32, errorFmt(errorOutRange, v)
 		}
 		return uint(v), nil
 	case uint:
@@ -847,17 +847,17 @@ func Uint(i interface{}) (uint, error) {
 		return uint(v), nil
 	case uint64:
 		if strconv.IntSize == 32 && v > math.MaxUint32 {
-			return math.MaxUint32, errorf(errorOutRange, v)
+			return math.MaxUint32, errorFmt(errorOutRange, v)
 		}
 		return uint(v), nil
 	case float32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint(v), nil
 	case float64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint(v), nil
 	case []byte:
@@ -869,7 +869,7 @@ func Uint(i interface{}) (uint, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -889,77 +889,77 @@ func Uint8(i interface{}) (uint8, error) {
 		return 0, nil
 	case int:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case int8:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint8(v), nil
 	case int16:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case int32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case int64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case uint:
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case uint8:
 		return v, nil
 	case uint16:
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case uint32:
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case uint64:
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case float32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case float64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint8 {
-			return math.MaxUint8, errorf(errorOutRange, v)
+			return math.MaxUint8, errorFmt(errorOutRange, v)
 		}
 		return uint8(v), nil
 	case []byte:
@@ -971,7 +971,7 @@ func Uint8(i interface{}) (uint8, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -991,41 +991,41 @@ func Uint16(i interface{}) (uint16, error) {
 		return 0, nil
 	case int:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint16 {
-			return math.MaxUint16, errorf(errorOutRange, v)
+			return math.MaxUint16, errorFmt(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case int8:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint16(v), nil
 	case int16:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint16(v), nil
 	case int32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint16 {
-			return math.MaxUint16, errorf(errorOutRange, v)
+			return math.MaxUint16, errorFmt(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case int64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint16 {
-			return math.MaxUint16, errorf(errorOutRange, v)
+			return math.MaxUint16, errorFmt(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case uint:
 		if v > math.MaxUint16 {
-			return math.MaxUint16, errorf(errorOutRange, v)
+			return math.MaxUint16, errorFmt(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case uint8:
@@ -1034,28 +1034,28 @@ func Uint16(i interface{}) (uint16, error) {
 		return v, nil
 	case uint32:
 		if v > math.MaxUint16 {
-			return math.MaxUint16, errorf(errorOutRange, v)
+			return math.MaxUint16, errorFmt(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case uint64:
 		if v > math.MaxUint16 {
-			return math.MaxUint16, errorf(errorOutRange, v)
+			return math.MaxUint16, errorFmt(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case float32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint16 {
-			return math.MaxUint16, errorf(errorOutRange, v)
+			return math.MaxUint16, errorFmt(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case float64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint16 {
-			return math.MaxUint16, errorf(errorOutRange, v)
+			return math.MaxUint16, errorFmt(errorOutRange, v)
 		}
 		return uint16(v), nil
 	case []byte:
@@ -1067,7 +1067,7 @@ func Uint16(i interface{}) (uint16, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -1087,38 +1087,38 @@ func Uint32(i interface{}) (uint32, error) {
 		return 0, nil
 	case int:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if strconv.IntSize == 64 && String(v) != String(uint32(v)) {
-			return math.MaxUint32, errorf(errorOutRange, v)
+			return math.MaxUint32, errorFmt(errorOutRange, v)
 		}
 		return uint32(v), nil
 	case int8:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint32(v), nil
 	case int16:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint32(v), nil
 	case int32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint32(v), nil
 	case int64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		if v > math.MaxUint32 {
-			return math.MaxUint32, errorf(errorOutRange, v)
+			return math.MaxUint32, errorFmt(errorOutRange, v)
 		}
 		return uint32(v), nil
 	case uint:
 		if v > math.MaxUint32 {
-			return math.MaxUint32, errorf(errorOutRange, v)
+			return math.MaxUint32, errorFmt(errorOutRange, v)
 		}
 		return uint32(v), nil
 	case uint8:
@@ -1129,17 +1129,17 @@ func Uint32(i interface{}) (uint32, error) {
 		return v, nil
 	case uint64:
 		if v > math.MaxUint32 {
-			return math.MaxUint32, errorf(errorOutRange, v)
+			return math.MaxUint32, errorFmt(errorOutRange, v)
 		}
 		return uint32(v), nil
 	case float32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint32(v), nil
 	case float64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint32(v), nil
 	case []byte:
@@ -1151,7 +1151,7 @@ func Uint32(i interface{}) (uint32, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -1171,27 +1171,27 @@ func Uint64(i interface{}) (uint64, error) {
 		return 0, nil
 	case int:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint64(v), nil
 	case int8:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint64(v), nil
 	case int16:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint64(v), nil
 	case int32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint64(v), nil
 	case int64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint64(v), nil
 	case uint:
@@ -1206,12 +1206,12 @@ func Uint64(i interface{}) (uint64, error) {
 		return v, nil
 	case float32:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint64(v), nil
 	case float64:
 		if v < 0 {
-			return 0, errors(errorNegative)
+			return 0, errorStr(errorNegative)
 		}
 		return uint64(v), nil
 	case []byte:
@@ -1223,7 +1223,7 @@ func Uint64(i interface{}) (uint64, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -1274,7 +1274,7 @@ func Float32(i interface{}) (float32, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -1325,7 +1325,7 @@ func Float64(i interface{}) (float64, error) {
 	case nil:
 		return 0, nil
 	default:
-		return 0, errorf(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
+		return 0, errorFmt(errorInterfaceTo, i, i, strings.ToLower(jruntime.GetFuncName()))
 	}
 }
 
@@ -1340,7 +1340,7 @@ func InterfaceMapInterface(i interface{}) (map[interface{}]interface{}, error) {
 		}
 		return m, nil
 	} else {
-		return nil, errorf(errorInterfaceTo, i, i, "map[interface{}]interface{}")
+		return nil, errorFmt(errorInterfaceTo, i, i, "map[interface{}]interface{}")
 	}
 }
 
@@ -1348,7 +1348,7 @@ func InterfaceMapInterface(i interface{}) (map[interface{}]interface{}, error) {
 func StringMapInterface(i interface{}) (map[string]interface{}, error) {
 	m := make(map[string]interface{})
 	if imi, err := InterfaceMapInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "map[string]interface{}")
+		return nil, errorFmt(errorInterfaceTo, i, i, "map[string]interface{}")
 	} else {
 		for k, v := range imi {
 			m[String(k)] = v
@@ -1361,7 +1361,7 @@ func StringMapInterface(i interface{}) (map[string]interface{}, error) {
 func StringMapString(i interface{}) (map[string]string, error) {
 	m := make(map[string]string)
 	if imi, err := InterfaceMapInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "map[string]string")
+		return nil, errorFmt(errorInterfaceTo, i, i, "map[string]string")
 	} else {
 		for k, v := range imi {
 			m[String(k)] = String(v)
@@ -1381,14 +1381,14 @@ func SliceInterface(i interface{}) ([]interface{}, error) {
 		}
 		return s, nil
 	} else {
-		return nil, errorf(errorInterfaceTo, i, i, "[]interface{}")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]interface{}")
 	}
 }
 
 // SliceString interface to []string
 func SliceString(i interface{}) ([]string, error) {
 	if si, err := SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]string")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]string")
 	} else {
 		s := make([]string, len(si))
 		for idx, v := range si {
@@ -1403,12 +1403,12 @@ func SliceBool(i interface{}) ([]bool, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]bool")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]bool")
 	}
 	s := make([]bool, len(si))
 	for idx, v := range si {
 		if s[idx], err = Bool(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]bool")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]bool")
 		}
 	}
 	return s, nil
@@ -1419,12 +1419,12 @@ func SliceInt(i interface{}) ([]int, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]int")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]int")
 	}
 	s := make([]int, len(si))
 	for idx, v := range si {
 		if s[idx], err = Int(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]int")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]int")
 		}
 	}
 	return s, nil
@@ -1435,12 +1435,12 @@ func SliceInt8(i interface{}) ([]int8, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]int8")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]int8")
 	}
 	s := make([]int8, len(si))
 	for idx, v := range si {
 		if s[idx], err = Int8(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]int8")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]int8")
 		}
 	}
 	return s, nil
@@ -1451,12 +1451,12 @@ func SliceInt16(i interface{}) ([]int16, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]int16")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]int16")
 	}
 	s := make([]int16, len(si))
 	for idx, v := range si {
 		if s[idx], err = Int16(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]int16")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]int16")
 		}
 	}
 	return s, nil
@@ -1467,12 +1467,12 @@ func SliceInt32(i interface{}) ([]int32, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]int32")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]int32")
 	}
 	s := make([]int32, len(si))
 	for idx, v := range si {
 		if s[idx], err = Int32(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]int32")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]int32")
 		}
 	}
 	return s, nil
@@ -1483,12 +1483,12 @@ func SliceInt64(i interface{}) ([]int64, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]int64")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]int64")
 	}
 	s := make([]int64, len(si))
 	for idx, v := range si {
 		if s[idx], err = Int64(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]int64")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]int64")
 		}
 	}
 	return s, nil
@@ -1499,12 +1499,12 @@ func SliceUint(i interface{}) ([]uint, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]uint")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]uint")
 	}
 	s := make([]uint, len(si))
 	for idx, v := range si {
 		if s[idx], err = Uint(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]uint")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]uint")
 		}
 	}
 	return s, nil
@@ -1515,12 +1515,12 @@ func SliceUint8(i interface{}) ([]uint8, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]uint8")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]uint8")
 	}
 	s := make([]uint8, len(si))
 	for idx, v := range si {
 		if s[idx], err = Uint8(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]uint8")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]uint8")
 		}
 	}
 	return s, nil
@@ -1531,12 +1531,12 @@ func SliceUint16(i interface{}) ([]uint16, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]uint16")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]uint16")
 	}
 	s := make([]uint16, len(si))
 	for idx, v := range si {
 		if s[idx], err = Uint16(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]uint16")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]uint16")
 		}
 	}
 	return s, nil
@@ -1547,12 +1547,12 @@ func SliceUint32(i interface{}) ([]uint32, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]uint32")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]uint32")
 	}
 	s := make([]uint32, len(si))
 	for idx, v := range si {
 		if s[idx], err = Uint32(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]uint32")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]uint32")
 		}
 	}
 	return s, nil
@@ -1563,12 +1563,12 @@ func SliceUint64(i interface{}) ([]uint64, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]uint64")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]uint64")
 	}
 	s := make([]uint64, len(si))
 	for idx, v := range si {
 		if s[idx], err = Uint64(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]uint64")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]uint64")
 		}
 	}
 	return s, nil
@@ -1579,12 +1579,12 @@ func SliceFloat32(i interface{}) ([]float32, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]float32")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]float32")
 	}
 	s := make([]float32, len(si))
 	for idx, v := range si {
 		if s[idx], err = Float32(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]float32")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]float32")
 		}
 	}
 	return s, nil
@@ -1595,22 +1595,22 @@ func SliceFloat64(i interface{}) ([]float64, error) {
 	var err error
 	var si []interface{}
 	if si, err = SliceInterface(i); err != nil {
-		return nil, errorf(errorInterfaceTo, i, i, "[]float64")
+		return nil, errorFmt(errorInterfaceTo, i, i, "[]float64")
 	}
 	s := make([]float64, len(si))
 	for idx, v := range si {
 		if s[idx], err = Float64(v); err != nil {
-			return nil, errorf(errorInterfaceTo, i, i, "[]float64")
+			return nil, errorFmt(errorInterfaceTo, i, i, "[]float64")
 		}
 	}
 	return s, nil
 }
 
-func errorf(e jError, args ...interface{}) error {
+func errorFmt(e jError, args ...interface{}) error {
 	return fmt.Errorf(fmt.Sprint(pkgName, ": ", e.Error()), args...)
 }
 
-func errors(e jError) error {
+func errorStr(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
 }
 
@@ -1713,5 +1713,5 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 			}
 		}
 	}
-	return time.Time{}, errorf(errorParseTime, s)
+	return time.Time{}, errorFmt(errorParseTime, s)
 }

@@ -56,5 +56,5 @@ func ParseDBType(t string) (Type, error) {
 	case "oracle":
 		return Oracle, nil
 	}
-	return Unknown, errorf(errorNotValidDbType, t)
+	return Unknown, errorFmt(errorNotValidDbType, t)
 }

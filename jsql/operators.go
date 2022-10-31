@@ -103,7 +103,7 @@ func ParseOperators(o string) (Operators, error) {
 	case "lessthanorequal":
 		return LessThanOrEqual, nil
 	}
-	return Unknown, errorf(errorNotValidOperators, o)
+	return Unknown, errorFmt(errorNotValidOperators, o)
 }
 
 func (o Operators) getClauseAndParams(t Type, val interface{}, params []interface{}) (string, []interface{}, error) {
@@ -128,10 +128,10 @@ func (o Operators) getClauseAndParams(t Type, val interface{}, params []interfac
 				}
 				return fmt.Sprint(" IN (", ps, ")"), np, nil
 			} else {
-				return "", nil, errorf(errorOprValLenZero, o.String())
+				return "", nil, errorFmt(errorOprValLenZero, o.String())
 			}
 		} else {
-			return "", nil, errorf(errorOprValTypeNotInterfaceSlice, o.String(), reflect.TypeOf(val))
+			return "", nil, errorFmt(errorOprValTypeNotInterfaceSlice, o.String(), reflect.TypeOf(val))
 		}
 	case NotIn:
 		if vs, ok := val.([]interface{}); ok {
@@ -149,10 +149,10 @@ func (o Operators) getClauseAndParams(t Type, val interface{}, params []interfac
 				}
 				return fmt.Sprint(" NOT IN (", ps, ")"), np, nil
 			} else {
-				return "", nil, errorf(errorOprValLenZero, o.String())
+				return "", nil, errorFmt(errorOprValLenZero, o.String())
 			}
 		} else {
-			return "", nil, errorf(errorOprValTypeNotInterfaceSlice, o.String(), reflect.TypeOf(val))
+			return "", nil, errorFmt(errorOprValTypeNotInterfaceSlice, o.String(), reflect.TypeOf(val))
 		}
 	case Between:
 		if vs, ok := val.([]interface{}); ok {
@@ -165,10 +165,10 @@ func (o Operators) getClauseAndParams(t Type, val interface{}, params []interfac
 				np = append(np, vs[1])
 				return fmt.Sprint(" BETWEEN ", ps), np, nil
 			} else {
-				return "", nil, errorf(errorOprValLenNot2, o.String())
+				return "", nil, errorFmt(errorOprValLenNot2, o.String())
 			}
 		} else {
-			return "", nil, errorf(errorOprValTypeNotInterfaceSlice, o.String(), reflect.TypeOf(val))
+			return "", nil, errorFmt(errorOprValTypeNotInterfaceSlice, o.String(), reflect.TypeOf(val))
 		}
 	case NotBetween:
 		if vs, ok := val.([]interface{}); ok {
@@ -181,10 +181,10 @@ func (o Operators) getClauseAndParams(t Type, val interface{}, params []interfac
 				np = append(np, vs[1])
 				return fmt.Sprint(" NOT BETWEEN ", ps), np, nil
 			} else {
-				return "", nil, errorf(errorOprValLenNot2, o.String())
+				return "", nil, errorFmt(errorOprValLenNot2, o.String())
 			}
 		} else {
-			return "", nil, errorf(errorOprValTypeNotInterfaceSlice, o.String(), reflect.TypeOf(val))
+			return "", nil, errorFmt(errorOprValTypeNotInterfaceSlice, o.String(), reflect.TypeOf(val))
 		}
 	case IsNull:
 		return " IS NULL", params, nil
@@ -194,19 +194,19 @@ func (o Operators) getClauseAndParams(t Type, val interface{}, params []interfac
 		if s, ok := val.(string); ok {
 			return fmt.Sprint(" LIKE ", t.Param(len(params))), append(params, fmt.Sprint("%", s, "%")), nil
 		} else {
-			return "", nil, errorf(errorOprValTypeNotString, o.String(), reflect.TypeOf(val))
+			return "", nil, errorFmt(errorOprValTypeNotString, o.String(), reflect.TypeOf(val))
 		}
 	case SLike:
 		if s, ok := val.(string); ok {
 			return fmt.Sprint(" LIKE ", t.Param(len(params))), append(params, fmt.Sprint(s, "%")), nil
 		} else {
-			return "", nil, errorf(errorOprValTypeNotString, o.String(), reflect.TypeOf(val))
+			return "", nil, errorFmt(errorOprValTypeNotString, o.String(), reflect.TypeOf(val))
 		}
 	case ELike:
 		if s, ok := val.(string); ok {
 			return fmt.Sprint(" LIKE ", t.Param(len(params))), append(params, fmt.Sprint("%", s)), nil
 		} else {
-			return "", nil, errorf(errorOprValTypeNotString, o.String(), reflect.TypeOf(val))
+			return "", nil, errorFmt(errorOprValTypeNotString, o.String(), reflect.TypeOf(val))
 		}
 	case Greater:
 		return fmt.Sprint(" > ", t.Param(len(params))), append(params, val), nil
@@ -217,6 +217,6 @@ func (o Operators) getClauseAndParams(t Type, val interface{}, params []interfac
 	case LessThanOrEqual:
 		return fmt.Sprint(" <= ", t.Param(len(params))), append(params, val), nil
 	default:
-		return "", nil, errors(errorUnknownOpr)
+		return "", nil, errorStr(errorUnknownOpr)
 	}
 }

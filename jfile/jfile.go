@@ -6,6 +6,7 @@ package jfile
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/xjustloveux/jgo/jcast"
 	"io"
@@ -53,11 +54,26 @@ func Convert(m map[string]interface{}, v interface{}) error {
 	return json.Unmarshal(b, &v)
 }
 
-func errorf(e jError, args ...interface{}) error {
+// Exist check file or folder exist
+func Exist(path string) (bool, error) {
+
+	if _, err := os.Stat(path); err == nil {
+
+		return true, nil
+	} else if errors.Is(err, os.ErrNotExist) {
+
+		return false, nil
+	} else {
+
+		return false, err
+	}
+}
+
+func errorFmt(e jError, args ...interface{}) error {
 	return fmt.Errorf(fmt.Sprint(pkgName, ": ", e.Error()), args...)
 }
 
-func errors(e jError) error {
+func errorStr(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
 }
 

@@ -65,7 +65,7 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 		}
 		if e.tag != tagOther {
 			if strings.Index(strings.ToLower(query), e.tag.String()) != 0 {
-				return "", "", errorf(errorWrongSql, e.tag.String())
+				return "", "", errorFmt(errorWrongSql, e.tag.String())
 			}
 		}
 	case tagText:
@@ -120,7 +120,7 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 			idx := 0
 			var vm map[string]string
 			if vm, err = jcast.StringMapString(val); err != nil {
-				return "", "", errorf(errorWrongTypeOfForeach)
+				return "", "", errorFmt(errorWrongTypeOfForeach)
 			}
 			for k, v := range vm {
 				str := text
@@ -135,7 +135,7 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 		case reflect.Slice:
 			var vs []string
 			if vs, err = jcast.SliceString(val); err != nil {
-				return "", "", errorf(errorWrongTypeOfForeach)
+				return "", "", errorFmt(errorWrongTypeOfForeach)
 			}
 			for idx, v := range vs {
 				str := text
@@ -146,7 +146,7 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 				query += trim(str)
 			}
 		default:
-			return "", "", errors(errorWrongTypeOfForeach)
+			return "", "", errorStr(errorWrongTypeOfForeach)
 		}
 		query += e.attr["close"]
 	case tagWhere:

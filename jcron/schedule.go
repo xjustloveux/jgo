@@ -159,7 +159,7 @@ func (s *schedule) Status() (Status, error) {
 		if sts, ok := c.data.(Status); ok {
 			return sts, nil
 		} else {
-			return Unknown, errorf(errorDataStatus, c.data)
+			return Unknown, errorFmt(errorDataStatus, c.data)
 		}
 	} else {
 		return s.status, nil
@@ -257,7 +257,7 @@ func (s *schedule) Resume() error {
 				runSch = append(runSch, s)
 			}
 		} else {
-			return errors(errorUnknownSch)
+			return errorStr(errorUnknownSch)
 		}
 		return nil
 	}
@@ -289,7 +289,7 @@ func (s *schedule) Trigger(data map[string]interface{}) error {
 			go e.run(wgTrigger)
 			return nil
 		} else {
-			return errors(errorJobNil)
+			return errorStr(errorJobNil)
 		}
 	}
 }

@@ -43,7 +43,7 @@ func (ds dataSource) getDefault() *dataSource {
 
 func (ds *dataSource) open() error {
 	if ds.db != nil {
-		return errors(errorDbAlreadyOpen)
+		return errorStr(errorDbAlreadyOpen)
 	}
 	var f reflect.Value
 	nds := ds
@@ -64,16 +64,16 @@ func (ds *dataSource) open() error {
 						if err, ok = o.Interface().(error); ok {
 							return err
 						} else {
-							return errors(errorDecodeFuncOut2NotErrorType)
+							return errorStr(errorDecodeFuncOut2NotErrorType)
 						}
 					} else {
-						return errors(errorDecodeFuncOut2NotErrorType)
+						return errorStr(errorDecodeFuncOut2NotErrorType)
 					}
 				}
 				if o := out[0]; o.Type().Kind() == reflect.String {
 					encodeStr = o.String()
 				} else {
-					return errors(errorDecodeFuncOut1NotStringType)
+					return errorStr(errorDecodeFuncOut1NotStringType)
 				}
 				if err = jfile.Decode(ds.Format.String(), []byte(encodeStr), dsm); err != nil {
 					return err
@@ -84,7 +84,7 @@ func (ds *dataSource) open() error {
 				nds = tds
 			}
 		} else {
-			return errors(errorDecodeFuncType)
+			return errorStr(errorDecodeFuncType)
 		}
 	}
 	driverName := ""
@@ -104,16 +104,16 @@ func (ds *dataSource) open() error {
 				if err, ok := o.Interface().(error); ok {
 					return err
 				} else {
-					return errors(errorDecodeFuncOut2NotErrorType)
+					return errorStr(errorDecodeFuncOut2NotErrorType)
 				}
 			} else {
-				return errors(errorDecodeFuncOut2NotErrorType)
+				return errorStr(errorDecodeFuncOut2NotErrorType)
 			}
 		}
 		if o := out[0]; o.Type().Kind() == reflect.String {
 			dataSourceName = o.String()
 		} else {
-			return errors(errorDecodeFuncOut1NotStringType)
+			return errorStr(errorDecodeFuncOut1NotStringType)
 		}
 	} else {
 		dataSourceName = nds.DSN
@@ -140,7 +140,7 @@ func (ds *dataSource) open() error {
 
 func (ds *dataSource) close() error {
 	if ds.db == nil {
-		return errors(errorDbNotOpen)
+		return errorStr(errorDbNotOpen)
 	}
 	if err := ds.db.Close(); err != nil {
 		return err

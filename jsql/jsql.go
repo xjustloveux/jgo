@@ -19,10 +19,11 @@ import (
 )
 
 const (
-	errorNoRowsAvailable = jError("no rows available")
-	errorRowsNil         = jError("rows is nil")
-	errorTableEmpty      = jError("table name is empty")
-	errorAgentNil        = jError("agent is nil")
+	errorNoRowsAvailable   = jError("no rows available")
+	errorRowsNil           = jError("rows is nil")
+	errorTableEmpty        = jError("table name is empty")
+	errorAgentNil          = jError("agent is nil")
+	errorNotFountDaoFolder = jError("not found dao folder: %q")
 
 	errorColTypeNotStringType = jError("column name type is %q, not string")
 	errorColNil               = jError("column is nil")
@@ -192,7 +193,7 @@ func GetAgent(dsKey ...string) (*Agent, error) {
 	}
 	ds := dsMap[key]
 	if ds == nil {
-		return nil, errorf(errorUnknownDataSource, key)
+		return nil, errorFmt(errorUnknownDataSource, key)
 	}
 	t, _ := ParseDBType(ds.Type)
 	if ds.db == nil {
@@ -203,11 +204,11 @@ func GetAgent(dsKey ...string) (*Agent, error) {
 	return &Agent{db: ds.db, t: t, dbName: ds.DbName}, nil
 }
 
-func errorf(e jError, args ...interface{}) error {
+func errorFmt(e jError, args ...interface{}) error {
 	return fmt.Errorf(fmt.Sprint(pkgName, ": ", e.Error()), args...)
 }
 
-func errors(e jError) error {
+func errorStr(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
 }
 
@@ -271,6 +272,12 @@ func loadDaoXml() error {
 
 func loadDaoXmlDir(path string) (xmlList []*element, err error) {
 	path = strings.Trim(strings.Trim(path, "\\ "), "/ ")
+	exist := false
+	if exist, err = jfile.Exist(path); err != nil {
+		return nil, err
+	} else if !exist {
+		return nil, errorFmt(errorNotFountDaoFolder, path)
+	}
 	var file *os.File
 	if file, err = os.Open(path); err != nil {
 		return nil, err
@@ -320,36 +327,36 @@ func getElement(ops Operations, id string) (*element, error) {
 	switch ops {
 	case Select:
 		if xs := selectMap[id]; xs == nil {
-			return nil, errorf(errorUnknownSelectId, id)
+			return nil, errorFmt(errorUnknownSelectId, id)
 		} else {
 			return xs, nil
 		}
 	case Insert:
 		if xi := insertMap[id]; xi == nil {
-			return nil, errorf(errorUnknownInsertId, id)
+			return nil, errorFmt(errorUnknownInsertId, id)
 		} else {
 			return xi, nil
 		}
 	case Update:
 		if xu := updateMap[id]; xu == nil {
-			return nil, errorf(errorUnknownUpdateId, id)
+			return nil, errorFmt(errorUnknownUpdateId, id)
 		} else {
 			return xu, nil
 		}
 	case Delete:
 		if xd := deleteMap[id]; xd == nil {
-			return nil, errorf(errorUnknownDeleteId, id)
+			return nil, errorFmt(errorUnknownDeleteId, id)
 		} else {
 			return xd, nil
 		}
 	case Other:
 		if xo := otherMap[id]; xo == nil {
-			return nil, errorf(errorUnknownOtherId, id)
+			return nil, errorFmt(errorUnknownOtherId, id)
 		} else {
 			return xo, nil
 		}
 	}
-	return nil, errors(errorUnknownOps)
+	return nil, errorStr(errorUnknownOps)
 }
 
 func getPageSql(t Type, sql, obs string, start, end int64) (pageSql, countSql string) {

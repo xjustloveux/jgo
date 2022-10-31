@@ -214,15 +214,15 @@ func GetSchedule(name string) (Schedule, error) {
 		}
 		if v, ok := c.data.(*schedule); ok {
 			if v == nil {
-				return nil, errors(errorUnknownSch)
+				return nil, errorStr(errorUnknownSch)
 			}
 			return v, c.err
 		} else {
-			return nil, errorf(errorDataSch, c.data)
+			return nil, errorFmt(errorDataSch, c.data)
 		}
 	} else {
 		if sch := totalSch[name]; sch == nil {
-			return nil, errors(errorUnknownSch)
+			return nil, errorStr(errorUnknownSch)
 		} else {
 			return sch, nil
 		}
@@ -328,7 +328,7 @@ func Trigger(j Job, data map[string]interface{}) error {
 			return nil
 		}
 	} else {
-		return errors(errorJobNil)
+		return errorStr(errorJobNil)
 	}
 }
 
@@ -360,15 +360,15 @@ func TriggerFunc(f func(map[string]interface{}), data map[string]interface{}) er
 			return nil
 		}
 	} else {
-		return errors(errorFuncNil)
+		return errorStr(errorFuncNil)
 	}
 }
 
-func errorf(e jError, args ...interface{}) error {
+func errorFmt(e jError, args ...interface{}) error {
 	return fmt.Errorf(fmt.Sprint(pkgName, ": ", e.Error()), args...)
 }
 
-func errors(e jError) error {
+func errorStr(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
 }
 
@@ -470,7 +470,7 @@ func runCh(c channel, now time.Time) channel {
 		if j, ok := c.data.(*job); ok {
 			jobs[j.name] = j.j
 		} else {
-			c.err = errorf(errorDataJob, c.data)
+			c.err = errorFmt(errorDataJob, c.data)
 		}
 	case addSch:
 		if s, ok := c.data.(*schedule); ok {
@@ -486,7 +486,7 @@ func runCh(c channel, now time.Time) channel {
 			totalSch[s.name] = s
 			runSch = append(runSch, s)
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case stopSch:
 		if s, ok := c.data.(*schedule); ok {
@@ -497,7 +497,7 @@ func runCh(c channel, now time.Time) channel {
 				s.prev = nt
 			}
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case resumeSch:
 		if s, ok := c.data.(*schedule); ok {
@@ -518,16 +518,16 @@ func runCh(c channel, now time.Time) channel {
 							err:    nil,
 						}
 					} else {
-						c.err = errors(errorSchRun)
+						c.err = errorStr(errorSchRun)
 					}
 				} else {
-					c.err = errors(errorSchRun)
+					c.err = errorStr(errorSchRun)
 				}
 			} else {
-				c.err = errors(errorUnknownSch)
+				c.err = errorStr(errorUnknownSch)
 			}
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case trigger:
 		if e, ok := c.data.(*entry); ok {
@@ -535,67 +535,67 @@ func runCh(c channel, now time.Time) channel {
 				e.j = jobs[e.sch.job]
 			}
 			if e.j == nil {
-				c.err = errors(errorJobNil)
+				c.err = errorStr(errorJobNil)
 			} else {
 				wgTrigger.Add(1)
 				go e.run(wgTrigger)
 			}
 		} else {
-			c.err = errorf(errorDataEntry, c.data)
+			c.err = errorFmt(errorDataEntry, c.data)
 		}
 	case getSch:
 		if v, ok := c.data.(string); ok {
 			c.data = totalSch[v]
 		} else {
-			c.err = errorf(errorDataString, c.data)
+			c.err = errorFmt(errorDataString, c.data)
 		}
 	case getSchName:
 		if s, ok := c.data.(*schedule); ok {
 			c.data = s.name
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case getSchCronExpression:
 		if s, ok := c.data.(*schedule); ok {
 			c.data = s.cronExpression
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case getSchJob:
 		if s, ok := c.data.(*schedule); ok {
 			c.data = s.job
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case getSchData:
 		if s, ok := c.data.(*schedule); ok {
 			c.data = s.data
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case getSchDesc:
 		if s, ok := c.data.(*schedule); ok {
 			c.data = s.desc
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case getSchSts:
 		if s, ok := c.data.(*schedule); ok {
 			c.data = s.status
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case getSchNext:
 		if s, ok := c.data.(*schedule); ok {
 			c.data = s.next
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	case getSchPrev:
 		if s, ok := c.data.(*schedule); ok {
 			c.data = s.prev
 		} else {
-			c.err = errorf(errorDataSch, c.data)
+			c.err = errorFmt(errorDataSch, c.data)
 		}
 	}
 	return c

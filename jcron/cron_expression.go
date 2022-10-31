@@ -23,14 +23,14 @@ type CronExpression struct {
 func ParseCronExpression(c string) (*CronExpression, error) {
 	arr := strings.Split(strings.Trim(c, " "), " ")
 	if len(arr) < 6 {
-		return nil, errorf(errorNotValidCronExpression, c)
+		return nil, errorFmt(errorNotValidCronExpression, c)
 	}
 	ce := &CronExpression{0, 0, 0, 0, 0, 0, 0}
 	if second, err := parseCronExpression(arr[0], 0, 59, false, nil); err != nil {
 		return nil, err
 	} else {
 		if second <= 0 {
-			return nil, errorf(errorNotValidCronExpression, c)
+			return nil, errorFmt(errorNotValidCronExpression, c)
 		}
 		ce.second = second
 	}
@@ -38,7 +38,7 @@ func ParseCronExpression(c string) (*CronExpression, error) {
 		return nil, err
 	} else {
 		if minute <= 0 {
-			return nil, errorf(errorNotValidCronExpression, c)
+			return nil, errorFmt(errorNotValidCronExpression, c)
 		}
 		ce.minute = minute
 	}
@@ -46,7 +46,7 @@ func ParseCronExpression(c string) (*CronExpression, error) {
 		return nil, err
 	} else {
 		if hour <= 0 {
-			return nil, errorf(errorNotValidCronExpression, c)
+			return nil, errorFmt(errorNotValidCronExpression, c)
 		}
 		ce.hour = hour
 	}
@@ -59,7 +59,7 @@ func ParseCronExpression(c string) (*CronExpression, error) {
 		return nil, err
 	} else {
 		if month <= 0 {
-			return nil, errorf(errorNotValidCronExpression, c)
+			return nil, errorFmt(errorNotValidCronExpression, c)
 		}
 		ce.month = month
 	}
@@ -70,7 +70,7 @@ func ParseCronExpression(c string) (*CronExpression, error) {
 	}
 	if (ce.day <= 0 && ce.weekday <= 0) ||
 		(ce.day > 0 && ce.weekday > 0) {
-		return nil, errorf(errorNotValidCronExpression, c)
+		return nil, errorFmt(errorNotValidCronExpression, c)
 	}
 	if len(arr) > 6 {
 		if year, err := parseCronExpression(arr[6], 0, maxYear-minYear, true, nil); err != nil {
@@ -89,7 +89,7 @@ func ParseCronExpression(c string) (*CronExpression, error) {
 func parseCronExpression(c string, min, max int, year bool, p func(string) int64) (uint64, error) {
 	arr := strings.Split(strings.Trim(c, " "), ",")
 	if len(arr) <= 0 {
-		return 0, errorf(errorNotValidCronExpression, c)
+		return 0, errorFmt(errorNotValidCronExpression, c)
 	}
 	var res uint64
 	res = 0
@@ -129,7 +129,7 @@ func parseCronExpression(c string, min, max int, year bool, p func(string) int64
 					nv -= minYear
 				}
 				if nv < min || nv > max {
-					return 0, errorf(errorNotValidCronExpression, c)
+					return 0, errorFmt(errorNotValidCronExpression, c)
 				}
 				res |= 1 << nv
 				continue
@@ -144,17 +144,17 @@ func parseCronExpression(c string, min, max int, year bool, p func(string) int64
 						res |= 1 << i
 					}
 				} else {
-					return 0, errorf(errorNotValidCronExpression, c)
+					return 0, errorFmt(errorNotValidCronExpression, c)
 				}
 			} else {
-				return 0, errorf(errorNotValidCronExpression, c)
+				return 0, errorFmt(errorNotValidCronExpression, c)
 			}
 		case 2:
 			var err error
 			var b64 int64
 			str2 := strings.Trim(arr2[1], " ")
 			if b64, err = strconv.ParseInt(str2, 10, 64); err != nil {
-				return 0, errorf(errorNotValidCronExpression, c)
+				return 0, errorFmt(errorNotValidCronExpression, c)
 			}
 			var b int
 			var v64 int64
@@ -172,7 +172,7 @@ func parseCronExpression(c string, min, max int, year bool, p func(string) int64
 				if arr3 := strings.Split(str2, "-"); len(arr3) == 2 {
 					var valid bool
 					if sn, en, valid = getCronExpressionSE(arr3, min, max, year, p); !valid {
-						return 0, errorf(errorNotValidCronExpression, c)
+						return 0, errorFmt(errorNotValidCronExpression, c)
 					}
 				} else {
 					var v int64
@@ -198,10 +198,10 @@ func parseCronExpression(c string, min, max int, year bool, p func(string) int64
 							sn -= minYear
 						}
 						if sn < min || sn > max {
-							return 0, errorf(errorNotValidCronExpression, c)
+							return 0, errorFmt(errorNotValidCronExpression, c)
 						}
 					} else {
-						return 0, errorf(errorNotValidCronExpression, c)
+						return 0, errorFmt(errorNotValidCronExpression, c)
 					}
 				}
 			}
@@ -209,7 +209,7 @@ func parseCronExpression(c string, min, max int, year bool, p func(string) int64
 				res |= 1 << i
 			}
 		default:
-			return 0, errorf(errorNotValidCronExpression, c)
+			return 0, errorFmt(errorNotValidCronExpression, c)
 		}
 	}
 	return res, nil

@@ -57,11 +57,11 @@ func (l *logger) Call(funcName string, params ...interface{}) error {
 		} else {
 			if isFormat {
 				if fl := f.Type().NumIn(); fl > 1 && pl < fl-1 {
-					return errors(errorParamsNumOutIndex)
+					return errorStr(errorParamsNumOutIndex)
 				}
 			} else {
 				if fl := f.Type().NumIn(); fl > 1 && pl < fl {
-					return errors(errorParamsNumOutIndex)
+					return errorStr(errorParamsNumOutIndex)
 				}
 			}
 		}

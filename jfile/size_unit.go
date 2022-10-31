@@ -59,5 +59,5 @@ func ParseSizeUnit(u string) (SizeUnit, error) {
 	case "EB":
 		return EB, nil
 	}
-	return Unknown, errorf(errorNotValidSizeUnit, u)
+	return Unknown, errorFmt(errorNotValidSizeUnit, u)
 }

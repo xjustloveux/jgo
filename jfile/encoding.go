@@ -31,11 +31,11 @@ func GetCodec(format string) (Codec, error) {
 	if c, ok := codec[format]; ok {
 		return c, nil
 	} else {
-		return nil, errors(errorNotFoundCodec)
+		return nil, errorStr(errorNotFoundCodec)
 	}
 }
 
-//Encode encode
+// Encode encode
 func Encode(format string, m map[string]interface{}) ([]byte, error) {
 	if c, err := GetCodec(format); err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func Encode(format string, m map[string]interface{}) ([]byte, error) {
 	}
 }
 
-//Decode decode
+// Decode decode
 func Decode(format string, b []byte, m map[string]interface{}) error {
 	if c, err := GetCodec(format); err != nil {
 		return err

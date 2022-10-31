@@ -83,7 +83,7 @@ func TestAgentResult_TotalRecord(t *testing.T) {
 }
 
 func TestAgentResult_LastInsertId(t *testing.T) {
-	e := errors("TEST ERROR")
+	e := errorStr("TEST ERROR")
 	tests := []struct {
 		input  agentResult
 		output lastInsertId
@@ -99,7 +99,7 @@ func TestAgentResult_LastInsertId(t *testing.T) {
 }
 
 func TestAgentResult_RowsAffected(t *testing.T) {
-	e := errors("TEST ERROR")
+	e := errorStr("TEST ERROR")
 	tests := []struct {
 		input  agentResult
 		output rowsAffected

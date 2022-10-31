@@ -31,7 +31,7 @@ func (ta *TableAgent) AddColumn(args ...interface{}) error {
 			if v, ok := c.(string); ok {
 				name = v
 			} else {
-				return errorf(errorColTypeNotStringType, reflect.TypeOf(c))
+				return errorFmt(errorColTypeNotStringType, reflect.TypeOf(c))
 			}
 		} else {
 			ta.Col[name] = c
@@ -171,7 +171,7 @@ func (ta *TableAgent) Query() (Result, error) {
 // QueryTx executes a query that returns Result
 func (ta *TableAgent) QueryTx() (Result, error) {
 	if ta.Agent == nil {
-		return nil, errors(errorAgentNil)
+		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getQueryAndArgs(); err != nil {
 		return nil, err
@@ -192,7 +192,7 @@ func (ta *TableAgent) QueryRow() (Result, error) {
 // QueryRowTx executes a query that is expected to return at most one row
 func (ta *TableAgent) QueryRowTx() (Result, error) {
 	if ta.Agent == nil {
-		return nil, errors(errorAgentNil)
+		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getQueryAndArgs(); err != nil {
 		return nil, err
@@ -215,7 +215,7 @@ func (ta *TableAgent) QueryPage(start, end int64) (Result, error) {
 // the start and end are for query start row and end row
 func (ta *TableAgent) QueryPageTx(start, end int64) (Result, error) {
 	if ta.Agent == nil {
-		return nil, errors(errorAgentNil)
+		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getQuery(); err != nil {
 		return nil, err
@@ -236,7 +236,7 @@ func (ta *TableAgent) Insert() (Result, error) {
 // InsertTx executes a query with tx.Exec
 func (ta *TableAgent) InsertTx() (Result, error) {
 	if ta.Agent == nil {
-		return nil, errors(errorAgentNil)
+		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getInsert(); err != nil {
 		return nil, err
@@ -257,7 +257,7 @@ func (ta *TableAgent) Update() (Result, error) {
 // UpdateTx executes a query with tx.Exec
 func (ta *TableAgent) UpdateTx() (Result, error) {
 	if ta.Agent == nil {
-		return nil, errors(errorAgentNil)
+		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getUpdate(); err != nil {
 		return nil, err
@@ -278,7 +278,7 @@ func (ta *TableAgent) Delete() (Result, error) {
 // DeleteTx executes a query with tx.Exec
 func (ta *TableAgent) DeleteTx() (Result, error) {
 	if ta.Agent == nil {
-		return nil, errors(errorAgentNil)
+		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getDelete(); err != nil {
 		return nil, err
@@ -290,7 +290,7 @@ func (ta *TableAgent) DeleteTx() (Result, error) {
 // Drop executes a query with db.Exec
 func (ta *TableAgent) Drop() (Result, error) {
 	if ta.Table == "" {
-		return nil, errors(errorTableEmpty)
+		return nil, errorStr(errorTableEmpty)
 	}
 	return ta.Agent.exec(fmt.Sprint("DROP TABLE ", ta.Table))
 }
@@ -298,7 +298,7 @@ func (ta *TableAgent) Drop() (Result, error) {
 // DropTx executes a query with tx.Exec
 func (ta *TableAgent) DropTx() (Result, error) {
 	if ta.Table == "" {
-		return nil, errors(errorTableEmpty)
+		return nil, errorStr(errorTableEmpty)
 	}
 	return ta.Agent.execTx(fmt.Sprint("DROP TABLE ", ta.Table))
 }
@@ -315,7 +315,7 @@ func (ta *TableAgent) getQueryAndArgs() (query string, args []interface{}, err e
 
 func (ta *TableAgent) getQuery() (query string, args []interface{}, err error) {
 	if ta.Table == "" {
-		return "", nil, errors(errorTableEmpty)
+		return "", nil, errorStr(errorTableEmpty)
 	}
 	if ta.Agent == nil {
 		if ta.Agent, err = GetAgent(ta.DSKey); err != nil {
@@ -343,10 +343,10 @@ func (ta *TableAgent) getQuery() (query string, args []interface{}, err error) {
 
 func (ta *TableAgent) getInsert() (query string, args []interface{}, err error) {
 	if ta.Table == "" {
-		return "", nil, errors(errorTableEmpty)
+		return "", nil, errorStr(errorTableEmpty)
 	}
 	if ta.Col == nil || len(ta.Col) <= 0 {
-		return "", nil, errors(errorColNil)
+		return "", nil, errorStr(errorColNil)
 	}
 	if ta.Agent == nil {
 		if ta.Agent, err = GetAgent(ta.DSKey); err != nil {
@@ -377,10 +377,10 @@ func (ta *TableAgent) getInsert() (query string, args []interface{}, err error) 
 
 func (ta *TableAgent) getUpdate() (query string, args []interface{}, err error) {
 	if ta.Table == "" {
-		return "", nil, errors(errorTableEmpty)
+		return "", nil, errorStr(errorTableEmpty)
 	}
 	if ta.Col == nil || len(ta.Col) <= 0 {
-		return "", nil, errors(errorColNil)
+		return "", nil, errorStr(errorColNil)
 	}
 	if ta.Agent == nil {
 		if ta.Agent, err = GetAgent(ta.DSKey); err != nil {
@@ -417,7 +417,7 @@ func (ta *TableAgent) getUpdate() (query string, args []interface{}, err error) 
 
 func (ta *TableAgent) getDelete() (query string, args []interface{}, err error) {
 	if ta.Table == "" {
-		return "", nil, errors(errorTableEmpty)
+		return "", nil, errorStr(errorTableEmpty)
 	}
 	if ta.Agent == nil {
 		if ta.Agent, err = GetAgent(ta.DSKey); err != nil {

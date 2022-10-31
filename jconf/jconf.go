@@ -38,11 +38,11 @@ func New() Config {
 	}
 }
 
-func errorf(e jError, args ...interface{}) error {
+func errorFmt(e jError, args ...interface{}) error {
 	return fmt.Errorf(fmt.Sprint(pkgName, ": ", e.Error()), args...)
 }
 
-func errors(e jError) error {
+func errorStr(e jError) error {
 	return jError(fmt.Sprint(pkgName, ": ", e.Error()))
 }
 

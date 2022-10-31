@@ -1,3 +1,10 @@
+# v1.2.3 (2022.10.31)
+New Features：
+* Add jfile.Exist function
+
+Changes：
+* errorf and errors function change to errorFmt and errorStr
+
 # v1.2.2 (2022.10.30)
 New Features：
 * Add jsql.GetDataSource function

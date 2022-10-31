@@ -182,7 +182,7 @@ func (c *config) DisableEnv() {
 
 func (c *config) Load() (err error) {
 	if c.fileName == "" {
-		return errors(errorFileNameEmpty)
+		return errorStr(errorFileNameEmpty)
 	}
 	var b []byte
 	if b, err = jfile.Load(fmt.Sprint(c.root, c.fileName)); err != nil {
@@ -524,10 +524,10 @@ func (c *config) get(data interface{}, args ...interface{}) (interface{}, error)
 	if len(args) > 0 {
 		a := args[0]
 		if a == nil {
-			return nil, errors(errorArgNil)
+			return nil, errorStr(errorArgNil)
 		}
 		if data == nil {
-			return nil, errorf(errorValNilOfArg, a)
+			return nil, errorFmt(errorValNilOfArg, a)
 		}
 		na := args[1:]
 		switch reflect.TypeOf(data).Kind() {
@@ -560,10 +560,10 @@ func (c *config) get(data interface{}, args ...interface{}) (interface{}, error)
 					return v, nil
 				}
 			} else {
-				return nil, errorf(errorIndexOut, idx, l)
+				return nil, errorFmt(errorIndexOut, idx, l)
 			}
 		default:
-			return nil, errorf(errorValNotFoundOfArg, a)
+			return nil, errorFmt(errorValNotFoundOfArg, a)
 		}
 	} else {
 		return data, nil

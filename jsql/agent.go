@@ -47,7 +47,7 @@ func (a *Agent) DbName() string {
 // if db does not open, will call open before begin
 func (a *Agent) Ping() error {
 	if a.db == nil {
-		return errors(errorDBNil)
+		return errorStr(errorDBNil)
 	}
 	return a.db.Ping()
 }
@@ -55,7 +55,7 @@ func (a *Agent) Ping() error {
 // Begin same as sql.DB.Begin
 func (a *Agent) Begin() (*sql.Tx, error) {
 	if a.db == nil {
-		return nil, errors(errorDBNil)
+		return nil, errorStr(errorDBNil)
 	}
 	var err error
 	if a.tx, err = a.db.Begin(); err != nil {
@@ -68,10 +68,10 @@ func (a *Agent) Begin() (*sql.Tx, error) {
 // Commit same as sql.Tx.Commit
 func (a *Agent) Commit() error {
 	if a.db == nil {
-		return errors(errorDBNil)
+		return errorStr(errorDBNil)
 	}
 	if a.tx == nil {
-		return errors(errorDbNotBegin)
+		return errorStr(errorDbNotBegin)
 	}
 	if err := a.tx.Commit(); err != nil {
 		return err
@@ -83,10 +83,10 @@ func (a *Agent) Commit() error {
 // Rollback same as sql.Tx.Rollback
 func (a *Agent) Rollback() error {
 	if a.db == nil {
-		return errors(errorDBNil)
+		return errorStr(errorDBNil)
 	}
 	if a.tx == nil {
-		return errors(errorDbNotBegin)
+		return errorStr(errorDbNotBegin)
 	}
 	if err := a.tx.Rollback(); err != nil {
 		return err
@@ -401,7 +401,7 @@ func (a *Agent) Tables(args ...interface{}) ([]string, error) {
 		case Oracle:
 			query = sqlQueryTablesOracle
 		default:
-			return nil, errors(errorUnknownSqlTypeForAgentTables)
+			return nil, errorStr(errorUnknownSqlTypeForAgentTables)
 		}
 	}
 	if result, err := a.QueryWithSql(query, param...); err != nil {
@@ -433,7 +433,7 @@ func (a *Agent) TablesTx(args ...interface{}) ([]string, error) {
 		case Oracle:
 			query = sqlQueryTablesOracle
 		default:
-			return nil, errors(errorUnknownSqlTypeForAgentTables)
+			return nil, errorStr(errorUnknownSqlTypeForAgentTables)
 		}
 	}
 	if result, err := a.QueryTxWithSql(query, param...); err != nil {
@@ -467,7 +467,7 @@ func (a *Agent) TableSchema(table string, args ...interface{}) ([]TableSchema, e
 			query = sqlQueryTableSchemaOracle
 			param = append(param, a.DbName(), table)
 		default:
-			return nil, errors(errorUnknownSqlTypeForAgentTables)
+			return nil, errorStr(errorUnknownSqlTypeForAgentTables)
 		}
 	}
 	if result, err := a.QueryWithSql(query, param...); err != nil {
@@ -503,7 +503,7 @@ func (a *Agent) TableSchemaTx(table string, args ...interface{}) ([]TableSchema,
 			query = sqlQueryTableSchemaOracle
 			param = append(param, a.DbName(), table)
 		default:
-			return nil, errors(errorUnknownSqlTypeForAgentTables)
+			return nil, errorStr(errorUnknownSqlTypeForAgentTables)
 		}
 	}
 	if result, err := a.QueryTxWithSql(query, param...); err != nil {
@@ -650,7 +650,7 @@ func (a *Agent) getQueryAndArgs(sorQuery string, params map[string]interface{}) 
 
 func (a *Agent) query(single bool, query string, args ...interface{}) (result Result, err error) {
 	if a.db == nil {
-		return nil, errors(errorDBNil)
+		return nil, errorStr(errorDBNil)
 	}
 	var rows *sql.Rows
 	subject.Next(query)
@@ -662,7 +662,7 @@ func (a *Agent) query(single bool, query string, args ...interface{}) (result Re
 
 func (a *Agent) queryTx(single bool, query string, args ...interface{}) (result Result, err error) {
 	if a.tx == nil {
-		return nil, errors(errorDbNotBegin)
+		return nil, errorStr(errorDbNotBegin)
 	}
 	var rows *sql.Rows
 	subject.Next(query)
@@ -737,7 +737,7 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 		}
 	}
 	if len(resCount.Rows()) <= 0 {
-		return nil, errors(errorNoRowsAvailable)
+		return nil, errorStr(errorNoRowsAvailable)
 	}
 	var m map[string]interface{}
 	m = resCount.Rows()[0]
@@ -756,7 +756,7 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 
 func (a *Agent) exec(query string, args ...interface{}) (result Result, err error) {
 	if a.db == nil {
-		return nil, errors(errorDBNil)
+		return nil, errorStr(errorDBNil)
 	}
 	var res sql.Result
 	subject.Next(query)
@@ -778,7 +778,7 @@ func (a *Agent) exec(query string, args ...interface{}) (result Result, err erro
 
 func (a *Agent) execTx(query string, args ...interface{}) (result Result, err error) {
 	if a.tx == nil {
-		return nil, errors(errorDbNotBegin)
+		return nil, errorStr(errorDbNotBegin)
 	}
 	var res sql.Result
 	subject.Next(query)
@@ -800,7 +800,7 @@ func (a *Agent) execTx(query string, args ...interface{}) (result Result, err er
 
 func (a *Agent) queryPrepare(single bool, query string, args ...[]interface{}) (result []Result, err error) {
 	if a.db == nil {
-		return nil, errors(errorDBNil)
+		return nil, errorStr(errorDBNil)
 	}
 	var stmt *sql.Stmt
 	subject.Next(query)
@@ -812,7 +812,7 @@ func (a *Agent) queryPrepare(single bool, query string, args ...[]interface{}) (
 
 func (a *Agent) queryPrepareTx(single bool, query string, args ...[]interface{}) (result []Result, err error) {
 	if a.tx == nil {
-		return nil, errors(errorDbNotBegin)
+		return nil, errorStr(errorDbNotBegin)
 	}
 	var stmt *sql.Stmt
 	subject.Next(query)
@@ -845,7 +845,7 @@ func (a *Agent) stmtQuery(single bool, stmt *sql.Stmt, args ...[]interface{}) (r
 
 func (a *Agent) execPrepare(query string, args ...[]interface{}) (result []Result, err error) {
 	if a.db == nil {
-		return nil, errors(errorDBNil)
+		return nil, errorStr(errorDBNil)
 	}
 	var stmt *sql.Stmt
 	subject.Next(query)
@@ -857,7 +857,7 @@ func (a *Agent) execPrepare(query string, args ...[]interface{}) (result []Resul
 
 func (a *Agent) execPrepareTx(query string, args ...[]interface{}) (result []Result, err error) {
 	if a.tx == nil {
-		return nil, errors(errorDbNotBegin)
+		return nil, errorStr(errorDbNotBegin)
 	}
 	var stmt *sql.Stmt
 	subject.Next(query)
@@ -896,7 +896,7 @@ func (a *Agent) stmtExec(stmt *sql.Stmt, args ...[]interface{}) (result []Result
 
 func (a *Agent) getResult(rows *sql.Rows, single bool) (result Result, err error) {
 	if rows == nil {
-		err = errors(errorRowsNil)
+		err = errorStr(errorRowsNil)
 		return nil, err
 	}
 	defer func() {
