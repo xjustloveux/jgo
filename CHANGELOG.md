@@ -1,3 +1,7 @@
+# v1.2.9 (2022.11.03)
+Bug Fixes：
+* Fixed jcast time format bug
+
 # v1.2.8 (2022.11.03)
 Bug Fixes：
 * Fixed get record scan type nil no value bug

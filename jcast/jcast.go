@@ -1644,10 +1644,10 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 		switch f.F {
 		case jtime.ANSIC: // Mon Jan _2 15:04:05 2006
 			ck = len(f.F) == len(s)
-			pattern = fmt.Sprint("^", en3o, en3o, n2o, tmo, n4)
+			pattern = fmt.Sprint("^", en3o, en3o, o, n, o, tmo, n4)
 		case jtime.UnixDate: // Mon Jan _2 15:04:05 MST 2006
 			ck = len(f.F) == len(s)
-			pattern = fmt.Sprint("^", en3o, en3o, n2o, tmo, en3o, n4)
+			pattern = fmt.Sprint("^", en3o, en3o, o, n, o, tmo, en3o, n4)
 		case jtime.RubyDate: // Mon Jan 02 15:04:05 -0700 2006
 			ck = len(f.F) == len(s)
 			pattern = fmt.Sprint("^", en3o, en3o, n2o, tmo, o, n4o, n4)
