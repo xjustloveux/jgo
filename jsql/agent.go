@@ -483,7 +483,7 @@ func (a *Agent) TableSchema(table string, args ...interface{}) ([]TableSchema, e
 	} else {
 		list := make([]TableSchema, len(result.Rows()))
 		for i, v := range result.Rows() {
-			if err = jfile.Convert(v, list[i]); err != nil {
+			if err = jfile.Convert(v, &list[i]); err != nil {
 				return nil, err
 			}
 		}
@@ -519,7 +519,7 @@ func (a *Agent) TableSchemaTx(table string, args ...interface{}) ([]TableSchema,
 	} else {
 		list := make([]TableSchema, len(result.Rows()))
 		for i, v := range result.Rows() {
-			if err = jfile.Convert(v, list[i]); err != nil {
+			if err = jfile.Convert(v, &list[i]); err != nil {
 				return nil, err
 			}
 		}
@@ -921,7 +921,11 @@ func (a *Agent) getResult(rows *sql.Rows, single bool) (result Result, err error
 		rowValue := make([]interface{}, len(colTypes))
 		rowParam := make([]interface{}, len(colTypes))
 		for i, colType := range colTypes {
-			rowValue[i] = reflect.New(colType.ScanType())
+			if colType.ScanType() == nil {
+				rowValue[i] = nil
+			} else {
+				rowValue[i] = reflect.New(colType.ScanType())
+			}
 			rowParam[i] = reflect.ValueOf(&rowValue[i]).Interface()
 		}
 		if err = rows.Scan(rowParam...); err != nil {
@@ -951,7 +955,6 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 				fallthrough
 			case "sql.NullTime":
 				record[colType.Name()] = rowValue[i].(time.Time)
-				break
 			case "int64":
 				fallthrough
 			case "sql.NullInt64":

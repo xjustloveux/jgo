@@ -1,3 +1,8 @@
+# v1.2.6 (2022.11.03)
+Bug Fixes：
+* Fixed table schema convert bug
+* Fixed scan type nil bug
+
 # v1.2.5 (2022.11.03)
 Bug Fixes：
 * Fixed Agent.Tables bug
