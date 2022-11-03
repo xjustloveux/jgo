@@ -1,3 +1,7 @@
+# v1.2.8 (2022.11.03)
+Bug Fixes：
+* Fixed get record scan type nil no value bug
+
 # v1.2.7 (2022.11.03)
 Bug Fixes：
 * Fixed get record scan type nil bug

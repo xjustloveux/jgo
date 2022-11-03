@@ -948,35 +948,39 @@ func (a *Agent) getResult(rows *sql.Rows, single bool) (result Result, err error
 func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) map[string]interface{} {
 	record := make(map[string]interface{})
 	for i, colType := range colTypes {
-		if rowValue[i] != nil && colType.ScanType() != nil {
-			dbType := colType.DatabaseTypeName()
-			switch colType.ScanType().String() {
-			case "time.Time":
-				fallthrough
-			case "sql.NullTime":
-				record[colType.Name()] = rowValue[i].(time.Time)
-			case "int64":
-				fallthrough
-			case "sql.NullInt64":
-				switch rowValue[i].(type) {
-				case []byte:
-					record[colType.Name()], _ = strconv.ParseInt(string(rowValue[i].([]byte)), 10, 64)
+		if rowValue[i] != nil {
+			if colType.ScanType() == nil {
+				record[colType.Name()] = rowValue[i]
+			} else {
+				dbType := colType.DatabaseTypeName()
+				switch colType.ScanType().String() {
+				case "time.Time":
+					fallthrough
+				case "sql.NullTime":
+					record[colType.Name()] = rowValue[i].(time.Time)
+				case "int64":
+					fallthrough
+				case "sql.NullInt64":
+					switch rowValue[i].(type) {
+					case []byte:
+						record[colType.Name()], _ = strconv.ParseInt(string(rowValue[i].([]byte)), 10, 64)
+					default:
+						record[colType.Name()] = rowValue[i]
+					}
+				case "sql.RawBytes":
+					switch dbType {
+					case "DOUBLE":
+						record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]byte)), 64)
+					case "DECIMAL":
+						record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]byte)), 64)
+					case "NUMERIC":
+						record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]byte)), 64)
+					default:
+						record[colType.Name()] = string(rowValue[i].([]byte))
+					}
 				default:
 					record[colType.Name()] = rowValue[i]
 				}
-			case "sql.RawBytes":
-				switch dbType {
-				case "DOUBLE":
-					record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]byte)), 64)
-				case "DECIMAL":
-					record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]byte)), 64)
-				case "NUMERIC":
-					record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]byte)), 64)
-				default:
-					record[colType.Name()] = string(rowValue[i].([]byte))
-				}
-			default:
-				record[colType.Name()] = rowValue[i]
 			}
 		} else {
 			record[colType.Name()] = nil
