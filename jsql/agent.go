@@ -948,7 +948,7 @@ func (a *Agent) getResult(rows *sql.Rows, single bool) (result Result, err error
 func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) map[string]interface{} {
 	record := make(map[string]interface{})
 	for i, colType := range colTypes {
-		if rowValue[i] != nil {
+		if rowValue[i] != nil && colType.ScanType() != nil {
 			dbType := colType.DatabaseTypeName()
 			switch colType.ScanType().String() {
 			case "time.Time":
