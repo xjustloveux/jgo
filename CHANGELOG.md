@@ -1,4 +1,8 @@
-# v1.1.4 (2022.11.03)
+# v1.2.5 (2022.11.03)
+Bug Fixes：
+* Fixed Agent.Tables bug
+
+# v1.2.4 (2022.11.03)
 Bug Fixes：
 * Fixed table schema mssql and oracle sql param bug
 

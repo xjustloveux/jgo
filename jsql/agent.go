@@ -409,7 +409,11 @@ func (a *Agent) Tables(args ...interface{}) ([]string, error) {
 	} else {
 		list := make([]string, len(result.Rows()))
 		for i, v := range result.Rows() {
-			list[i] = jcast.String(v)
+			var m map[string]string
+			if m, err = jcast.StringMapString(v); err != nil {
+				return nil, err
+			}
+			list[i] = m["TABLE_NAME"]
 		}
 		return list, nil
 	}
@@ -441,7 +445,11 @@ func (a *Agent) TablesTx(args ...interface{}) ([]string, error) {
 	} else {
 		list := make([]string, len(result.Rows()))
 		for i, v := range result.Rows() {
-			list[i] = jcast.String(v)
+			var m map[string]string
+			if m, err = jcast.StringMapString(v); err != nil {
+				return nil, err
+			}
+			list[i] = m["TABLE_NAME"]
 		}
 		return list, nil
 	}
