@@ -1,3 +1,7 @@
+# v1.1.4 (2022.11.03)
+Bug Fixes：
+* Fixed table schema mssql and oracle sql param bug
+
 # v1.2.3 (2022.10.31)
 New Features：
 * Add jfile.Exist function

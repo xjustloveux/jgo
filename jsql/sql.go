@@ -70,7 +70,7 @@ const (
 									AND SEPTD.NAME = 'MS_Description'
 									AND SEPTD.MINOR_ID = 0
 
-								WHERE C.TABLE_NAME = ?
+								WHERE C.TABLE_NAME = @p1
 
 								ORDER BY C.ORDINAL_POSITION`
 	sqlQueryTableSchemaOracle = `SELECT
@@ -105,8 +105,8 @@ const (
 									AND ATC.TABLE_NAME = ATCM.TABLE_NAME
 
 								WHERE
-									ATC.OWNER = ?
-									AND ATC.TABLE_NAME = ?
+									ATC.OWNER = :0
+									AND ATC.TABLE_NAME = :1
 
 								ORDER BY ATC.COLUMN_ID`
 )
