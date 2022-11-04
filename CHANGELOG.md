@@ -1,3 +1,10 @@
+# v1.2.10 (2022.11.04)
+New Features：
+* Add jsql.TableSchema IsIdentity column
+
+Bug Fixes：
+* Fixed jsql sql default value column name bug
+
 # v1.2.9 (2022.11.03)
 Bug Fixes：
 * Fixed jcast time format bug

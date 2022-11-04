@@ -9,8 +9,9 @@ const (
 									C.COLUMN_NAME,
 									C.DATA_TYPE,
 									C.IS_NULLABLE,
-									C.COLUMN_DEFAULT,
+									C.COLUMN_DEFAULT AS DATA_DEFAULT,
 									KCU.ORDINAL_POSITION AS PRIMARY_KEY,
+									CASE WHEN C.EXTRA LIKE '%auto_increment%' THEN 'YES' ELSE 'NO' END AS IS_IDENTITY,
 									C.COLUMN_COMMENT,
 									T.TABLE_COMMENT
 
@@ -36,8 +37,9 @@ const (
 									C.COLUMN_NAME,
 									C.DATA_TYPE,
 									C.IS_NULLABLE,
-									C.COLUMN_DEFAULT,
+									C.COLUMN_DEFAULT AS DATA_DEFAULT,
 									KCU.ORDINAL_POSITION AS PRIMARY_KEY,
+									CASE WHEN SC.IS_IDENTITY = 'true' THEN 'YES' ELSE 'NO' END AS IS_IDENTITY,
 									SEPCD.VALUE AS COLUMN_COMMENT,
 									SEPTD.VALUE AS TABLE_COMMENT
 
@@ -73,12 +75,29 @@ const (
 								WHERE C.TABLE_NAME = @p1
 
 								ORDER BY C.ORDINAL_POSITION`
-	sqlQueryTableSchemaOracle = `SELECT
+	sqlQueryTableSchemaOracle = `WITH
+    								FUNCTION GET_DEF(O IN VARCHAR2, T IN VARCHAR2, C IN VARCHAR2) RETURN VARCHAR2 IS VAL VARCHAR2(4000);
+        								BEGIN
+            								SELECT ATC.DATA_DEFAULT INTO VAL
+                                    			FROM   ALL_TAB_COLUMNS ATC
+                                    			WHERE  ATC.OWNER = O
+                                      				AND ATC.TABLE_NAME = T
+                                      				AND ATC.COLUMN_NAME = C;
+            								RETURN VAL;
+        								END;
+									SELECT
 									ATC.COLUMN_NAME,
 									ATC.DATA_TYPE,
 									CASE WHEN ATC.NULLABLE = 'Y' THEN 'YES' ELSE 'NO' END AS IS_NULLABLE,
-									ATC.DATA_DEFAULT,
+    								CASE WHEN
+        								GET_DEF(ATC.OWNER, ATC.TABLE_NAME, ATC.COLUMN_NAME) = 'null'
+            							OR GET_DEF(ATC.OWNER, ATC.TABLE_NAME, ATC.COLUMN_NAME) LIKE CONCAT(CONCAT('%"', 'CIS'), '"."ISEQ$$_%')
+        								THEN NULL
+    								    ELSE ATC.DATA_DEFAULT END AS DATA_DEFAULT,
 									ACC.POSITION AS PRIMARY_KEY,
+									CASE WHEN GET_DEF(ATC.OWNER, ATC.TABLE_NAME, ATC.COLUMN_NAME) LIKE CONCAT(CONCAT('%"', 'CIS'), '"."ISEQ$$_%')
+									    THEN 'YES'
+									    ELSE 'NO' END AS IS_IDENTITY,
 									ACCM.COMMENTS AS COLUMN_COMMENT,
 									ATCM.COMMENTS AS TABLE_COMMENT
 

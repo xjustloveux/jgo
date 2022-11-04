@@ -6,6 +6,7 @@ type TableSchema struct {
 	IsNullable    string `json:"IS_NULLABLE"`
 	DataDefault   string `json:"DATA_DEFAULT"`
 	PrimaryKey    *int8  `json:"PRIMARY_KEY"`
+	IsIdentity    string `json:"IS_IDENTITY"`
 	ColumnComment string `json:"COLUMN_COMMENT"`
 	TableComment  string `json:"TABLE_COMMENT"`
 }
