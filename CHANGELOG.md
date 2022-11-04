@@ -1,3 +1,7 @@
+# v1.2.11 (2022.11.05)
+New Features：
+* Add jcron.GetScheduleInfo function
+
 # v1.2.10 (2022.11.04)
 New Features：
 * Add jsql.TableSchema IsIdentity column

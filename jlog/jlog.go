@@ -189,6 +189,9 @@ func Init() error {
 
 // GetParam returns conf.Params with key
 func GetParam(key string) string {
+	if pack == nil {
+		return ""
+	}
 	return pack.Params[key]
 }
 

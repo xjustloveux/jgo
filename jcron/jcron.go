@@ -126,6 +126,14 @@ func Init() error {
 	return nil
 }
 
+// GetScheduleInfo returns json schedule info
+func GetScheduleInfo() []*SchInfo {
+	if pack == nil {
+		return nil
+	}
+	return pack.Schedule
+}
+
 // AddJob add job
 func AddJob(name string, j Job) error {
 	mux.Lock()

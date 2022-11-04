@@ -160,16 +160,25 @@ func Init() error {
 
 // GetDaoPath returns conf.DaoPath
 func GetDaoPath() string {
+	if pack == nil {
+		return ""
+	}
 	return pack.DaoPath
 }
 
 // GetDefaultDataSource returns json default data source
 func GetDefaultDataSource() string {
+	if pack == nil {
+		return ""
+	}
 	return pack.Default
 }
 
 // GetDataSource returns json data source
 func GetDataSource() map[string]interface{} {
+	if pack == nil {
+		return nil
+	}
 	return pack.DataSource
 }
 
