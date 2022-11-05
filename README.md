@@ -434,14 +434,15 @@ func example7() {
 Configuration file default `json` format, you can use `jcron.SetFormat` to set you want, but you must be used
 [jfile.RegisterCodec](#RegisterCodec) register codec.
 
-| Property Name    | Required | Type                   | Default Value | Comment                                        |
-|------------------|----------|------------------------|---------------|------------------------------------------------|
-| Schedule         | true     | []*SchInfo             | empty         |                                                |
-| Schedule.Name    | true     | string                 | empty         | schedule name.                                 |
-| Schedule.Cron    | true     | string                 | empty         | [CronExpression](#CronExpression).             |
-| Schedule.JobName | true     | string                 | empty         | schedule job name.                             |
-| Schedule.JobData | false    | map[string]interface{} | empty         | schedule job data.                             |
-| Schedule.Desc    | false    | string                 | empty         | schedule job description.                      |
+| Property Name    | Required | Type                   | Default Value | Comment                            |
+|------------------|----------|------------------------|---------------|------------------------------------|
+| Schedule         | true     | []*SchInfo             | empty         |                                    |
+| Schedule.Name    | true     | string                 | empty         | schedule name.                     |
+| Schedule.Cron    | true     | string                 | empty         | [CronExpression](#CronExpression). |
+| Schedule.JobName | true     | string                 | empty         | schedule job name.                 |
+| Schedule.JobData | false    | map[string]interface{} | empty         | schedule job data.                 |
+| Schedule.Desc    | false    | string                 | empty         | schedule job description.          |
+| Schedule.Status  | false    | string                 | run           | schedule status.                   |
 
 ### Usage
 
