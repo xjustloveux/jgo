@@ -1,3 +1,7 @@
+# v1.2.12 (2022.11.05)
+Changes：
+* jsql.TableSchema PrimaryKey column type from *int8 to int8
+
 # v1.2.11 (2022.11.05)
 New Features：
 * Add jcron.GetScheduleInfo function

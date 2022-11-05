@@ -4,11 +4,18 @@
 
 package jcron
 
+// SchInfo config schedule information
 type SchInfo struct {
-	Name    string
-	Cron    string
+	// Name schedule name
+	Name string
+	// Cron cron expression
+	Cron string
+	// JobName job name
 	JobName string
+	// JobData job data
 	JobData map[string]interface{}
-	Desc    string
-	Status  string
+	// Desc job description
+	Desc string
+	// Status schedule status(stop or run)
+	Status string
 }
