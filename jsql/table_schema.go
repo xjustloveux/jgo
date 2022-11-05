@@ -11,7 +11,7 @@ type TableSchema struct {
 	// DataDefault column default data
 	DataDefault string `json:"DATA_DEFAULT"`
 	// PrimaryKey primary key
-	PrimaryKey string `json:"PRIMARY_KEY"`
+	PrimaryKey interface{} `json:"PRIMARY_KEY"`
 	// IsIdentity is identity(YES OR NO)
 	IsIdentity string `json:"IS_IDENTITY"`
 	// ColumnComment column comment
