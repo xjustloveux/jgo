@@ -971,7 +971,6 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 				record[colType.Name()] = rowValue[i]
 			} else {
 				dbType := colType.DatabaseTypeName()
-				fmt.Println(fmt.Sprint("Github Debug：", colType.Name(), ",", colType.ScanType().String(), ",", dbType))
 				switch colType.ScanType().String() {
 				case "time.Time":
 					fallthrough
