@@ -47,12 +47,12 @@ jobs:
       run: |
         mkdir -p /opt/oracle
         cd /opt/oracle
-        wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip
-        unzip instantclient-basic-linuxx64.zip
-        sudo sh -c "echo /opt/oracle/instantclient_19_11 > /etc/ld.so.conf.d/oracle-instantclient.conf"
+        wget https://download.oracle.com/otn_software/linux/instantclient/218000/instantclient-basic-linux.x64-21.8.0.0.0dbru.zip
+        unzip instantclient-basic-linux.x64-21.8.0.0.0dbru.zip
+        sudo apt-get install libaio
+        sudo sh -c "echo /opt/oracle/instantclient_21_8 > /etc/ld.so.conf.d/oracle-instantclient.conf"
         sudo ldconfig
-        export LD_LIBRARY_PATH=/opt/oracle/instantclient_19_11:$LD_LIBRARY_PATH
-        sudo apt-get install libaio1
+        export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_8:$LD_LIBRARY_PATH
 
     - name: Get
       run: go get -v
