@@ -24,7 +24,7 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Copy
+    - name: Copy And Install Oracle
       run: |
         mv ./files/test/mod ./go.mod
         mv ./files/test/sum ./go.sum
@@ -37,6 +37,7 @@ jobs:
         sed -i 's/ORACLE_DB/${{ secrets.ORACLE_DB }}/g' ./files/test-jconf.json
         sed -i 's/POSTGRESQL_DSN/${{ secrets.POSTGRESQL_DSN }}/g' ./files/test-jconf.json
         sed -i 's/POSTGRESQL_DB/${{ secrets.POSTGRESQL_DB }}/g' ./files/test-jconf.json
+        sudo apt-get install libaio1
 
     - name: Get
       run: go get -v
