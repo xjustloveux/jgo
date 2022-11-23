@@ -28,14 +28,14 @@ jobs:
       run: |
         mv files/test/go go.mod
         mv files/test/jsql/jsql_test jsql/jsql_test.go
-        sed -i "s/MYSQL_DSN/${{ secrets.MYSQL_DSN }}/g" files/test-jconf.json
-        sed -i "s/MYSQL_DB/${{ secrets.MYSQL_DB }}/g" files/test-jconf.json
-        sed -i "s/MSSQL_DSN/${{ secrets.MSSQL_DSN }}/g" files/test-jconf.json
-        sed -i "s/MSSQL_DB/${{ secrets.MSSQL_DB }}/g" files/test-jconf.json
-        sed -i "s/ORACLE_DSN/${{ secrets.ORACLE_DSN }}/g" files/test-jconf.json
-        sed -i "s/ORACLE_DB/${{ secrets.ORACLE_DB }}/g" files/test-jconf.json
-        sed -i "s/POSTGRESQL_DSN/${{ secrets.POSTGRESQL_DSN }}/g" files/test-jconf.json
-        sed -i "s/POSTGRESQL_DB/${{ secrets.POSTGRESQL_DB }}/g" files/test-jconf.json
+        sed -i 's/MYSQL_DSN/${{ secrets.MYSQL_DSN }}/g' files/test-jconf.json
+        sed -i 's/MYSQL_DB/${{ secrets.MYSQL_DB }}/g' files/test-jconf.json
+        sed -i 's/MSSQL_DSN/${{ secrets.MSSQL_DSN }}/g' files/test-jconf.json
+        sed -i 's/MSSQL_DB/${{ secrets.MSSQL_DB }}/g' files/test-jconf.json
+        sed -i 's/ORACLE_DSN/${{ secrets.ORACLE_DSN }}/g' files/test-jconf.json
+        sed -i 's/ORACLE_DB/${{ secrets.ORACLE_DB }}/g' files/test-jconf.json
+        sed -i 's/POSTGRESQL_DSN/${{ secrets.POSTGRESQL_DSN }}/g' files/test-jconf.json
+        sed -i 's/POSTGRESQL_DB/${{ secrets.POSTGRESQL_DB }}/g' files/test-jconf.json
 
     - name: Get
       run: go get -v
