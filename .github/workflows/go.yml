@@ -13,6 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v3.3.0
+      with:
+        node-version: '18'
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
@@ -24,7 +29,7 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Copy And Install Oracle
+    - name: Copy And Replace
       run: |
         mv ./files/test/mod ./go.mod
         mv ./files/test/sum ./go.sum
@@ -37,7 +42,16 @@ jobs:
         sed -i 's/ORACLE_DB/${{ secrets.ORACLE_DB }}/g' ./files/test-jconf.json
         sed -i 's/POSTGRESQL_DSN/${{ secrets.POSTGRESQL_DSN }}/g' ./files/test-jconf.json
         sed -i 's/POSTGRESQL_DB/${{ secrets.POSTGRESQL_DB }}/g' ./files/test-jconf.json
-        sudo apt-get install libaio1
+
+    - name: Install Oracle
+      run: |
+        mkdir -p /opt/oracle
+        cd /opt/oracle
+        wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip
+        unzip instantclient-basic-linuxx64.zip
+        sudo sh -c "echo /opt/oracle/instantclient_19_11 > /etc/ld.so.conf.d/oracle-instantclient.conf"
+        sudo ldconfig
+        export LD_LIBRARY_PATH=/opt/oracle/instantclient_19_11:$LD_LIBRARY_PATH
 
     - name: Get
       run: go get -v
