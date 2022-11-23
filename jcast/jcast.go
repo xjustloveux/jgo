@@ -1619,7 +1619,7 @@ func strToTime(s string, loc *time.Location) (time.Time, error) {
 	three := "{3}"
 	four := "{4}"
 	six := "{6}"
-	o := "[^A-Za-z0-9_]"
+	o := "."
 	o2 := fmt.Sprint(o, two)
 	on := "[^0-9]"
 	n := "[0-9]"

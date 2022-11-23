@@ -375,27 +375,37 @@ func getPageSql(t Type, sql, obs string, start, end int64) (pageSql, countSql st
 	switch t {
 	case MySql:
 		pageSql = fmt.Sprint(
-			"SELECT * FROM (SELECT (@i := @i + 1) AS ", allowPagingId, ", table1.* ",
-			"FROM (SELECT *, 1 as ", orderById, " FROM (", sql, obs,
-			")  as  tbs1 ) as table1, (select @i := 0) temp ORDER BY ", orderById, " DESC ) as table2 ",
+			"SELECT * FROM (SELECT (@i := @i + 1) AS ", allowPagingId, ", TABLE1.* ",
+			"FROM (SELECT *, 1 AS ", orderById, " FROM (", sql, obs,
+			") AS TBS1 ) AS TABLE1, (SELECT @i := 0) TEMP ORDER BY ", orderById, " DESC ) AS TABLE2 ",
 			"WHERE ", allowPagingId, " BETWEEN ", strconv.FormatInt(start, 10), " AND ", strconv.FormatInt(end, 10))
 	case MSSql:
 		obis := ""
 		if obs == "" {
 			obs = fmt.Sprint("ORDER BY ", orderById, " DESC")
-			obis = fmt.Sprint(", 1 as ", orderById)
+			obis = fmt.Sprint(", 1 AS ", orderById)
 		}
 		pageSql = fmt.Sprint(
-			"SELECT * FROM (SELECT ROW_NUMBER() OVER(", obs, ") AS ", allowPagingId, ",* ",
-			"FROM (SELECT *", obis, " FROM (", sql, ") as tbs1) as table1) as table2 ",
+			"SELECT * FROM (SELECT ROW_NUMBER() OVER(", obs, ") AS ", allowPagingId, ", * ",
+			"FROM (SELECT *", obis, " FROM (", sql, ") AS TBS1) AS TABLE1) AS TABLE2 ",
 			"WHERE ", allowPagingId, " BETWEEN ", strconv.FormatInt(start, 10), " AND ", strconv.FormatInt(end, 10))
 	case Oracle:
 		pageSql = fmt.Sprint(
-			"SELECT t3.* FROM (SELECT t2.*, rownum as ", allowPagingId, " ",
-			"FROM (SELECT t1.*, 1 as ", orderById, " FROM (", sql, obs, ") t1) t2 ORDER BY ", orderById, ") t3 ",
+			"SELECT T3.* FROM (SELECT T2.*, rownum as ", allowPagingId, " ",
+			"FROM (SELECT T1.*, 1 AS ", orderById, " FROM (", sql, obs, ") T1) T2 ORDER BY ", orderById, ") T3 ",
 			"WHERE ", allowPagingId, " BETWEEN ", strconv.FormatInt(start, 10), " AND ", strconv.FormatInt(end, 10))
+	case PostgreSql:
+		obis := ""
+		if obs == "" {
+			obs = fmt.Sprint("ORDER BY ", orderById, " DESC")
+			obis = fmt.Sprint(", 1 AS ", orderById)
+		}
+		pageSql = fmt.Sprint(
+			"SELECT * FROM (SELECT ROW_NUMBER() OVER(", obs, ") AS ", allowPagingId, ", * ",
+			"FROM (SELECT *", obis, " FROM (", sql, ") AS TBS1) AS TABLE1) AS TABLE2 ",
+			"WHERE ", allowPagingId, " BETWEEN ", strconv.FormatInt(start-1, 10), " AND ", strconv.FormatInt(end-1, 10))
 	}
-	countSql = fmt.Sprint("SELECT COUNT(1) as ", totalRecord, " FROM (", sql, ") data")
+	countSql = fmt.Sprint("SELECT COUNT(1) AS ", totalRecord, " FROM (", sql, ") DATA")
 	return pageSql, countSql
 }
 

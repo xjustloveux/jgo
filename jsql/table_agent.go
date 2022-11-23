@@ -292,6 +292,12 @@ func (ta *TableAgent) Drop() (Result, error) {
 	if ta.Table == "" {
 		return nil, errorStr(errorTableEmpty)
 	}
+	if ta.Agent == nil {
+		var err error
+		if ta.Agent, err = GetAgent(ta.DSKey); err != nil {
+			return nil, err
+		}
+	}
 	return ta.Agent.exec(fmt.Sprint("DROP TABLE ", ta.Table))
 }
 
@@ -299,6 +305,12 @@ func (ta *TableAgent) Drop() (Result, error) {
 func (ta *TableAgent) DropTx() (Result, error) {
 	if ta.Table == "" {
 		return nil, errorStr(errorTableEmpty)
+	}
+	if ta.Agent == nil {
+		var err error
+		if ta.Agent, err = GetAgent(ta.DSKey); err != nil {
+			return nil, err
+		}
 	}
 	return ta.Agent.execTx(fmt.Sprint("DROP TABLE ", ta.Table))
 }

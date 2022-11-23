@@ -400,6 +400,8 @@ func (a *Agent) Tables(args ...interface{}) ([]string, error) {
 			query = sqlQueryTablesMSSql
 		case Oracle:
 			query = sqlQueryTablesOracle
+		case PostgreSql:
+			query = sqlQueryTablesPostgreSql
 		default:
 			return nil, errorStr(errorUnknownSqlTypeForAgentTables)
 		}
@@ -413,7 +415,11 @@ func (a *Agent) Tables(args ...interface{}) ([]string, error) {
 			if m, err = jcast.StringMapString(v); err != nil {
 				return nil, err
 			}
-			list[i] = m["TABLE_NAME"]
+			if m["TABLE_NAME"] != "" {
+				list[i] = m["TABLE_NAME"]
+			} else {
+				list[i] = m["table_name"]
+			}
 		}
 		return list, nil
 	}
@@ -436,6 +442,8 @@ func (a *Agent) TablesTx(args ...interface{}) ([]string, error) {
 			query = sqlQueryTablesMSSql
 		case Oracle:
 			query = sqlQueryTablesOracle
+		case PostgreSql:
+			query = sqlQueryTablesPostgreSql
 		default:
 			return nil, errorStr(errorUnknownSqlTypeForAgentTables)
 		}
@@ -449,7 +457,11 @@ func (a *Agent) TablesTx(args ...interface{}) ([]string, error) {
 			if m, err = jcast.StringMapString(v); err != nil {
 				return nil, err
 			}
-			list[i] = m["TABLE_NAME"]
+			if m["TABLE_NAME"] != "" {
+				list[i] = m["TABLE_NAME"]
+			} else {
+				list[i] = m["table_name"]
+			}
 		}
 		return list, nil
 	}
@@ -474,6 +486,9 @@ func (a *Agent) TableSchema(table string, args ...interface{}) ([]TableSchema, e
 		case Oracle:
 			query = sqlQueryTableSchemaOracle
 			param = append(param, a.DbName(), table)
+		case PostgreSql:
+			query = sqlQueryTableSchemaPostgreSql
+			param = append(param, table)
 		default:
 			return nil, errorStr(errorUnknownSqlTypeForAgentTables)
 		}
@@ -510,6 +525,9 @@ func (a *Agent) TableSchemaTx(table string, args ...interface{}) ([]TableSchema,
 		case Oracle:
 			query = sqlQueryTableSchemaOracle
 			param = append(param, a.DbName(), table)
+		case PostgreSql:
+			query = sqlQueryTableSchemaPostgreSql
+			param = append(param, table)
 		default:
 			return nil, errorStr(errorUnknownSqlTypeForAgentTables)
 		}
@@ -958,6 +976,15 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 					fallthrough
 				case "sql.NullTime":
 					record[colType.Name()] = rowValue[i].(time.Time)
+				case "int32":
+					fallthrough
+				case "sql.NullInt32":
+					switch rowValue[i].(type) {
+					case []byte:
+						record[colType.Name()], _ = strconv.ParseInt(string(rowValue[i].([]byte)), 10, 32)
+					default:
+						record[colType.Name()] = rowValue[i]
+					}
 				case "int64":
 					fallthrough
 				case "sql.NullInt64":
@@ -975,9 +1002,28 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 						record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]byte)), 64)
 					case "NUMERIC":
 						record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]byte)), 64)
+					case "BLOB":
+						record[colType.Name()] = rowValue[i].([]byte)
 					default:
 						record[colType.Name()] = string(rowValue[i].([]byte))
 					}
+				case "sql.NullFloat64":
+					fallthrough
+				case "interface {}":
+					fallthrough
+				case "[]uint8":
+					switch dbType {
+					case "DOUBLE":
+						record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]uint8)), 64)
+					case "DECIMAL":
+						record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]uint8)), 64)
+					case "NUMERIC":
+						record[colType.Name()], _ = strconv.ParseFloat(string(rowValue[i].([]uint8)), 64)
+					default:
+						record[colType.Name()] = rowValue[i]
+					}
+				case "godror.Number":
+					record[colType.Name()], _ = strconv.ParseFloat(jcast.String(rowValue[i]), 64)
 				default:
 					record[colType.Name()] = rowValue[i]
 				}

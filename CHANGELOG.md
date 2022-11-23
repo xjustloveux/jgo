@@ -1,3 +1,15 @@
+# v1.3.0 (2022.11.23)
+New Features：
+* Add `PostgreSql` sql type, it is designed on basic of [pq](https://github.com/lib/pq)
+* Add jsql test
+
+Changes：
+* `Oracle` sql type design reference middleware changed from [go-oci8](https://github.com/mattn/go-oci8) to [godror](https://github.com/godror/godror)
+
+Bug Fixes：
+* Fixed jsql.TableAgent.Drop no agent bug
+* Fixed jcast.strToTime bug
+
 # v1.2.14 (2022.11.05)
 Changes：
 * jsql.TableSchema PrimaryKey column type from string to interface{}

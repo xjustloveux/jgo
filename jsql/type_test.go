@@ -17,7 +17,8 @@ func TestType_DriverName(t *testing.T) {
 	}{
 		{MySql, "mysql"},
 		{MSSql, "sqlserver"},
-		{Oracle, "oci8"},
+		{Oracle, "godror"},
+		{PostgreSql, "postgres"},
 		{Unknown, ""},
 	}
 	for _, v := range tests {
@@ -34,6 +35,7 @@ func TestType_Param(t *testing.T) {
 		{MySql, "?"},
 		{MSSql, "@p1"},
 		{Oracle, ":0"},
+		{PostgreSql, "$1"},
 		{Unknown, "?"},
 	}
 	for _, v := range tests {
@@ -50,6 +52,7 @@ func TestParseDBType(t *testing.T) {
 		{"MySql", MySql},
 		{"MSSql", MSSql},
 		{"Oracle", Oracle},
+		{"PostgreSql", PostgreSql},
 		{"Unknown", Unknown},
 	}
 	for _, v := range tests {

@@ -106,18 +106,23 @@
     "dataSource": {
       "testMySql": {
         "type": "MySql",
-        "dsn": "user:password@tcp(192.168.1.1:3306)/DBName?checkConnLiveness=false&maxAllowedPacket=0&charset=utf8mb4&parseTime=true",
-        "dbName": "DBName"
+        "dsn": "MYSQL_DSN",
+        "dbName": "MYSQL_DB"
       },
       "testMSSql": {
         "type": "MSSql",
-        "dsn": "Data Source=192.168.1.1,1433;Initial Catalog=DBName;Integrated Security=False;User ID=user;Password=password;Connection Timeout=120;MultipleActiveResultSets=True",
-        "dbName": "DBName"
+        "dsn": "MSSQL_DSN",
+        "dbName": "MSSQL_DB"
       },
       "testOracle": {
         "type": "Oracle",
-        "dsn": "user/password@192.168.1.1:1521/ORCLCDB",
-        "dbName": "DBName"
+        "dsn": "ORACLE_DSN",
+        "dbName": "ORACLE_DB"
+      },
+      "testPostgreSql": {
+        "type": "PostgreSql",
+        "dsn": "POSTGRESQL_DSN",
+        "dbName": "POSTGRESQL_DB"
       }
     }
   },

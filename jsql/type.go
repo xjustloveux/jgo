@@ -17,6 +17,7 @@ const (
 	MySql Type = iota
 	MSSql
 	Oracle
+	PostgreSql
 )
 
 // DriverName returns sql driver name
@@ -27,7 +28,9 @@ func (t Type) DriverName() string {
 	case MSSql:
 		return "sqlserver"
 	case Oracle:
-		return "oci8"
+		return "godror"
+	case PostgreSql:
+		return "postgres"
 	}
 	return ""
 }
@@ -43,6 +46,8 @@ func (t Type) Param(i int) string {
 		return fmt.Sprint("@p", strconv.FormatInt(int64(i+1), 10))
 	case Oracle:
 		return fmt.Sprint(":", strconv.FormatInt(int64(i), 10))
+	case PostgreSql:
+		return fmt.Sprint("$", strconv.FormatInt(int64(i+1), 10))
 	}
 }
 
@@ -55,6 +60,8 @@ func ParseDBType(t string) (Type, error) {
 		return MSSql, nil
 	case "oracle":
 		return Oracle, nil
+	case "postgresql":
+		return PostgreSql, nil
 	}
 	return Unknown, errorFmt(errorNotValidDbType, t)
 }

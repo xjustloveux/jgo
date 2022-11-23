@@ -1,181 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dao>
-    <select id="testMySql1">
-        SELECT * FROM USR
-    </select>
-    <select id="testMSSql1">
-        SELECT * FROM USR
-    </select>
-    <select id="testOracle1">
-        SELECT * FROM M_USER
-    </select>
-
-    <select id="testMySql2">
-        SELECT * FROM USR
-        <where>
-            OR USR_STS = @{USR_STS}
-            <if test="!nil(USR_ID) and USR_ID != ''">
-                AND USR_ID = @{USR_ID}
-            </if>
-        </where>
-    </select>
-    <select id="testMSSql2">
-        SELECT * FROM USR
-        <where>
-            OR USE_STS = @{USE_STS}
-            <if test="!nil(USR_ID) and USR_ID != ''">
-                AND USR_ID = @{USR_ID}
-            </if>
-        </where>
-    </select>
-    <select id="testOracle2">
-        SELECT * FROM M_USER
-        <where>
-            OR USER_STATUS = @{USER_STATUS}
-            <if test="!nil(USER_ID) and USER_ID != ''">
-                AND USER_ID = @{USER_ID}
-            </if>
-        </where>
-    </select>
-
-    <select id="testMySql3">
-        SELECT ${COL1}, ${COL2} FROM USR
-        <orderBy last="true">
-            ${SORT} DESC
-        </orderBy>
-    </select>
-    <select id="testMSSql3">
-        SELECT ${COL1}, ${COL2} FROM USR
-        <orderBy last="true">
-            ${SORT} DESC
-        </orderBy>
-    </select>
-    <select id="testOracle3">
-        SELECT ${COL1}, ${COL2} FROM M_USER
-        <orderBy last="true">
-            ${SORT} DESC
-        </orderBy>
-    </select>
-
-    <select id="testMySql4">
-        SELECT
-        <foreach params="list" open="" separator="," close="">
-            #{val}
-        </foreach>
-        FROM USR
-    </select>
-    <select id="testMSSql4">
-        SELECT
-        <foreach params="list" open="" separator="," close="">
-            #{val}
-        </foreach>
-        FROM USR
-    </select>
-    <select id="testOracle4">
-        SELECT
-        <foreach params="list" open="" separator="," close="">
-            #{val}
-        </foreach>
-        FROM M_USER
-    </select>
-
-    <select id="testSelect5">
-        SELECT
-        <if test="TYPE == 'MySql'">
-            <foreach params="MySqlList" open="" separator="," close="">
-                <if test="AS_NAME">#{val} AS #{key}</if>
-                <if test="!AS_NAME">#{val}</if>
-            </foreach>
-        </if>
-        <if test="TYPE == 'MSSql'">
-            <foreach params="MSSqlList" open="" separator="," close="">
-                <if test="AS_NAME">#{val} AS #{key}</if>
-                <if test="!AS_NAME">#{val}</if>
-            </foreach>
-        </if>
-        <if test="TYPE == 'Oracle'">
-            <foreach params="OracleList" open="" separator="," close="">
-                <if test="AS_NAME">#{val} AS #{key}</if>
-                <if test="!AS_NAME">#{val}</if>
-            </foreach>
-        </if>
-        FROM ${TABLE}
-    </select>
-
-    <select id="testSelect6">
-        SELECT *
-        <!--comment-->
-        FROM ${TABLE}
-        --comment
-        <where>
-        AND ${COL} = @{VAL}
-        <!--
-        <![CDATA[AND ${COL2} >= @{VAL2}]]>
-        -->
-        <![CDATA[--comment]]>
-        <![CDATA[--comment<!--comment-->]]>
-        <if test="TEST">
-            <!--
-            comment
-            <foreach params="list" open="" separator="," close="">
-                #{val}
-            </foreach>
-            -->
-            --comment
-        </if>
-        <![CDATA[
-        --comment
-        <!--
-            comment
-            AND ${COL2} >= @{VAL2}
-        -->
-]]>
-        <if test="TEST2">
-            AND ${COL2} <![CDATA[ >= ]]> @{VAL2}
-            <!--
-            comment
-            <foreach params="list" open="" separator="," close="">
-                #{val}
-            </foreach>
-            -->
-            --comment
-        </if>
-        <!--
-        <if test="!nil(VAL) and VAL != ''">
-            AND COL = @{VAL}
-        </if>
-        comment
-        -->
-        </where>
-        <orderBy>
-            ${COL} DESC
-        </orderBy>
-    </select>
-
-    <insert id="testInsert1">
+    <other id="CreateMySqlTable">
+        CREATE TABLE TEST
+        (
+            COL1 INT                         NOT NULL COMMENT 'int type' PRIMARY KEY,
+            COL2 DECIMAL(10, 2) DEFAULT 7.70 NOT NULL COMMENT 'decimal(10, 2) type',
+            COL3 DATETIME                        NULL COMMENT 'datetime type',
+            COL4 VARCHAR(10)                     NULL COMMENT 'varchar(10) type',
+            COL5 BLOB                            NULL COMMENT 'blob type'
+        )
+        COMMENT 'test table';
+    </other>
+    <other id="CreateMSSqlTable">
+        CREATE TABLE TEST
+        (
+            COL1 INT                         NOT NULL CONSTRAINT [PRIMARY] PRIMARY KEY NONCLUSTERED,
+            COL2 DECIMAL(10, 2) DEFAULT 7.70 NOT NULL,
+            COL3 DATETIME,
+            COL4 VARCHAR(10),
+            COL5 VARBINARY(MAX)
+        );
+        EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', 'test table', 'SCHEMA', 'dbo', 'TABLE', 'TEST';
+        EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', 'int type', 'SCHEMA', 'dbo', 'TABLE', 'TEST', 'COLUMN', 'COL1';
+        EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', 'decimal(10, 2) type', 'SCHEMA', 'dbo', 'TABLE', 'TEST', 'COLUMN', 'COL2';
+        EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', 'datetime type', 'SCHEMA', 'dbo', 'TABLE', 'TEST', 'COLUMN', 'COL3';
+        EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', 'varchar(10) type', 'SCHEMA', 'dbo', 'TABLE', 'TEST', 'COLUMN', 'COL4';
+        EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', 'varbinary(max) type', 'SCHEMA', 'dbo', 'TABLE', 'TEST', 'COLUMN', 'COL5';
+    </other>
+    <other id="CreateOracleTable">
+        CREATE TABLE TEST
+        (
+            COL1 NUMBER                     NOT NULL CONSTRAINT "PRIMARY" PRIMARY KEY,
+            COL2 NUMBER(10, 2) DEFAULT 7.70 NOT NULL,
+            COL3 DATE,
+            COL4 VARCHAR(10),
+            COL5 BLOB
+        )
+    </other>
+    <other id="CreateOracleTableComment1">
+        COMMENT ON TABLE TEST IS 'test table'
+    </other>
+    <other id="CreateOracleTableComment2">
+        COMMENT ON COLUMN TEST.COL1 IS 'NUMBER type'
+    </other>
+    <other id="CreateOracleTableComment3">
+        COMMENT ON COLUMN TEST.COL2 IS 'NUMBER(10, 2) type'
+    </other>
+    <other id="CreateOracleTableComment4">
+        COMMENT ON COLUMN TEST.COL3 IS 'date type'
+    </other>
+    <other id="CreateOracleTableComment5">
+        COMMENT ON COLUMN TEST.COL4 IS 'varchar2(10) type'
+    </other>
+    <other id="CreateOracleTableComment6">
+        COMMENT ON COLUMN TEST.COL5 IS 'blob type'
+    </other>
+    <other id="CreatePostgreSqlTable">
+        CREATE TABLE TEST
+        (
+            COL1 INTEGER                     NOT NULL CONSTRAINT "PRIMARY" PRIMARY KEY,
+            COL2 NUMERIC(10, 2) DEFAULT 7.70 NOT NULL,
+            COL3 TIMESTAMP,
+            COL4 VARCHAR(10),
+            COL5 BYTEA
+        );
+        COMMENT ON TABLE TEST IS 'test table';
+        COMMENT ON COLUMN TEST.COL1 IS 'integer type';
+        COMMENT ON COLUMN TEST.COL2 IS 'numeric(10, 2) type';
+        COMMENT ON COLUMN TEST.COL3 IS 'timestamp without time zone type';
+        COMMENT ON COLUMN TEST.COL4 IS 'varchar(10) type';
+        COMMENT ON COLUMN TEST.COL5 IS 'bytea type';
+    </other>
+    <insert id="Insert">
         INSERT INTO ${TABLE}
-        <foreach params="list" open="(" separator="," close=")">
+        <foreach params="LIST" open="(" separator="," close=")">
             #{val}
         </foreach>
         VALUES
-        <foreach params="list" open="(" separator="," close=")">
+        <foreach params="LIST" open="(" separator="," close=")">
             @{#{val}}
         </foreach>
     </insert>
-
-    <update id="testUpdate1">
-        UPDATE ${TABLE} SET ${COL1}=@{${COL1}} WHERE ${COL2}=@{${COL2}}
+    <update id="Update">
+        UPDATE TEST SET COL1 = @{COL1} WHERE COL4 = @{COL4}
     </update>
-
-    <delete id="testDelete1">
-        DELETE FROM ${TABLE} WHERE ${COL}=@{${COL}}
+    <delete id="Delete">
+        DELETE FROM TEST WHERE COL1 = @{COL1}
     </delete>
-
-    <other id="testOther1">
-        CREATE TABLE TEST_CREATE (TEST_COL VARCHAR(255))
-    </other>
-
-    <other id="testOther2">
-        DROP TABLE TEST_CREATE
-    </other>
+    <select id="Query">
+        SELECT * FROM TEST WHERE COL1 = @{COL1}
+    </select>
+    <select id="QueryPage">
+        SELECT * FROM TEST
+    </select>
 </dao>
