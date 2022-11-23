@@ -26,7 +26,8 @@ jobs:
 
     - name: Copy
       run: |
-        mv ./files/test/go ./go.mod
+        mv ./files/test/mod ./go.mod
+        mv ./files/test/sum ./go.sum
         mv ./files/test/jsql/jsql_test ./jsql/jsql_test.go
         sed -i 's/MYSQL_DSN/${{ secrets.MYSQL_DSN }}/g' ./files/test-jconf.json
         sed -i 's/MYSQL_DB/${{ secrets.MYSQL_DB }}/g' ./files/test-jconf.json
