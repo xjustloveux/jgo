@@ -1,3 +1,10 @@
+# v1.3.1 (2022.11.24)
+New Features：
+* Json value support
+
+Bug Fixes：
+* Fixed ignore dash character '_' error
+
 # v1.3.0 (2022.11.23)
 New Features：
 * Add `PostgreSql` sql type, it is designed on basic of [pq](https://github.com/lib/pq)

@@ -92,8 +92,11 @@ func (ds *dataSource) open() error {
 	if nds.DN != "" {
 		driverName = nds.DN
 	} else {
-		t, _ := ParseDBType(nds.Type)
-		driverName = t.DriverName()
+		if t, err := ParseDBType(nds.Type); err != nil {
+			return err
+		} else {
+			driverName = t.DriverName()
+		}
 	}
 	if decodeFunc != nil && ds.EncodeData == "" {
 		in := make([]reflect.Value, 1)

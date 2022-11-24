@@ -204,13 +204,16 @@ func GetAgent(dsKey ...string) (*Agent, error) {
 	if ds == nil {
 		return nil, errorFmt(errorUnknownDataSource, key)
 	}
-	t, _ := ParseDBType(ds.Type)
-	if ds.db == nil {
-		if err := ds.open(); err != nil {
-			return nil, err
+	if t, err := ParseDBType(ds.Type); err != nil {
+		return nil, err
+	} else {
+		if ds.db == nil {
+			if err = ds.open(); err != nil {
+				return nil, err
+			}
 		}
+		return &Agent{db: ds.db, t: t, dbName: ds.DbName}, nil
 	}
-	return &Agent{db: ds.db, t: t, dbName: ds.DbName}, nil
 }
 
 func errorFmt(e jError, args ...interface{}) error {

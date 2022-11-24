@@ -182,7 +182,10 @@ func (e *element) getSql(param map[string]interface{}, page bool) (string, strin
 		if query, order, err = nodesToQuery(e.nodes, param, page); err != nil {
 			return "", "", err
 		}
-		last, _ := jcast.Bool(e.attr["last"])
+		var last bool
+		if last, err = jcast.Bool(e.attr["last"]); err != nil {
+			return "", "", err
+		}
 		if page && last {
 			order = query
 			query = ""
