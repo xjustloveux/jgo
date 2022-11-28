@@ -1,3 +1,7 @@
+# v1.3.2 (2022.11.28)
+Bug Fixes：
+* Fixed jsql table schema bug
+
 # v1.3.1 (2022.11.24)
 New Features：
 * Json value support
