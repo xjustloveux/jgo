@@ -1,3 +1,7 @@
+# v1.3.3 (2022.11.30)
+Bug Fixes：
+* Fixed jsql element order tag last attr ignore error
+
 # v1.3.2 (2022.11.28)
 Bug Fixes：
 * Fixed jsql table schema bug
