@@ -720,7 +720,12 @@ func (a *Agent) queryPage(ct bool, id string, start, end int64, args ...interfac
 		return result, err
 	}
 	if v != nil {
-		m := map[string]interface{}{"Rows": result.Rows()}
+		m := map[string]interface{}{
+			"Rows":        result.Rows(),
+			"RowStart":    result.RowStart(),
+			"RowEnd":      result.RowEnd(),
+			"TotalRecord": result.TotalRecord(),
+		}
 		if err = jfile.Convert(m, v); err != nil {
 			return result, err
 		}

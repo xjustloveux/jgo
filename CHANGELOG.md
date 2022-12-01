@@ -1,3 +1,7 @@
+# v1.3.5 (2022.12.01)
+Changes：
+* Add jsql query page convert data RowStart, RowEnd and TotalRecord
+
 # v1.3.4 (2022.12.01)
 Bug Fixes：
 * Fixed getDefault function warning
