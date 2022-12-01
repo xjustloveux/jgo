@@ -243,7 +243,7 @@ func createDataSource() error {
 		if dm, err = jcast.StringMapInterface(dv); err != nil {
 			return err
 		}
-		dsMap[dk] = dataSource{}.getDefault()
+		dsMap[dk] = (&dataSource{}).getDefault()
 		if err = jfile.Convert(dm, dsMap[dk]); err != nil {
 			return err
 		}

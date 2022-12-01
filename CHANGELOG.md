@@ -1,3 +1,7 @@
+# v1.3.4 (2022.12.01)
+Bug Fixes：
+* Fixed getDefault function warning
+
 # v1.3.3 (2022.11.30)
 Bug Fixes：
 * Fixed jsql element order tag last attr ignore error

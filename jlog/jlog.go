@@ -467,13 +467,13 @@ func errorStr(e jError) error {
 func createLogger() error {
 	pack.appender = make(map[string]*appender)
 	for k, v := range pack.Appender {
-		pack.appender[k] = appender{}.getDefault()
+		pack.appender[k] = (&appender{}).getDefault()
 		if err := jfile.Convert(v, pack.appender[k]); err != nil {
 			return err
 		}
 	}
 	if pack.appender[console] == nil {
-		pack.appender[console] = appender{}.getDefault()
+		pack.appender[console] = (&appender{}).getDefault()
 		pack.appender[console].Level = "Debug"
 		pack.appender[console].Output.Name = console
 	}
@@ -491,7 +491,7 @@ func createLogger() error {
 			}
 			log := logMap[pn]
 			if log == nil {
-				log = logger{}.getDefault()
+				log = (&logger{}).getDefault()
 				logMap[pn] = log
 			}
 			for _, av := range cl.Appender {

@@ -28,7 +28,7 @@ type dataSource struct {
 	db                      *sql.DB
 }
 
-func (ds dataSource) getDefault() *dataSource {
+func (*dataSource) getDefault() *dataSource {
 	return &dataSource{
 		ConnMaxLifetime:         120,
 		ConnMaxLifetimeDuration: "Second",
@@ -54,7 +54,7 @@ func (ds *dataSource) open() error {
 				var err error
 				var encodeStr string
 				dsm := make(map[string]interface{})
-				tds := dataSource{}.getDefault()
+				tds := (&dataSource{}).getDefault()
 				in := make([]reflect.Value, 1)
 				in[0] = reflect.ValueOf(ds.EncodeData)
 				out := f.Call(in)

@@ -17,7 +17,7 @@ type logger struct {
 	mux  *sync.RWMutex
 }
 
-func (logger) getDefault() *logger {
+func (*logger) getDefault() *logger {
 	return &logger{
 		logs: make(map[string]*logrus.Logger),
 		mux:  new(sync.RWMutex),

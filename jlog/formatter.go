@@ -15,7 +15,7 @@ type formatter struct {
 	Json *logrus.JSONFormatter
 }
 
-func (f formatter) getDefault() *formatter {
+func (*formatter) getDefault() *formatter {
 	return &formatter{
 		Type: "TEXT",
 		Text: &logrus.TextFormatter{TimestampFormat: jtime.DateTime},

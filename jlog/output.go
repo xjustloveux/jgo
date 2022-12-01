@@ -23,7 +23,7 @@ type Output struct {
 	Handler              string
 }
 
-func (o Output) getDefault() *Output {
+func (*Output) getDefault() *Output {
 	return &Output{
 		Name:                 "",
 		P:                    "",

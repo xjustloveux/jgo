@@ -12,11 +12,11 @@ type appender struct {
 	Output    *Output
 }
 
-func (a appender) getDefault() *appender {
+func (*appender) getDefault() *appender {
 	return &appender{
 		Level:     "info",
-		Formatter: formatter{}.getDefault(),
-		Output:    Output{}.getDefault(),
+		Formatter: (&formatter{}).getDefault(),
+		Output:    (&Output{}).getDefault(),
 	}
 }
 

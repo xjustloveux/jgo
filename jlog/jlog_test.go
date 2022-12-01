@@ -46,7 +46,7 @@ func TestLog(t *testing.T) {
 	SetFileName("test-jconf.json")
 	AddWriter("test", os.Stdout)
 	AddHandler("test", &testHandler{})
-	o := Output{}.getDefault()
+	o := (&Output{}).getDefault()
 	o.MaxAgeDuration = "Unknown"
 	if _, err := NewRotateLogs("", o, make(map[string]string)); err == nil {
 		t.Error(fmt.Sprint(testErr, " NewRotateLogs must be return error"))
