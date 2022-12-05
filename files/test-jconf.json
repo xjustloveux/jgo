@@ -58,8 +58,9 @@
         "level": "Error",
         "formatter": {
           "type": "JSON",
+          "Location": "UTC",
           "json": {
-            "timestampFormat": "2006-01-02"
+            "timestampFormat": "2006-01-02 15:04"
           }
         },
         "output": {
@@ -127,6 +128,7 @@
     }
   },
   "cron": {
+    "Location": "UTC",
     "schedule": [
       {
         "Name": "Sch01",

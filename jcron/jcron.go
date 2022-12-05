@@ -401,7 +401,7 @@ func run() {
 		close(noneCh)
 	}()
 	var nextTime time.Time
-	now := time.Now().Local()
+	now := getNow()
 	for _, s := range runSch {
 		if jobs[s.job] == nil {
 			var nt time.Time
@@ -423,7 +423,7 @@ func run() {
 		}
 		select {
 		case <-time.After(nextTime.Sub(now)):
-			now = time.Now().Local()
+			now = getNow()
 			for _, s := range runSch {
 				if now.After(s.next) {
 					if j := jobs[s.job]; j != nil {
@@ -462,6 +462,18 @@ func run() {
 	}
 }
 
+func getNow() time.Time {
+	now := time.Now().Local()
+	if len(pack.Location) > 0 {
+		if loc, err := time.LoadLocation(pack.Location); err != nil {
+			subject.Next(err)
+		} else {
+			now = time.Now().In(loc)
+		}
+	}
+	return now
+}
+
 func removeSch() []*schedule {
 	ns := make([]*schedule, 0)
 	for _, s := range runSch {
@@ -482,7 +494,7 @@ func runCh(c channel, now time.Time) channel {
 		}
 	case addSch:
 		if s, ok := c.data.(*schedule); ok {
-			now = time.Now().Local()
+			now = getNow()
 			if ts := totalSch[s.name]; ts != nil && ts != s {
 				noneCh <- channel{
 					action: stopSch,

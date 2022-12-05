@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 )
 
 type logger struct {
@@ -103,12 +104,37 @@ func (l *logger) ClearLogger() {
 
 func (l *logger) addLogger(an string, pn string, a *appender, param map[string]string) error {
 	log := logrus.New()
-	switch strings.ToUpper(a.Formatter.Type) {
-	case "TEXT":
-		log.SetFormatter(a.Formatter.Text)
-	case "JSON":
-		log.SetFormatter(a.Formatter.Json)
+	var loc *time.Location
+	if len(a.Formatter.Location) > 0 {
+		var err error
+		if loc, err = time.LoadLocation(a.Formatter.Location); err != nil {
+			return err
+		}
 	}
+	var f logrus.Formatter
+	switch strings.ToUpper(a.Formatter.Type) {
+	default:
+		fallthrough
+	case "TEXT":
+		if loc == nil {
+			f = a.Formatter.Text
+		} else {
+			f = timeFormatter{
+				loc: loc,
+				log: a.Formatter.Text,
+			}
+		}
+	case "JSON":
+		if loc == nil {
+			f = a.Formatter.Json
+		} else {
+			f = timeFormatter{
+				loc: loc,
+				log: a.Formatter.Json,
+			}
+		}
+	}
+	log.SetFormatter(f)
 	log.SetLevel(a.getLogrusLevel())
 	if a.Output.Name != "" && writer[a.Output.Name] != nil {
 		log.SetOutput(writer[a.Output.Name])

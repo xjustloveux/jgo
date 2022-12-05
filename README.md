@@ -441,6 +441,7 @@ Configuration file default `json` format, you can use `jcron.SetFormat` to set y
 
 | Property Name    | Required | Type                   | Default Value | Comment                            |
 |------------------|----------|------------------------|---------------|------------------------------------|
+| Location         | false    | string                 | empty         | time location                      |
 | Schedule         | true     | []*SchInfo             | empty         |                                    |
 | Schedule.Name    | true     | string                 | empty         | schedule name.                     |
 | Schedule.Cron    | true     | string                 | empty         | [CronExpression](#CronExpression). |
@@ -545,6 +546,7 @@ Configuration file default `json` format, you can use `jlog.SetFormat` to set yo
 | Appender.Level                       | false    | string                 | info                                                   | `logrus.Level`                                                                                                       |
 | Appender.Formatter                   | false    | *formatter             | default formatter                                      |                                                                                                                      |
 | Appender.Formatter.Type              | false    | string                 | TEXT                                                   | `TEXT`, `JSON`                                                                                                       |
+| Appender.Formatter.Location          | false    | string                 | empty                                                  | time location                                                                                                        |
 | Appender.Formatter.Text              | false    | *logrus.TextFormatter  | &logrus.TextFormatter{TimestampFormat: jtime.DateTime} |                                                                                                                      |
 | Appender.Formatter.Json              | false    | *logrus.JSONFormatter  | &logrus.JSONFormatter{TimestampFormat: jtime.DateTime} |                                                                                                                      |
 | Appender.Output                      | true     | *output                | default output                                         |                                                                                                                      |

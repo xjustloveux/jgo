@@ -9,5 +9,6 @@ type configData struct {
 }
 
 type configPack struct {
+	Location string
 	Schedule []*SchInfo
 }

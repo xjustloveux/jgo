@@ -1,3 +1,7 @@
+# v1.3.6 (2022.12.05)
+New Features：
+* jcron and jlog add time location setting
+
 # v1.3.5 (2022.12.01)
 Changes：
 * Add jsql query page convert data RowStart, RowEnd and TotalRecord
