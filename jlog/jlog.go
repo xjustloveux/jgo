@@ -479,7 +479,7 @@ func createLogger() error {
 	}
 	pack.Logs = append(pack.Logs, &logs{
 		Program:  []string{Default},
-		Appender: []string{console},
+		Appender: append(pack.Default, console),
 	})
 	for _, cl := range pack.Logs {
 		for _, pv := range cl.Program {

@@ -1,3 +1,7 @@
+# v1.3.8 (2022.12.05)
+New Features：
+* jlog default appender setting custom
+
 # v1.3.7 (2022.12.05)
 Bug Fixes：
 * Fixed jsql query page in postgresql bug

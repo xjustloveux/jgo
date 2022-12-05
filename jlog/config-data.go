@@ -10,6 +10,7 @@ type configData struct {
 
 type configPack struct {
 	Params   map[string]string
+	Default  []string
 	Appender map[string]map[string]interface{}
 	Logs     []*logs
 	appender map[string]*appender
