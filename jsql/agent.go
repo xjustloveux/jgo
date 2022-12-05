@@ -13,6 +13,7 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -753,9 +754,15 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 		return nil, err
 	}
 	if res, ok := resPage.(agentResult); ok {
+		api := allowPagingId
+		obi := orderById
+		if a.t == PostgreSql {
+			api = strings.ToLower(api)
+			obi = strings.ToLower(obi)
+		}
 		for i := range res.rows {
-			delete(res.rows[i], allowPagingId)
-			delete(res.rows[i], orderById)
+			delete(res.rows[i], api)
+			delete(res.rows[i], obi)
 		}
 	}
 	subject.Next(countQuery)
@@ -773,7 +780,11 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 	var m map[string]interface{}
 	m = resCount.Rows()[0]
 	var total int64
-	if total, err = jcast.Int64(m[totalRecord]); err != nil {
+	tr := totalRecord
+	if a.t == PostgreSql {
+		tr = strings.ToLower(tr)
+	}
+	if total, err = jcast.Int64(m[tr]); err != nil {
 		return nil, err
 	}
 	return agentResult{

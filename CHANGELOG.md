@@ -1,3 +1,7 @@
+# v1.3.7 (2022.12.05)
+Bug Fixes：
+* Fixed jsql query page in postgresql bug
+
 # v1.3.6 (2022.12.05)
 New Features：
 * jcron and jlog add time location setting
