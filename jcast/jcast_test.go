@@ -324,6 +324,62 @@ func TestTimeFormatString(t *testing.T) {
 	}
 }
 
+func TestTimeLocTransform(t *testing.T) {
+	now := time.Now()
+	var err error
+	var ts string
+	if ts, err = TimeString(now); err != nil {
+		t.Error(err)
+		return
+	}
+	utc := fmt.Sprint(ts, " +0000 UTC")
+	cst := fmt.Sprint(ts, " +0800 CST")
+	pst := fmt.Sprint(ts, " -0800 PST")
+	var utcLoc, cstLoc, pstLoc *time.Location
+	if utcLoc, err = time.LoadLocation("UTC"); err != nil {
+		t.Error(err)
+		return
+	}
+	if cstLoc, err = time.LoadLocation("Asia/Taipei"); err != nil {
+		t.Error(err)
+		return
+	}
+	if pstLoc, err = time.LoadLocation("America/Los_Angeles"); err != nil {
+		t.Error(err)
+		return
+	}
+	tests := []struct {
+		input  interface{}
+		output string
+	}{
+		{"UTC", utc},
+		{"Asia/Taipei", cst},
+		{"America/Los_Angeles", pst},
+		{utcLoc, utc},
+		{cstLoc, cst},
+		{pstLoc, pst},
+		{"error", "error"},
+		{7, "error"},
+		{nil, "error"},
+	}
+	for _, test := range tests {
+		var nt time.Time
+		if nt, err = TimeLocTransform(now, test.input); err != nil {
+			if test.output != "error" {
+				t.Error(err)
+			}
+		} else {
+			var nts string
+			if nts, err = TimeFormatString(nt, jtime.DateS); err != nil {
+				t.Error(err)
+			} else {
+				msg := fmt.Sprintf("%v != %v", nts, test.output)
+				assert.Equal(t, test.output, nts, msg)
+			}
+		}
+	}
+}
+
 func TestString(t *testing.T) {
 	now := time.Now()
 	tests := []struct {

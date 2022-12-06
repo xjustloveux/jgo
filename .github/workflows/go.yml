@@ -13,23 +13,23 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Setup Node.js environment
+    - name: Setup Node.js Environment
       uses: actions/setup-node@v3.3.0
       with:
         node-version: '18'
 
-    - name: Set up Go
+    - name: Setup Go Environment
       uses: actions/setup-go@v3
       with:
         go-version: 1.18
 
-    - name: Get
+    - name: Go Get
       run: go get -v
       
-    - name: Build
+    - name: Go Build
       run: go build -v ./...
 
-    - name: Copy And Replace
+    - name: Copy And Replace Secrets
       run: |
         mv ./files/test/mod ./go.mod
         mv ./files/test/sum ./go.sum
@@ -51,14 +51,17 @@ jobs:
         unzip instantclient-basic-linux.x64-21.8.0.0.0dbru.zip
         sudo apt-get install libaio1
         sudo sh -c "echo /opt/oracle/instantclient_21_8 > /etc/ld.so.conf.d/oracle-instantclient.conf"
-        sudo ldconfig
         export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_8:$LD_LIBRARY_PATH
+        sudo ldconfig
 
-    - name: Get
+    - name: Install Time Zone
+      run: sudo apt-get install tzdata
+
+    - name: Go Get
       run: go get -v
 
-    - name: Test
+    - name: Go Test
       run: go test -v ./... -covermode=count -coverprofile=coverage.out
 
-    - name: Upload coverage to Codecov
+    - name: Upload Coverage To Codecov
       run: bash <(curl -s https://codecov.io/bash)

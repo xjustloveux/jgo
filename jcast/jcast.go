@@ -18,10 +18,11 @@ import (
 )
 
 const (
-	errorInterfaceTo = jError("unable to cast %#v of type %T to %s")
-	errorParseTime   = jError("unable to parse time: %s")
-	errorNegative    = jError("unable to cast negative value")
-	errorOutRange    = jError("parsing %q: value out of range")
+	errorInterfaceTo  = jError("unable to cast %#v of type %T to %s")
+	errorParseTime    = jError("unable to parse time: %s")
+	errorNegative     = jError("unable to cast negative value")
+	errorOutRange     = jError("parsing %q: value out of range")
+	errorLocationType = jError("unknown location type %T")
 )
 
 const (
@@ -322,6 +323,32 @@ func TimeFormatString(i interface{}, format string) (string, error) {
 			return t.Format(format), nil
 		}
 	}
+}
+
+// TimeLocTransform transform time location
+func TimeLocTransform(t time.Time, loc interface{}) (time.Time, error) {
+	var l *time.Location
+	switch loc.(type) {
+	case *time.Location:
+		l = loc.(*time.Location)
+	case string:
+		var err error
+		if l, err = time.LoadLocation(loc.(string)); err != nil {
+			return time.Time{}, err
+		}
+	default:
+		return time.Time{}, errorFmt(errorLocationType, loc)
+	}
+	var err error
+	var ts string
+	if ts, err = TimeString(t); err != nil {
+		return time.Time{}, err
+	}
+	var zs string
+	if zs, err = TimeFormatString(t.In(l), " -0700 MST"); err != nil {
+		return time.Time{}, err
+	}
+	return TimeLoc(fmt.Sprint(ts, zs), l)
 }
 
 // String interface to string

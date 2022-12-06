@@ -1,3 +1,7 @@
+# v1.3.9 (2022.12.06)
+New Features：
+* Add jcast.TimeLocTransform function
+
 # v1.3.8 (2022.12.05)
 New Features：
 * jlog default appender setting custom
