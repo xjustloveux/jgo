@@ -1,3 +1,7 @@
+# v1.3.10 (2022.12.05)
+Bug Fixes：
+* Remove jsql query page redundant subject event
+
 # v1.3.9 (2022.12.06)
 New Features：
 * Add jcast.TimeLocTransform function

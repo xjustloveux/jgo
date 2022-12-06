@@ -749,7 +749,6 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 	}
 	var resPage Result
 	var resCount Result
-	subject.Next(pageQuery)
 	if resPage, err = a.queryTx(false, pageQuery, args...); err != nil {
 		return nil, err
 	}
@@ -765,7 +764,6 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 			delete(res.rows[i], obi)
 		}
 	}
-	subject.Next(countQuery)
 	if resCount, err = a.queryTx(true, countQuery, args...); err != nil {
 		return nil, err
 	}
