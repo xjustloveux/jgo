@@ -7,6 +7,7 @@ package jlog
 import (
 	"fmt"
 	"github.com/xjustloveux/jgo/jslice"
+	"github.com/xjustloveux/jgo/jtime"
 	"os"
 	"path/filepath"
 	"strings"
@@ -85,7 +86,7 @@ func (l *logFile) rotation(lock bool) error {
 	return nil
 }
 
-func (l *logFile) remove(lock bool, age time.Duration, count int, current, currentLink string) error {
+func (l *logFile) remove(lock bool, sn string, age time.Duration, count int, current, currentLink string) error {
 	if lock {
 		l.mux.Lock()
 		defer func() {
@@ -93,7 +94,11 @@ func (l *logFile) remove(lock bool, age time.Duration, count int, current, curre
 		}()
 	}
 	if age > 0 || count > 0 {
-		if matches, err := filepath.Glob(fmt.Sprint(l.name, ".*")); err != nil {
+		format := jtime.FormatList()
+		for _, v := range format {
+			sn = strings.ReplaceAll(sn, fmt.Sprint("%", v), "*")
+		}
+		if matches, err := filepath.Glob(sn); err != nil {
 			return err
 		} else {
 			matches = l.sortByModTime(matches)
@@ -168,7 +173,7 @@ func (l *logFile) sortByModTime(list []string) []string {
 	return newList
 }
 
-func (l *logFile) write(lock bool, size int64, age time.Duration, count int, current, currentLink string, p []byte) (n int, err error) {
+func (l *logFile) write(lock bool, sn string, size int64, age time.Duration, count int, current, currentLink string, p []byte) (n int, err error) {
 	if lock {
 		l.mux.Lock()
 		defer func() {
@@ -185,7 +190,7 @@ func (l *logFile) write(lock bool, size int64, age time.Duration, count int, cur
 			}
 		}
 	}
-	if err = l.remove(false, age, count, current, currentLink); err != nil {
+	if err = l.remove(false, sn, age, count, current, currentLink); err != nil {
 		return 0, err
 	}
 	if l.file == nil {

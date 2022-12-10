@@ -1,3 +1,7 @@
+# v1.3.11 (2022.12.10)
+Bug Fixes：
+* Fixed jlog rotate bug
+
 # v1.3.10 (2022.12.05)
 Bug Fixes：
 * Remove jsql query page redundant subject event

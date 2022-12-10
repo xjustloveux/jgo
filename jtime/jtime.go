@@ -74,9 +74,8 @@ func ParseTimeDuration(t string) (time.Duration, error) {
 	return Unknown, errorf(errorNotValidTimeDuration, t)
 }
 
-func FormatString(str string, t time.Time) string {
-	arr := strings.Split(str, "%%")
-	format := []string{
+func FormatList() []string {
+	return []string{
 		"dddd", "ddd", "dd", "d", "DDD", "DD", "D",
 		"ffff", "fff", "ff", "f",
 		"FFFF", "FFF", "FF", "F",
@@ -91,6 +90,11 @@ func FormatString(str string, t time.Time) string {
 		"yyyy", "yyy", "yy", "y",
 		"zzzz", "zzz", "zz", "z", "Z",
 	}
+}
+
+func FormatString(str string, t time.Time) string {
+	arr := strings.Split(str, "%%")
+	format := FormatList()
 	v := ""
 	for i, s := range arr {
 		fs := s

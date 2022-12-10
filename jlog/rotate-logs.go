@@ -69,7 +69,7 @@ func (r *RotateLogs) Write(p []byte) (n int, err error) {
 			r.currentLink = lName
 		}
 	}
-	if n, err = file.write(true, r.rotationSize, r.maxAge, r.rotationCount, r.current, r.currentLink, p); err != nil {
+	if n, err = file.write(true, r.fileName, r.rotationSize, r.maxAge, r.rotationCount, r.current, r.currentLink, p); err != nil {
 		return n, err
 	} else {
 		if r.handler != nil {
