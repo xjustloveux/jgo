@@ -1,3 +1,7 @@
+# v1.3.12 (2022.12.10)
+Bug Fixes：
+* Fixed jcron next time bug
+
 # v1.3.11 (2022.12.10)
 Bug Fixes：
 * Fixed jlog rotate bug

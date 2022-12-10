@@ -471,5 +471,13 @@ func (s *schedule) getNum(n int, bits uint64) int {
 }
 
 func (s *schedule) getTime(year, month, day, hr, min, sec int) (time.Time, error) {
+	var t time.Time
+	if len(pack.Location) > 0 {
+		if loc, err := time.LoadLocation(pack.Location); err != nil {
+			return t, err
+		} else {
+			return jcast.TimeLoc(fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hr, min, sec), loc)
+		}
+	}
 	return jcast.Time(fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hr, min, sec))
 }
