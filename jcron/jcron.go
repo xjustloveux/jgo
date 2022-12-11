@@ -120,6 +120,15 @@ func Init() error {
 		return err
 	}
 	pack = data.Cron
+	if len(pack.Location) > 0 {
+		if loc, err := time.LoadLocation(pack.Location); err != nil {
+			return err
+		} else {
+			pack.loc = loc
+		}
+	} else {
+		pack.loc = time.Local
+	}
 	if err := createSchedule(); err != nil {
 		return err
 	}
@@ -463,15 +472,7 @@ func run() {
 }
 
 func getNow() time.Time {
-	now := time.Now().Local()
-	if len(pack.Location) > 0 {
-		if loc, err := time.LoadLocation(pack.Location); err != nil {
-			subject.Next(err)
-		} else {
-			now = time.Now().In(loc)
-		}
-	}
-	return now
+	return time.Now().In(pack.loc)
 }
 
 func removeSch() []*schedule {

@@ -4,6 +4,8 @@
 
 package jcron
 
+import "time"
+
 type configData struct {
 	Cron *configPack
 }
@@ -11,4 +13,5 @@ type configData struct {
 type configPack struct {
 	Location string
 	Schedule []*SchInfo
+	loc      *time.Location
 }

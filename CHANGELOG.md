@@ -1,3 +1,7 @@
+# v1.3.13 (2022.12.11)
+Changes：
+* Change jcron load location timings
+
 # v1.3.12 (2022.12.10)
 Bug Fixes：
 * Fixed jcron next time bug
