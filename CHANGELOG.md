@@ -1,3 +1,7 @@
+# v1.3.14 (2023.01.03)
+Bug Fixes：
+* Fixed jsql query page bug
+
 # v1.3.13 (2022.12.11)
 Changes：
 * Change jcron load location timings

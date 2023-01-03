@@ -406,7 +406,7 @@ func getPageSql(t Type, sql, obs string, start, end int64) (pageSql, countSql st
 		pageSql = fmt.Sprint(
 			"SELECT * FROM (SELECT ROW_NUMBER() OVER(", obs, ") AS ", allowPagingId, ", * ",
 			"FROM (SELECT *", obis, " FROM (", sql, ") AS TBS1) AS TABLE1) AS TABLE2 ",
-			"WHERE ", allowPagingId, " BETWEEN ", strconv.FormatInt(start-1, 10), " AND ", strconv.FormatInt(end-1, 10))
+			"WHERE ", allowPagingId, " BETWEEN ", strconv.FormatInt(start, 10), " AND ", strconv.FormatInt(end, 10))
 	}
 	countSql = fmt.Sprint("SELECT COUNT(1) AS ", totalRecord, " FROM (", sql, ") DATA")
 	return pageSql, countSql

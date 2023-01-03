@@ -539,8 +539,9 @@ func testQueryPage(t *testing.T) {
 				assert.Equal(t, val.COL5, res.Rows[i].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[i].COL5))
 			}
 			table := &TableAgent{
-				Agent: agent,
-				Table: "TEST",
+				Agent:  agent,
+				Table:  "TEST",
+				OrdStr: "COL1",
 			}
 			var r Result
 			if r, err = table.QueryPage(5, 7); err != nil {
@@ -620,8 +621,9 @@ func testQueryPageTx(t *testing.T) {
 					assert.Equal(t, val.COL5, res.Rows[i].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[i].COL5))
 				}
 				table := &TableAgent{
-					Agent: agent,
-					Table: "TEST",
+					Agent:  agent,
+					Table:  "TEST",
+					OrdStr: "COL1",
 				}
 				if r, e := table.QueryPageTx(5, 7); e != nil {
 					return e

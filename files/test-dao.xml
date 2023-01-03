@@ -92,5 +92,6 @@
     </select>
     <select id="QueryPage">
         SELECT * FROM TEST
+        <orderBy last="true">COL1</orderBy>
     </select>
 </dao>
