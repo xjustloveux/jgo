@@ -94,3 +94,11 @@ func GetCallerPkgName() string {
 	}
 	return ""
 }
+
+// GetCallerProgramLine returns caller program line
+func GetCallerProgramLine() int {
+	if _, _, line, ok := runtime.Caller(2); ok {
+		return line
+	}
+	return 0
+}

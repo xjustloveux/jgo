@@ -110,6 +110,8 @@ func TestLog(t *testing.T) {
 	Traceln("test")
 	Log(InfoLevel, Fields{"test": "test"}, "test", nil)
 	Log(InfoLevel, logrus.Fields{"test": "test"}, "test", nil)
+	Error(Fields{"test": "test"}, Fields{"test2": "test2"}, "test", nil)
+	Error(logrus.Fields{"test": "test"}, logrus.Fields{"test2": "test2"}, "test", nil)
 	Printf("test")
 	wg := new(sync.WaitGroup)
 	wg.Add(1)

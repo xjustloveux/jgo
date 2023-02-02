@@ -1,3 +1,8 @@
+# v1.3.15 (2023.02.02)
+New Features：
+* Add jlog ReportCaller config setting
+* Add jruntime GetCallerProgramLine function
+
 # v1.3.14 (2023.01.03)
 Bug Fixes：
 * Fixed jsql query page bug

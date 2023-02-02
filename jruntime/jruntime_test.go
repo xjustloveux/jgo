@@ -75,6 +75,15 @@ func TestGetCallerProgramName(t *testing.T) {
 	}
 }
 
+func TestGetCallerProgramLine(t *testing.T) {
+	test := func() int {
+		return GetCallerProgramLine()
+	}
+	input := 83
+	output := test()
+	assert.Equal(t, input, output, fmt.Sprintf("%v != %v", input, output))
+}
+
 func TestGetPkgName(t *testing.T) {
 	input := "jruntime"
 	output := GetPkgName()

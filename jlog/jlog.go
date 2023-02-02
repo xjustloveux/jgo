@@ -222,47 +222,47 @@ func Log(level Level, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Print print
 func Print(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Panic print panic level message
 func Panic(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Fatal print fatal level message
 func Fatal(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Error print error level message
 func Error(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Warn print warn level message
 func Warn(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Info print info level message
 func Info(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Debug print debug level message
 func Debug(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Trace print trace level message
 func Trace(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Logf log
@@ -273,7 +273,7 @@ func Logf(level Level, format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+2] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Printf print
@@ -283,7 +283,7 @@ func Printf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Panicf print panic level message
@@ -293,7 +293,7 @@ func Panicf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Fatalf print fatal level message
@@ -303,7 +303,7 @@ func Fatalf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Errorf print error level message
@@ -313,7 +313,7 @@ func Errorf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Warnf print warn level message
@@ -323,7 +323,7 @@ func Warnf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Infof print info level message
@@ -333,7 +333,7 @@ func Infof(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Debugf print debug level message
@@ -343,7 +343,7 @@ func Debugf(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Tracef print trace level message
@@ -353,61 +353,61 @@ func Tracef(format string, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // LogFn log
 func LogFn(level Level, fn LogFunction) {
 	args := []interface{}{logrus.Level(level), logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // PrintFn print
 func PrintFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // PanicFn print panic level message
 func PanicFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // FatalFn print fatal level message
 func FatalFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // ErrorFn print error level message
 func ErrorFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // WarnFn print warn level message
 func WarnFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // InfoFn print info level message
 func InfoFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // DebugFn print debug level message
 func DebugFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // TraceFn print trace level message
 func TraceFn(fn LogFunction) {
 	args := []interface{}{logrus.LogFunction(fn)}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Logln log
@@ -417,47 +417,47 @@ func Logln(level Level, args ...interface{}) {
 	for i, v := range args {
 		na[i+1] = v
 	}
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), na...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), na...)
 }
 
 // Println print
 func Println(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Panicln print panic level message
 func Panicln(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Fatalln print fatal level message
 func Fatalln(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Errorln print error level message
 func Errorln(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Warnln print warn level message
 func Warnln(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Infoln print info level message
 func Infoln(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Debugln print debug level message
 func Debugln(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 // Traceln print trace level message
 func Traceln(args ...interface{}) {
-	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), args...)
+	loggerCall(jruntime.GetCallerProgramName(), jruntime.GetFuncName(), jruntime.GetCallerPkgName(), jruntime.GetCallerProgramLine(), args...)
 }
 
 func errorStr(e jError) error {
@@ -506,12 +506,12 @@ func createLogger() error {
 	return nil
 }
 
-func loggerCall(pn, fn, pkg string, args ...interface{}) {
+func loggerCall(pn, fn, pkg string, line int, args ...interface{}) {
 	l := GetLogger(pn, fmt.Sprint(pkgKey, pkg))
 	if l == nil {
 		subject.Next(errorStr(errorLoggerNil))
 	} else {
-		if err := l.Call(fn, args...); err != nil {
+		if err := l.Call(fn, fmt.Sprint(pkg, "/", pn, ":", line), args...); err != nil {
 			subject.Next(err)
 		}
 	}

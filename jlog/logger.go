@@ -14,13 +14,13 @@ import (
 )
 
 type logger struct {
-	logs map[string]*logrus.Logger
+	logs map[string]LogrusLogger
 	mux  *sync.RWMutex
 }
 
 func (*logger) getDefault() *logger {
 	return &logger{
-		logs: make(map[string]*logrus.Logger),
+		logs: make(map[string]LogrusLogger),
 		mux:  new(sync.RWMutex),
 	}
 }
@@ -31,10 +31,10 @@ func (l *logger) LogrusLogger(name string) *logrus.Logger {
 	defer func() {
 		l.mux.RUnlock()
 	}()
-	return l.logs[name]
+	return l.logs[name].Log
 }
 
-func (l *logger) Call(funcName string, params ...interface{}) error {
+func (l *logger) Call(funcName, reportCaller string, params ...interface{}) error {
 	l.mux.RLock()
 	defer func() {
 		l.mux.RUnlock()
@@ -45,14 +45,25 @@ func (l *logger) Call(funcName string, params ...interface{}) error {
 		for _, param := range params {
 			switch param.(type) {
 			case Fields:
-				e = nl.WithFields(param.(Fields).toLogrusFields())
+				fields := param.(Fields).toLogrusFields()
+				if nl.ReportCaller {
+					fields["file"] = reportCaller
+				}
+				e = nl.Log.WithFields(fields)
 			case logrus.Fields:
-				e = nl.WithFields(param.(logrus.Fields))
+				fields := param.(logrus.Fields)
+				if nl.ReportCaller {
+					fields["file"] = reportCaller
+				}
+				e = nl.Log.WithFields(fields)
 			default:
 				pl++
 			}
 		}
-		f := reflect.ValueOf(l.getFunc(nl, e)[funcName])
+		if e == nil && nl.ReportCaller {
+			e = nl.Log.WithFields(logrus.Fields{"file": reportCaller})
+		}
+		f := reflect.ValueOf(l.getFunc(nl.Log, e)[funcName])
 		if isFormat, err := regexp.MatchString("f$", funcName); err != nil {
 			return err
 		} else {
@@ -86,7 +97,7 @@ func (l *logger) Call(funcName string, params ...interface{}) error {
 	return nil
 }
 
-func (l *logger) AddLogger(name string, log *logrus.Logger) {
+func (l *logger) AddLogger(name string, log LogrusLogger) {
 	l.mux.Lock()
 	defer func() {
 		l.mux.Unlock()
@@ -99,7 +110,7 @@ func (l *logger) ClearLogger() {
 	defer func() {
 		l.mux.Unlock()
 	}()
-	l.logs = make(map[string]*logrus.Logger)
+	l.logs = make(map[string]LogrusLogger)
 }
 
 func (l *logger) addLogger(an string, pn string, a *appender, param map[string]string) error {
@@ -143,7 +154,7 @@ func (l *logger) addLogger(an string, pn string, a *appender, param map[string]s
 	} else {
 		return err
 	}
-	l.logs[an] = log
+	l.logs[an] = LogrusLogger{Log: log, ReportCaller: a.ReportCaller}
 	return nil
 }
 

@@ -7,16 +7,18 @@ package jlog
 import "github.com/sirupsen/logrus"
 
 type appender struct {
-	Level     string
-	Formatter *formatter
-	Output    *Output
+	Level        string
+	ReportCaller bool
+	Formatter    *formatter
+	Output       *Output
 }
 
 func (*appender) getDefault() *appender {
 	return &appender{
-		Level:     "info",
-		Formatter: (&formatter{}).getDefault(),
-		Output:    (&Output{}).getDefault(),
+		Level:        "info",
+		ReportCaller: true,
+		Formatter:    (&formatter{}).getDefault(),
+		Output:       (&Output{}).getDefault(),
 	}
 }
 
