@@ -305,6 +305,7 @@ func (a *Agent) Count(id string, args ...interface{}) (count int, err error) {
 	if query, args, err = a.QuerySqlAndArgs(id, args...); err != nil {
 		return 0, err
 	}
+	subject.Next(query)
 	if err = a.db.QueryRow(query, args...).Scan(&count); err != nil {
 		return 0, err
 	}
@@ -317,6 +318,7 @@ func (a *Agent) CountTx(id string, args ...interface{}) (count int, err error) {
 	if query, args, err = a.QuerySqlAndArgs(id, args...); err != nil {
 		return 0, err
 	}
+	subject.Next(query)
 	if err = a.tx.QueryRow(query, args...).Scan(&count); err != nil {
 		return 0, err
 	}
@@ -331,6 +333,7 @@ func (a *Agent) Exists(id string, args ...interface{}) (exists bool, err error) 
 	}
 	var e string
 	query = getExistsSql(a.t, query)
+	subject.Next(query)
 	if err = a.db.QueryRow(query, args...).Scan(&e); err != nil {
 		return false, err
 	}
@@ -346,6 +349,7 @@ func (a *Agent) ExistsTx(id string, args ...interface{}) (exists bool, err error
 	}
 	var e string
 	query = getExistsSql(a.t, query)
+	subject.Next(query)
 	if err = a.tx.QueryRow(query, args...).Scan(&e); err != nil {
 		return false, err
 	}
@@ -394,6 +398,7 @@ func (a *Agent) InsertWithLastInsertId(id string, args ...interface{}) (lastInse
 	if query, args, err = a.InsertSqlAndArgs(id, args...); err != nil {
 		return 0, err
 	}
+	subject.Next(query)
 	if err = a.db.QueryRow(query, args...).Scan(&lastInsertId); err != nil {
 		return 0, err
 	}
@@ -406,6 +411,7 @@ func (a *Agent) InsertTxWithLastInsertId(id string, args ...interface{}) (lastIn
 	if query, args, err = a.InsertSqlAndArgs(id, args...); err != nil {
 		return 0, err
 	}
+	subject.Next(query)
 	if err = a.tx.QueryRow(query, args...).Scan(&lastInsertId); err != nil {
 		return 0, err
 	}

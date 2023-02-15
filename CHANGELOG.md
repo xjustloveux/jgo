@@ -1,3 +1,7 @@
+# v1.3.17 (2023.01.15)
+Bug Fixes：
+* Fixed jsql query sql log subject bug
+
 # v1.3.16 (2023.02.15)
 New Features：
 * Add jsql.Agent function
