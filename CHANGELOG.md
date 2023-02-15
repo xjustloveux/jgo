@@ -1,3 +1,8 @@
+# v1.3.16 (2023.02.15)
+New Features：
+* Add jsql.Agent function
+* (*SqlAndArgs, Count, Exists, InsertWithLastInsertId)
+
 # v1.3.15 (2023.02.02)
 New Features：
 * Add jlog ReportCaller config setting

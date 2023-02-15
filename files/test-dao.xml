@@ -94,4 +94,7 @@
         SELECT * FROM TEST
         <orderBy last="true">COL1</orderBy>
     </select>
+    <select id="Count">
+        SELECT COUNT(*) FROM TEST
+    </select>
 </dao>

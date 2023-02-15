@@ -412,6 +412,20 @@ func getPageSql(t Type, sql, obs string, start, end int64) (pageSql, countSql st
 	return pageSql, countSql
 }
 
+func getExistsSql(t Type, sql string) string {
+	switch t {
+	case MySql:
+		return fmt.Sprint("SELECT CASE WHEN EXISTS(", sql, ") THEN 'Y' ELSE 'N' END AS E")
+	case MSSql:
+		return fmt.Sprint("SELECT CASE WHEN EXISTS(", sql, ") THEN 'Y' ELSE 'N' END AS E")
+	case Oracle:
+		return fmt.Sprint("SELECT CASE WHEN EXISTS(", sql, ") THEN 'Y' ELSE 'N' END AS E FROM DUAL")
+	case PostgreSql:
+		return fmt.Sprint("SELECT CASE WHEN EXISTS(", sql, ") THEN 'Y' ELSE 'N' END AS E")
+	}
+	return sql
+}
+
 func trim(str string) string {
 	ts := []string{" ", "　", "\r\n", "\r", "\n"}
 	for i := 0; i < len(ts); i++ {

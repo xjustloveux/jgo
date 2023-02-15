@@ -294,6 +294,65 @@ func (a *Agent) QueryPageTxWithSql(query, order string, start, end int64, args .
 	return a.queryPageWithSql(false, pageQuery, countQuery, start, end, args...)
 }
 
+// QuerySqlAndArgs returns query sql and args
+func (a *Agent) QuerySqlAndArgs(id string, args ...interface{}) (string, []interface{}, error) {
+	return a.getSqlAndArgs(Select, id, args...)
+}
+
+// Count return query count
+func (a *Agent) Count(id string, args ...interface{}) (count int, err error) {
+	var query string
+	if query, args, err = a.QuerySqlAndArgs(id, args...); err != nil {
+		return 0, err
+	}
+	if err = a.db.QueryRow(query, args...).Scan(&count); err != nil {
+		return 0, err
+	}
+	return
+}
+
+// CountTx return query count
+func (a *Agent) CountTx(id string, args ...interface{}) (count int, err error) {
+	var query string
+	if query, args, err = a.QuerySqlAndArgs(id, args...); err != nil {
+		return 0, err
+	}
+	if err = a.tx.QueryRow(query, args...).Scan(&count); err != nil {
+		return 0, err
+	}
+	return
+}
+
+// Exists return query sql exists data
+func (a *Agent) Exists(id string, args ...interface{}) (exists bool, err error) {
+	var query string
+	if query, args, err = a.QuerySqlAndArgs(id, args...); err != nil {
+		return false, err
+	}
+	var e string
+	query = getExistsSql(a.t, query)
+	if err = a.db.QueryRow(query, args...).Scan(&e); err != nil {
+		return false, err
+	}
+	exists = e == "Y"
+	return
+}
+
+// ExistsTx return query sql exists data
+func (a *Agent) ExistsTx(id string, args ...interface{}) (exists bool, err error) {
+	var query string
+	if query, args, err = a.QuerySqlAndArgs(id, args...); err != nil {
+		return false, err
+	}
+	var e string
+	query = getExistsSql(a.t, query)
+	if err = a.tx.QueryRow(query, args...).Scan(&e); err != nil {
+		return false, err
+	}
+	exists = e == "Y"
+	return
+}
+
 // ExecWithSql executes a query with db.Exec
 func (a *Agent) ExecWithSql(query string, cond ...interface{}) (Result, error) {
 	return a.exec(query, cond...)
@@ -324,6 +383,35 @@ func (a *Agent) InsertPrepareTx(id string, param map[string]interface{}, args ..
 	return a.execPrepareTxOps(Insert, id, param, args...)
 }
 
+// InsertSqlAndArgs returns insert sql and args
+func (a *Agent) InsertSqlAndArgs(id string, args ...interface{}) (string, []interface{}, error) {
+	return a.getSqlAndArgs(Insert, id, args...)
+}
+
+// InsertWithLastInsertId return last insert id by QueryRow.Scan
+func (a *Agent) InsertWithLastInsertId(id string, args ...interface{}) (lastInsertId int, err error) {
+	var query string
+	if query, args, err = a.InsertSqlAndArgs(id, args...); err != nil {
+		return 0, err
+	}
+	if err = a.db.QueryRow(query, args...).Scan(&lastInsertId); err != nil {
+		return 0, err
+	}
+	return
+}
+
+// InsertTxWithLastInsertId return last insert id by QueryRow.Scan
+func (a *Agent) InsertTxWithLastInsertId(id string, args ...interface{}) (lastInsertId int, err error) {
+	var query string
+	if query, args, err = a.InsertSqlAndArgs(id, args...); err != nil {
+		return 0, err
+	}
+	if err = a.tx.QueryRow(query, args...).Scan(&lastInsertId); err != nil {
+		return 0, err
+	}
+	return
+}
+
 // Update executes a query with db.Exec
 func (a *Agent) Update(id string, args ...interface{}) (result Result, err error) {
 	return a.execOps(Update, id, args...)
@@ -342,6 +430,11 @@ func (a *Agent) UpdatePrepare(id string, param map[string]interface{}, args ...[
 // UpdatePrepareTx creates a prepared statement for later queries or executions
 func (a *Agent) UpdatePrepareTx(id string, param map[string]interface{}, args ...[]interface{}) (result []Result, err error) {
 	return a.execPrepareTxOps(Update, id, param, args...)
+}
+
+// UpdateSqlAndArgs returns update sql and args
+func (a *Agent) UpdateSqlAndArgs(id string, args ...interface{}) (string, []interface{}, error) {
+	return a.getSqlAndArgs(Update, id, args...)
 }
 
 // Delete executes a query with db.Exec
@@ -364,6 +457,11 @@ func (a *Agent) DeletePrepareTx(id string, param map[string]interface{}, args ..
 	return a.execPrepareTxOps(Delete, id, param, args...)
 }
 
+// DeleteSqlAndArgs returns delete sql and args
+func (a *Agent) DeleteSqlAndArgs(id string, args ...interface{}) (string, []interface{}, error) {
+	return a.getSqlAndArgs(Delete, id, args...)
+}
+
 // Other executes a query with db.Exec
 func (a *Agent) Other(id string, args ...interface{}) (result Result, err error) {
 	return a.execOps(Other, id, args...)
@@ -382,6 +480,11 @@ func (a *Agent) OtherPrepare(id string, param map[string]interface{}, args ...[]
 // OtherPrepareTx creates a prepared statement for later queries or executions
 func (a *Agent) OtherPrepareTx(id string, param map[string]interface{}, args ...[]interface{}) (result []Result, err error) {
 	return a.execPrepareTxOps(Other, id, param, args...)
+}
+
+// OtherSqlAndArgs returns other sql and args
+func (a *Agent) OtherSqlAndArgs(id string, args ...interface{}) (string, []interface{}, error) {
+	return a.getSqlAndArgs(Other, id, args...)
 }
 
 // Tables returns table name list
@@ -932,6 +1035,14 @@ func (a *Agent) stmtExec(stmt *sql.Stmt, args ...[]interface{}) (result []Result
 			rowsAffected: ra}
 	}
 	return result, nil
+}
+
+func (a *Agent) getSqlAndArgs(ops Operations, id string, args ...interface{}) (string, []interface{}, error) {
+	if param, _, err := a.checkArgs(args...); err != nil {
+		return "", nil, err
+	} else {
+		return a.xmlAndParamsToQueryAndArgs(ops, id, param)
+	}
 }
 
 func (a *Agent) getResult(rows *sql.Rows, single bool) (result Result, err error) {

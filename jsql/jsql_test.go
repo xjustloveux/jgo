@@ -57,6 +57,10 @@ func TestSql(t *testing.T) {
 	testQueryTx(t)
 	testQueryPage(t)
 	testQueryPageTx(t)
+	testCount(t)
+	testCountTx(t)
+	testExists(t)
+	testExistsTx(t)
 	testTableSchema(t)
 	testTableSchemaTx(t)
 	testDropTable(t)*/
@@ -640,6 +644,94 @@ func testQueryPageTx(t *testing.T) {
 						assert.Equal(t, val.COL5, res.Rows[i].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[i].COL5))
 					}
 				}
+				return nil
+			}); err != nil {
+				t.Error(err)
+			}
+		}
+	}
+}
+
+func testCount(t *testing.T) {
+	var err error
+	testData := []string{"testMySql", "testMSSql", "testOracle", "testPostgreSql"}
+	for _, v := range testData {
+		var agent *Agent
+		if agent, err = GetAgent(v); err != nil {
+			t.Error(err)
+		} else {
+			var count int
+			if count, err = agent.Count("Count"); err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, 15, count, fmt.Sprintf("%v != %v", 15, count))
+		}
+	}
+}
+
+func testCountTx(t *testing.T) {
+	var err error
+	testData := []string{"testMySql", "testMSSql", "testOracle", "testPostgreSql"}
+	for _, v := range testData {
+		var agent *Agent
+		if agent, err = GetAgent(v); err != nil {
+			t.Error(err)
+		} else {
+			if err = agent.UseTx(func() error {
+				var count int
+				var e error
+				if count, e = agent.CountTx("Count"); e != nil {
+					return e
+				}
+				assert.Equal(t, 15, count, fmt.Sprintf("%v != %v", 15, count))
+				return nil
+			}); err != nil {
+				t.Error(err)
+			}
+		}
+	}
+}
+
+func testExists(t *testing.T) {
+	var err error
+	testData := []string{"testMySql", "testMSSql", "testOracle", "testPostgreSql"}
+	for _, v := range testData {
+		var agent *Agent
+		if agent, err = GetAgent(v); err != nil {
+			t.Error(err)
+		} else {
+			var exists bool
+			if exists, err = agent.Exists("Query", map[string]interface{}{"COL1": 1}); err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, true, exists, fmt.Sprintf("%v != %v", true, exists))
+			if exists, err = agent.Exists("Query", map[string]interface{}{"COL1": 7}); err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, false, exists, fmt.Sprintf("%v != %v", false, exists))
+		}
+	}
+}
+
+func testExistsTx(t *testing.T) {
+	var err error
+	testData := []string{"testMySql", "testMSSql", "testOracle", "testPostgreSql"}
+	for _, v := range testData {
+		var agent *Agent
+		if agent, err = GetAgent(v); err != nil {
+			t.Error(err)
+		} else {
+			if err = agent.UseTx(func() error {
+				var exists bool
+				var e error
+				if exists, e = agent.ExistsTx("Query", map[string]interface{}{"COL1": 1}); e != nil {
+					return e
+				}
+				assert.Equal(t, true, exists, fmt.Sprintf("%v != %v", true, exists))
+				if exists, e = agent.ExistsTx("Query", map[string]interface{}{"COL1": 7}); e != nil {
+					return e
+				}
+				assert.Equal(t, false, exists, fmt.Sprintf("%v != %v", false, exists))
 				return nil
 			}); err != nil {
 				t.Error(err)
