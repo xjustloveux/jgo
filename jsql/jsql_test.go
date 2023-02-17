@@ -364,28 +364,18 @@ func testQuery(t *testing.T) {
 				Table:  "TEST",
 				Params: []*Param{{Col: "COL1", Val: 5}},
 			}
-			var r Result
-			if r, err = table.Query(); err != nil {
+			if _, err = table.Query(&res); err != nil {
 				t.Error(err)
-			} else {
-				m := map[string]interface{}{"Rows": r.Rows()}
-				if err = jfile.Convert(m, &res); err != nil {
-					t.Error(err)
-				}
-				if len(res.Rows) != 1 {
-					assert.Equal(t, val.COL1, res.Rows[0].COL1, fmt.Sprintf("%v != %v", val.COL1, res.Rows[0].COL1))
-					assert.Equal(t, val.COL2, res.Rows[0].COL2, fmt.Sprintf("%v != %v", val.COL2, res.Rows[0].COL2))
-					assert.Equal(t, val.COL3, res.Rows[0].COL3, fmt.Sprintf("%v != %v", val.COL3, res.Rows[0].COL3))
-					assert.Equal(t, val.COL4, res.Rows[0].COL4, fmt.Sprintf("%v != %v", val.COL4, res.Rows[0].COL4))
-					assert.Equal(t, val.COL5, res.Rows[0].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[0].COL5))
-				}
+			} else if len(res.Rows) != 1 {
+				assert.Equal(t, val.COL1, res.Rows[0].COL1, fmt.Sprintf("%v != %v", val.COL1, res.Rows[0].COL1))
+				assert.Equal(t, val.COL2, res.Rows[0].COL2, fmt.Sprintf("%v != %v", val.COL2, res.Rows[0].COL2))
+				assert.Equal(t, val.COL3, res.Rows[0].COL3, fmt.Sprintf("%v != %v", val.COL3, res.Rows[0].COL3))
+				assert.Equal(t, val.COL4, res.Rows[0].COL4, fmt.Sprintf("%v != %v", val.COL4, res.Rows[0].COL4))
+				assert.Equal(t, val.COL5, res.Rows[0].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[0].COL5))
 			}
-			if r, err = table.QueryRow(); err != nil {
+			if _, err = table.QueryRow(&resData); err != nil {
 				t.Error(err)
 			} else {
-				if err = jfile.Convert(r.Row(), &resData); err != nil {
-					t.Error(err)
-				}
 				assert.Equal(t, val.COL1, resData.COL1, fmt.Sprintf("%v != %v", val.COL1, resData.COL1))
 				assert.Equal(t, val.COL2, resData.COL2, fmt.Sprintf("%v != %v", val.COL2, resData.COL2))
 				assert.Equal(t, val.COL3, resData.COL3, fmt.Sprintf("%v != %v", val.COL3, resData.COL3))
@@ -451,27 +441,18 @@ func testQueryTx(t *testing.T) {
 					Table:  "TEST",
 					Params: []*Param{{Col: "COL1", Val: 5}},
 				}
-				if r, e := table.Query(); e != nil {
+				if _, e := table.Query(&res); e != nil {
 					return e
-				} else {
-					m := map[string]interface{}{"Rows": r.Rows()}
-					if e = jfile.Convert(m, &res); e != nil {
-						return e
-					}
-					if len(res.Rows) != 1 {
-						assert.Equal(t, val.COL1, res.Rows[0].COL1, fmt.Sprintf("%v != %v", val.COL1, res.Rows[0].COL1))
-						assert.Equal(t, val.COL2, res.Rows[0].COL2, fmt.Sprintf("%v != %v", val.COL2, res.Rows[0].COL2))
-						assert.Equal(t, val.COL3, res.Rows[0].COL3, fmt.Sprintf("%v != %v", val.COL3, res.Rows[0].COL3))
-						assert.Equal(t, val.COL4, res.Rows[0].COL4, fmt.Sprintf("%v != %v", val.COL4, res.Rows[0].COL4))
-						assert.Equal(t, val.COL5, res.Rows[0].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[0].COL5))
-					}
+				} else if len(res.Rows) != 1 {
+					assert.Equal(t, val.COL1, res.Rows[0].COL1, fmt.Sprintf("%v != %v", val.COL1, res.Rows[0].COL1))
+					assert.Equal(t, val.COL2, res.Rows[0].COL2, fmt.Sprintf("%v != %v", val.COL2, res.Rows[0].COL2))
+					assert.Equal(t, val.COL3, res.Rows[0].COL3, fmt.Sprintf("%v != %v", val.COL3, res.Rows[0].COL3))
+					assert.Equal(t, val.COL4, res.Rows[0].COL4, fmt.Sprintf("%v != %v", val.COL4, res.Rows[0].COL4))
+					assert.Equal(t, val.COL5, res.Rows[0].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[0].COL5))
 				}
-				if r, e := table.QueryRow(); e != nil {
+				if _, e := table.QueryRow(&resData); e != nil {
 					return e
 				} else {
-					if e = jfile.Convert(r.Row(), &resData); e != nil {
-						return e
-					}
 					assert.Equal(t, val.COL1, resData.COL1, fmt.Sprintf("%v != %v", val.COL1, resData.COL1))
 					assert.Equal(t, val.COL2, resData.COL2, fmt.Sprintf("%v != %v", val.COL2, resData.COL2))
 					assert.Equal(t, val.COL3, resData.COL3, fmt.Sprintf("%v != %v", val.COL3, resData.COL3))
@@ -547,14 +528,9 @@ func testQueryPage(t *testing.T) {
 				Table:  "TEST",
 				OrdStr: "COL1",
 			}
-			var r Result
-			if r, err = table.QueryPage(5, 7); err != nil {
+			if _, err = table.QueryPage(5, 7, &res); err != nil {
 				t.Error(err)
 			} else {
-				m := map[string]interface{}{"Rows": r.Rows()}
-				if err = jfile.Convert(m, &res); err != nil {
-					t.Error(err)
-				}
 				for i, val := range list {
 					assert.Equal(t, val.COL1, res.Rows[i].COL1, fmt.Sprintf("%v != %v", val.COL1, res.Rows[i].COL1))
 					assert.Equal(t, val.COL2, res.Rows[i].COL2, fmt.Sprintf("%v != %v", val.COL2, res.Rows[i].COL2))
@@ -629,13 +605,9 @@ func testQueryPageTx(t *testing.T) {
 					Table:  "TEST",
 					OrdStr: "COL1",
 				}
-				if r, e := table.QueryPageTx(5, 7); e != nil {
+				if _, e := table.QueryPageTx(5, 7, &res); e != nil {
 					return e
 				} else {
-					m := map[string]interface{}{"Rows": r.Rows()}
-					if e = jfile.Convert(m, &res); e != nil {
-						return e
-					}
 					for i, val := range list {
 						assert.Equal(t, val.COL1, res.Rows[i].COL1, fmt.Sprintf("%v != %v", val.COL1, res.Rows[i].COL1))
 						assert.Equal(t, val.COL2, res.Rows[i].COL2, fmt.Sprintf("%v != %v", val.COL2, res.Rows[i].COL2))

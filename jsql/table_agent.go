@@ -6,6 +6,7 @@ package jsql
 
 import (
 	"fmt"
+	"github.com/xjustloveux/jgo/jfile"
 	"github.com/xjustloveux/jgo/jruntime"
 	"reflect"
 )
@@ -160,67 +161,125 @@ func (ta *TableAgent) LessThanOrEqual(col string, val interface{}) {
 }
 
 // Query executes a query that returns Result
-func (ta *TableAgent) Query() (Result, error) {
+func (ta *TableAgent) Query(v ...interface{}) (Result, error) {
 	if query, args, err := ta.getQueryAndArgs(); err != nil {
 		return nil, err
 	} else {
-		return ta.Agent.QueryWithSql(query, args...)
+		var r Result
+		if r, err = ta.Agent.QueryWithSql(query, args...); err != nil || v == nil {
+			return r, err
+		} else {
+			m := map[string]interface{}{"Rows": r.Rows()}
+			err = jfile.Convert(m, v)
+			return r, err
+		}
 	}
 }
 
 // QueryTx executes a query that returns Result
-func (ta *TableAgent) QueryTx() (Result, error) {
+func (ta *TableAgent) QueryTx(v ...interface{}) (Result, error) {
 	if ta.Agent == nil {
 		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getQueryAndArgs(); err != nil {
 		return nil, err
 	} else {
-		return ta.Agent.QueryTxWithSql(query, args...)
+		var r Result
+		if r, err = ta.Agent.QueryTxWithSql(query, args...); err != nil || v == nil {
+			return r, err
+		} else {
+			m := map[string]interface{}{"Rows": r.Rows()}
+			err = jfile.Convert(m, v)
+			return r, err
+		}
 	}
 }
 
 // QueryRow executes a query that is expected to return at most one row
-func (ta *TableAgent) QueryRow() (Result, error) {
+func (ta *TableAgent) QueryRow(v ...interface{}) (Result, error) {
 	if query, args, err := ta.getQueryAndArgs(); err != nil {
 		return nil, err
 	} else {
-		return ta.Agent.QueryRowWithSql(query, args...)
+		var r Result
+		if r, err = ta.Agent.QueryRowWithSql(query, args...); err != nil || v == nil {
+			return r, err
+		} else {
+			m := r.Row()
+			if m == nil {
+				m = make(map[string]interface{})
+			}
+			err = jfile.Convert(m, v)
+			return r, err
+		}
 	}
 }
 
 // QueryRowTx executes a query that is expected to return at most one row
-func (ta *TableAgent) QueryRowTx() (Result, error) {
+func (ta *TableAgent) QueryRowTx(v ...interface{}) (Result, error) {
 	if ta.Agent == nil {
 		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getQueryAndArgs(); err != nil {
 		return nil, err
 	} else {
-		return ta.Agent.QueryRowTxWithSql(query, args...)
+		var r Result
+		if r, err = ta.Agent.QueryRowTxWithSql(query, args...); err != nil || v == nil {
+			return r, err
+		} else {
+			m := r.Row()
+			if m == nil {
+				m = make(map[string]interface{})
+			}
+			err = jfile.Convert(m, v)
+			return r, err
+		}
 	}
 }
 
 // QueryPage executes a query that returns Result
 // the start and end are for query start row and end row
-func (ta *TableAgent) QueryPage(start, end int64) (Result, error) {
+func (ta *TableAgent) QueryPage(start, end int64, v ...interface{}) (Result, error) {
 	if query, args, err := ta.getQuery(); err != nil {
 		return nil, err
 	} else {
-		return ta.Agent.QueryPageWithSql(query, ta.OrdStr, start, end, args...)
+		var r Result
+		if r, err = ta.Agent.QueryPageWithSql(query, ta.OrdStr, start, end, args...); err != nil || v == nil {
+			return r, err
+		} else {
+			m := map[string]interface{}{
+				"Rows":        r.Rows(),
+				"RowStart":    r.RowStart(),
+				"RowEnd":      r.RowEnd(),
+				"TotalRecord": r.TotalRecord(),
+			}
+			err = jfile.Convert(m, v)
+			return r, err
+		}
 	}
 }
 
 // QueryPageTx executes a query that returns Result
 // the start and end are for query start row and end row
-func (ta *TableAgent) QueryPageTx(start, end int64) (Result, error) {
+func (ta *TableAgent) QueryPageTx(start, end int64, v ...interface{}) (Result, error) {
 	if ta.Agent == nil {
 		return nil, errorStr(errorAgentNil)
 	}
 	if query, args, err := ta.getQuery(); err != nil {
 		return nil, err
 	} else {
-		return ta.Agent.QueryPageTxWithSql(query, ta.OrdStr, start, end, args...)
+		var r Result
+		if r, err = ta.Agent.QueryPageTxWithSql(query, ta.OrdStr, start, end, args...); err != nil || v == nil {
+			return r, err
+		} else {
+			m := map[string]interface{}{
+				"Rows":        r.Rows(),
+				"RowStart":    r.RowStart(),
+				"RowEnd":      r.RowEnd(),
+				"TotalRecord": r.TotalRecord(),
+			}
+			err = jfile.Convert(m, v)
+			return r, err
+		}
 	}
 }
 
