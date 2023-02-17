@@ -418,7 +418,7 @@ func testQueryTx(t *testing.T) {
 			if err = agent.UseTx(func() error {
 				var res TestRes
 				var resData TestData
-				if _, e := agent.Query("Query", map[string]interface{}{"COL1": 5}, &res); e != nil {
+				if _, e := agent.QueryTx("Query", map[string]interface{}{"COL1": 5}, &res); e != nil {
 					return e
 				}
 				if len(res.Rows) != 1 {
@@ -428,7 +428,7 @@ func testQueryTx(t *testing.T) {
 					assert.Equal(t, val.COL4, res.Rows[0].COL4, fmt.Sprintf("%v != %v", val.COL4, res.Rows[0].COL4))
 					assert.Equal(t, val.COL5, res.Rows[0].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[0].COL5))
 				}
-				if _, e := agent.QueryRow("Query", map[string]interface{}{"COL1": 5}, &resData); e != nil {
+				if _, e := agent.QueryRowTx("Query", map[string]interface{}{"COL1": 5}, &resData); e != nil {
 					return e
 				}
 				assert.Equal(t, val.COL1, resData.COL1, fmt.Sprintf("%v != %v", val.COL1, resData.COL1))
@@ -441,7 +441,7 @@ func testQueryTx(t *testing.T) {
 					Table:  "TEST",
 					Params: []*Param{{Col: "COL1", Val: 5}},
 				}
-				if _, e := table.Query(&res); e != nil {
+				if _, e := table.QueryTx(&res); e != nil {
 					return e
 				} else if len(res.Rows) != 1 {
 					assert.Equal(t, val.COL1, res.Rows[0].COL1, fmt.Sprintf("%v != %v", val.COL1, res.Rows[0].COL1))
@@ -450,7 +450,7 @@ func testQueryTx(t *testing.T) {
 					assert.Equal(t, val.COL4, res.Rows[0].COL4, fmt.Sprintf("%v != %v", val.COL4, res.Rows[0].COL4))
 					assert.Equal(t, val.COL5, res.Rows[0].COL5, fmt.Sprintf("%v != %v", val.COL5, res.Rows[0].COL5))
 				}
-				if _, e := table.QueryRow(&resData); e != nil {
+				if _, e := table.QueryRowTx(&resData); e != nil {
 					return e
 				} else {
 					assert.Equal(t, val.COL1, resData.COL1, fmt.Sprintf("%v != %v", val.COL1, resData.COL1))
