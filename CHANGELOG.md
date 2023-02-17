@@ -1,3 +1,7 @@
+# v1.3.20 (2023.01.17)
+Bug Fixes：
+* Fixed jsql.TableAgent query function convert data bug
+
 # v1.3.19 (2023.02.17)
 New Features：
 * Add jsql.TableAgent query function convert data

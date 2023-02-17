@@ -166,11 +166,11 @@ func (ta *TableAgent) Query(v ...interface{}) (Result, error) {
 		return nil, err
 	} else {
 		var r Result
-		if r, err = ta.Agent.QueryWithSql(query, args...); err != nil || v == nil {
+		if r, err = ta.Agent.QueryWithSql(query, args...); err != nil || len(v) == 0 {
 			return r, err
 		} else {
 			m := map[string]interface{}{"Rows": r.Rows()}
-			err = jfile.Convert(m, v)
+			err = jfile.Convert(m, v[0])
 			return r, err
 		}
 	}
@@ -185,11 +185,11 @@ func (ta *TableAgent) QueryTx(v ...interface{}) (Result, error) {
 		return nil, err
 	} else {
 		var r Result
-		if r, err = ta.Agent.QueryTxWithSql(query, args...); err != nil || v == nil {
+		if r, err = ta.Agent.QueryTxWithSql(query, args...); err != nil || len(v) == 0 {
 			return r, err
 		} else {
 			m := map[string]interface{}{"Rows": r.Rows()}
-			err = jfile.Convert(m, v)
+			err = jfile.Convert(m, v[0])
 			return r, err
 		}
 	}
@@ -201,14 +201,14 @@ func (ta *TableAgent) QueryRow(v ...interface{}) (Result, error) {
 		return nil, err
 	} else {
 		var r Result
-		if r, err = ta.Agent.QueryRowWithSql(query, args...); err != nil || v == nil {
+		if r, err = ta.Agent.QueryRowWithSql(query, args...); err != nil || len(v) == 0 {
 			return r, err
 		} else {
 			m := r.Row()
 			if m == nil {
 				m = make(map[string]interface{})
 			}
-			err = jfile.Convert(m, v)
+			err = jfile.Convert(m, v[0])
 			return r, err
 		}
 	}
@@ -223,14 +223,14 @@ func (ta *TableAgent) QueryRowTx(v ...interface{}) (Result, error) {
 		return nil, err
 	} else {
 		var r Result
-		if r, err = ta.Agent.QueryRowTxWithSql(query, args...); err != nil || v == nil {
+		if r, err = ta.Agent.QueryRowTxWithSql(query, args...); err != nil || len(v) == 0 {
 			return r, err
 		} else {
 			m := r.Row()
 			if m == nil {
 				m = make(map[string]interface{})
 			}
-			err = jfile.Convert(m, v)
+			err = jfile.Convert(m, v[0])
 			return r, err
 		}
 	}
@@ -243,7 +243,7 @@ func (ta *TableAgent) QueryPage(start, end int64, v ...interface{}) (Result, err
 		return nil, err
 	} else {
 		var r Result
-		if r, err = ta.Agent.QueryPageWithSql(query, ta.OrdStr, start, end, args...); err != nil || v == nil {
+		if r, err = ta.Agent.QueryPageWithSql(query, ta.OrdStr, start, end, args...); err != nil || len(v) == 0 {
 			return r, err
 		} else {
 			m := map[string]interface{}{
@@ -252,7 +252,7 @@ func (ta *TableAgent) QueryPage(start, end int64, v ...interface{}) (Result, err
 				"RowEnd":      r.RowEnd(),
 				"TotalRecord": r.TotalRecord(),
 			}
-			err = jfile.Convert(m, v)
+			err = jfile.Convert(m, v[0])
 			return r, err
 		}
 	}
@@ -268,7 +268,7 @@ func (ta *TableAgent) QueryPageTx(start, end int64, v ...interface{}) (Result, e
 		return nil, err
 	} else {
 		var r Result
-		if r, err = ta.Agent.QueryPageTxWithSql(query, ta.OrdStr, start, end, args...); err != nil || v == nil {
+		if r, err = ta.Agent.QueryPageTxWithSql(query, ta.OrdStr, start, end, args...); err != nil || len(v) == 0 {
 			return r, err
 		} else {
 			m := map[string]interface{}{
@@ -277,7 +277,7 @@ func (ta *TableAgent) QueryPageTx(start, end int64, v ...interface{}) (Result, e
 				"RowEnd":      r.RowEnd(),
 				"TotalRecord": r.TotalRecord(),
 			}
-			err = jfile.Convert(m, v)
+			err = jfile.Convert(m, v[0])
 			return r, err
 		}
 	}
