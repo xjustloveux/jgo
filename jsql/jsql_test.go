@@ -665,6 +665,14 @@ func testCount(t *testing.T) {
 				t.Error(err)
 			}
 			assert.Equal(t, 15, count, fmt.Sprintf("%v != %v", 15, count))
+			table := &TableAgent{
+				Agent: agent,
+				Table: "TEST",
+			}
+			if count, err = table.Count(); err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, 15, count, fmt.Sprintf("%v != %v", 15, count))
 		}
 	}
 }
@@ -681,6 +689,14 @@ func testCountTx(t *testing.T) {
 				var count int
 				var e error
 				if count, e = agent.CountTx("Count"); e != nil {
+					return e
+				}
+				assert.Equal(t, 15, count, fmt.Sprintf("%v != %v", 15, count))
+				table := &TableAgent{
+					Agent: agent,
+					Table: "TEST",
+				}
+				if count, e = table.CountTx(); e != nil {
 					return e
 				}
 				assert.Equal(t, 15, count, fmt.Sprintf("%v != %v", 15, count))
@@ -709,6 +725,24 @@ func testExists(t *testing.T) {
 				t.Error(err)
 			}
 			assert.Equal(t, false, exists, fmt.Sprintf("%v != %v", false, exists))
+			table := &TableAgent{
+				Agent:  agent,
+				Table:  "TEST",
+				Params: []*Param{{Col: "COL1", Val: 1}},
+			}
+			if exists, err = table.Exists(); err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, true, exists, fmt.Sprintf("%v != %v", true, exists))
+			table = &TableAgent{
+				Agent:  agent,
+				Table:  "TEST",
+				Params: []*Param{{Col: "COL1", Val: 7}},
+			}
+			if exists, err = table.Exists(); err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, false, exists, fmt.Sprintf("%v != %v", false, exists))
 		}
 	}
 }
@@ -729,6 +763,24 @@ func testExistsTx(t *testing.T) {
 				}
 				assert.Equal(t, true, exists, fmt.Sprintf("%v != %v", true, exists))
 				if exists, e = agent.ExistsTx("Query", map[string]interface{}{"COL1": 7}); e != nil {
+					return e
+				}
+				assert.Equal(t, false, exists, fmt.Sprintf("%v != %v", false, exists))
+				table := &TableAgent{
+					Agent:  agent,
+					Table:  "TEST",
+					Params: []*Param{{Col: "COL1", Val: 1}},
+				}
+				if exists, e = table.Exists(); e != nil {
+					return e
+				}
+				assert.Equal(t, true, exists, fmt.Sprintf("%v != %v", true, exists))
+				table = &TableAgent{
+					Agent:  agent,
+					Table:  "TEST",
+					Params: []*Param{{Col: "COL1", Val: 7}},
+				}
+				if exists, e = table.Exists(); e != nil {
 					return e
 				}
 				assert.Equal(t, false, exists, fmt.Sprintf("%v != %v", false, exists))

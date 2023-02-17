@@ -305,8 +305,7 @@ func (a *Agent) Count(id string, args ...interface{}) (count int, err error) {
 	if query, args, err = a.QuerySqlAndArgs(id, args...); err != nil {
 		return 0, err
 	}
-	subject.Next(query)
-	if err = a.db.QueryRow(query, args...).Scan(&count); err != nil {
+	if err = a.queryRowScan(query, &count, args...); err != nil {
 		return 0, err
 	}
 	return
@@ -318,8 +317,7 @@ func (a *Agent) CountTx(id string, args ...interface{}) (count int, err error) {
 	if query, args, err = a.QuerySqlAndArgs(id, args...); err != nil {
 		return 0, err
 	}
-	subject.Next(query)
-	if err = a.tx.QueryRow(query, args...).Scan(&count); err != nil {
+	if err = a.queryRowScanTx(query, &count, args...); err != nil {
 		return 0, err
 	}
 	return
@@ -333,8 +331,7 @@ func (a *Agent) Exists(id string, args ...interface{}) (exists bool, err error) 
 	}
 	var e string
 	query = getExistsSql(a.t, query)
-	subject.Next(query)
-	if err = a.db.QueryRow(query, args...).Scan(&e); err != nil {
+	if err = a.queryRowScan(query, &e, args...); err != nil {
 		return false, err
 	}
 	exists = e == "Y"
@@ -349,8 +346,7 @@ func (a *Agent) ExistsTx(id string, args ...interface{}) (exists bool, err error
 	}
 	var e string
 	query = getExistsSql(a.t, query)
-	subject.Next(query)
-	if err = a.tx.QueryRow(query, args...).Scan(&e); err != nil {
+	if err = a.queryRowScanTx(query, &e, args...); err != nil {
 		return false, err
 	}
 	exists = e == "Y"
@@ -398,8 +394,7 @@ func (a *Agent) InsertWithLastInsertId(id string, args ...interface{}) (lastInse
 	if query, args, err = a.InsertSqlAndArgs(id, args...); err != nil {
 		return 0, err
 	}
-	subject.Next(query)
-	if err = a.db.QueryRow(query, args...).Scan(&lastInsertId); err != nil {
+	if err = a.queryRowScan(query, &lastInsertId, args...); err != nil {
 		return 0, err
 	}
 	return
@@ -411,8 +406,7 @@ func (a *Agent) InsertTxWithLastInsertId(id string, args ...interface{}) (lastIn
 	if query, args, err = a.InsertSqlAndArgs(id, args...); err != nil {
 		return 0, err
 	}
-	subject.Next(query)
-	if err = a.tx.QueryRow(query, args...).Scan(&lastInsertId); err != nil {
+	if err = a.queryRowScanTx(query, &lastInsertId, args...); err != nil {
 		return 0, err
 	}
 	return
@@ -901,6 +895,16 @@ func (a *Agent) queryPageWithSql(ct bool, pageQuery, countQuery string, start, e
 		totalRecord:  total,
 		lastInsertId: lastInsertId{id: -1, err: nil},
 		rowsAffected: rowsAffected{rows: 0, err: nil}}, nil
+}
+
+func (a *Agent) queryRowScan(query string, data interface{}, args ...interface{}) error {
+	subject.Next(query)
+	return a.db.QueryRow(query, args...).Scan(data)
+}
+
+func (a *Agent) queryRowScanTx(query string, data interface{}, args ...interface{}) error {
+	subject.Next(query)
+	return a.tx.QueryRow(query, args...).Scan(data)
 }
 
 func (a *Agent) exec(query string, args ...interface{}) (result Result, err error) {

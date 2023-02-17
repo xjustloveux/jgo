@@ -1,3 +1,8 @@
+# v1.3.18 (2023.02.17)
+New Features：
+* Add jsql.TableAgent function
+* (Count, Exists, InsertWithLastInsertId)
+
 # v1.3.17 (2023.01.15)
 Bug Fixes：
 * Fixed jsql query sql log subject bug

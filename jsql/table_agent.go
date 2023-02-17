@@ -224,6 +224,60 @@ func (ta *TableAgent) QueryPageTx(start, end int64) (Result, error) {
 	}
 }
 
+// Count return query count
+func (ta *TableAgent) Count() (int, error) {
+	if query, args, err := ta.getCountAndArgs(); err != nil {
+		return 0, err
+	} else {
+		var count int
+		if err = ta.Agent.queryRowScan(query, &count, args...); err != nil {
+			return 0, err
+		}
+		return count, nil
+	}
+}
+
+// CountTx return query count
+func (ta *TableAgent) CountTx() (int, error) {
+	if query, args, err := ta.getCountAndArgs(); err != nil {
+		return 0, err
+	} else {
+		var count int
+		if err = ta.Agent.queryRowScanTx(query, &count, args...); err != nil {
+			return 0, err
+		}
+		return count, nil
+	}
+}
+
+// Exists return query sql exists data
+func (ta *TableAgent) Exists() (bool, error) {
+	if query, args, err := ta.getQueryAndArgs(); err != nil {
+		return false, err
+	} else {
+		query = getExistsSql(ta.Agent.DBType(), query)
+		var e string
+		if err = ta.Agent.queryRowScan(query, &e, args...); err != nil {
+			return false, err
+		}
+		return e == "Y", nil
+	}
+}
+
+// ExistsTx return query sql exists data
+func (ta *TableAgent) ExistsTx() (bool, error) {
+	if query, args, err := ta.getQueryAndArgs(); err != nil {
+		return false, err
+	} else {
+		query = getExistsSql(ta.Agent.DBType(), query)
+		var e string
+		if err = ta.Agent.queryRowScanTx(query, &e, args...); err != nil {
+			return false, err
+		}
+		return e == "Y", nil
+	}
+}
+
 // Insert executes a query with db.Exec
 func (ta *TableAgent) Insert() (Result, error) {
 	if query, args, err := ta.getInsert(); err != nil {
@@ -242,6 +296,34 @@ func (ta *TableAgent) InsertTx() (Result, error) {
 		return nil, err
 	} else {
 		return ta.Agent.execTx(query, args...)
+	}
+}
+
+// InsertWithLastInsertId return last insert id by QueryRow.Scan
+func (ta *TableAgent) InsertWithLastInsertId() (int, error) {
+	if query, args, err := ta.getInsert(); err != nil {
+		return 0, err
+	} else {
+		query = ta.getInsertWithLastInsertId(query)
+		var id int
+		if err = ta.Agent.queryRowScan(query, &id, args...); err != nil {
+			return 0, err
+		}
+		return id, nil
+	}
+}
+
+// InsertTxWithLastInsertId return last insert id by QueryRow.Scan
+func (ta *TableAgent) InsertTxWithLastInsertId() (int, error) {
+	if query, args, err := ta.getInsert(); err != nil {
+		return 0, err
+	} else {
+		query = ta.getInsertWithLastInsertId(query)
+		var id int
+		if err = ta.Agent.queryRowScanTx(query, &id, args...); err != nil {
+			return 0, err
+		}
+		return id, nil
 	}
 }
 
@@ -353,6 +435,34 @@ func (ta *TableAgent) getQuery() (query string, args []interface{}, err error) {
 	return query, args, nil
 }
 
+func (ta *TableAgent) getCountAndArgs() (query string, args []interface{}, err error) {
+	if ta.Table == "" {
+		return "", nil, errorStr(errorTableEmpty)
+	}
+	if ta.Agent == nil {
+		if ta.Agent, err = GetAgent(ta.DSKey); err != nil {
+			return "", nil, err
+		}
+	}
+	if ta.SelStr == "" {
+		ta.SelStr = "COUNT(*) AS NUM"
+	}
+	query = fmt.Sprint("SELECT ", ta.SelStr, " FROM ", ta.Table, " WHERE 1 = 1")
+	args = make([]interface{}, 0)
+	if ta.Params != nil {
+		for _, param := range ta.Params {
+			var clause string
+			var pm []interface{}
+			if clause, pm, err = param.getClauseAndParams(ta.Agent.DBType(), args); err != nil {
+				return "", nil, err
+			}
+			query = fmt.Sprint(query, clause)
+			args = pm
+		}
+	}
+	return query, args, nil
+}
+
 func (ta *TableAgent) getInsert() (query string, args []interface{}, err error) {
 	if ta.Table == "" {
 		return "", nil, errorStr(errorTableEmpty)
@@ -385,6 +495,16 @@ func (ta *TableAgent) getInsert() (query string, args []interface{}, err error) 
 	val = fmt.Sprint(val, ")")
 	query = fmt.Sprint(query, " ", col, " VALUES ", val)
 	return query, args, nil
+}
+
+func (ta *TableAgent) getInsertWithLastInsertId(query string) string {
+	switch ta.Agent.DBType() {
+	case MSSql:
+		return fmt.Sprint(query, "; SELECT SCOPE_IDENTITY()")
+	case PostgreSql:
+		return fmt.Sprint(query, " RETURNING id")
+	}
+	return query
 }
 
 func (ta *TableAgent) getUpdate() (query string, args []interface{}, err error) {
