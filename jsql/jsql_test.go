@@ -743,7 +743,7 @@ func testExistsTx(t *testing.T) {
 					Table:  "TEST",
 					Params: []*Param{{Col: "COL1", Val: 1}},
 				}
-				if exists, e = table.Exists(); e != nil {
+				if exists, e = table.ExistsTx(); e != nil {
 					return e
 				}
 				assert.Equal(t, true, exists, fmt.Sprintf("%v != %v", true, exists))
@@ -752,7 +752,7 @@ func testExistsTx(t *testing.T) {
 					Table:  "TEST",
 					Params: []*Param{{Col: "COL1", Val: 7}},
 				}
-				if exists, e = table.Exists(); e != nil {
+				if exists, e = table.ExistsTx(); e != nil {
 					return e
 				}
 				assert.Equal(t, false, exists, fmt.Sprintf("%v != %v", false, exists))
@@ -870,7 +870,7 @@ func testTableSchemaTx(t *testing.T) {
 			t.Error(err)
 		} else {
 			if err = agent.UseTx(func() error {
-				if list, e := agent.Tables(); e != nil {
+				if list, e := agent.TablesTx(); e != nil {
 					return e
 				} else if len(list) != 1 {
 					return fmt.Errorf("query table error")
@@ -878,7 +878,7 @@ func testTableSchemaTx(t *testing.T) {
 					for i1, tb := range tables {
 						assert.Equal(t, strings.ToUpper(tb), strings.ToUpper(list[i1]), fmt.Sprintf("%v != %v", strings.ToUpper(tb), strings.ToUpper(list[i1])))
 						var sa []TableSchema
-						if sa, e = agent.TableSchema(list[i1]); e != nil {
+						if sa, e = agent.TableSchemaTx(list[i1]); e != nil {
 							return e
 						} else if len(sa) != 5 {
 							return fmt.Errorf("query table schema error")
