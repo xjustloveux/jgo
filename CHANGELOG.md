@@ -1,4 +1,11 @@
-# v1.3.20 (2023.01.17)
+# v1.3.21 (2023.05.17)
+Changes：
+* Update golang version to 1.20
+
+Bug Fixes：
+* Fixed jsql test bug
+
+# v1.3.20 (2023.02.17)
 Bug Fixes：
 * Fixed jsql.TableAgent query function convert data bug
 
