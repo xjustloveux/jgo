@@ -1,6 +1,7 @@
 # v1.3.21 (2023.05.17)
 Changes：
 * Update golang version to 1.20
+* Remove the JCAST PST test, as it differs between winter and summer.
 
 Bug Fixes：
 * Fixed jsql test bug
