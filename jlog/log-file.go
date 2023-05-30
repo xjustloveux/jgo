@@ -98,6 +98,7 @@ func (l *logFile) remove(lock bool, sn string, age time.Duration, count int, cur
 		for _, v := range format {
 			sn = strings.ReplaceAll(sn, fmt.Sprint("%", v), "*")
 		}
+		sn = fmt.Sprint(sn, "*")
 		if matches, err := filepath.Glob(sn); err != nil {
 			return err
 		} else {

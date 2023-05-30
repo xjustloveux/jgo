@@ -1,3 +1,7 @@
+# v1.3.22 (2023.05.30)
+Bug Fixes：
+* Fixed jlog rotate remove file bug
+
 # v1.3.21 (2023.05.17)
 Changes：
 * Update golang version to 1.20
