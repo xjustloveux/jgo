@@ -1,3 +1,7 @@
+# v1.3.23 (2023.06.05)
+Bug Fixes：
+* Fixed jsql postgresql column citext type bug
+
 # v1.3.22 (2023.05.30)
 Bug Fixes：
 * Fixed jlog rotate remove file bug

@@ -1106,7 +1106,8 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 				record[colType.Name()] = rowValue[i]
 			} else {
 				dbType := colType.DatabaseTypeName()
-				switch colType.ScanType().String() {
+				st := colType.ScanType().String()
+				switch st {
 				case "time.Time":
 					fallthrough
 				case "sql.NullTime":
@@ -1233,7 +1234,15 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 							record[colType.Name()] = rowValue[i]
 						}
 					default:
-						record[colType.Name()] = rowValue[i]
+						if st == "interface {}" {
+							if b, ok := rowValue[i].([]byte); !ok {
+								record[colType.Name()] = rowValue[i]
+							} else {
+								record[colType.Name()] = string(b)
+							}
+						} else {
+							record[colType.Name()] = rowValue[i]
+						}
 					}
 				case "godror.Number":
 					var err error
