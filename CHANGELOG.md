@@ -1,3 +1,7 @@
+# v1.3.24 (2023.12.11)
+Changes：
+* Update golang and packages version
+
 # v1.3.23 (2023.06.05)
 Bug Fixes：
 * Fixed jsql postgresql column citext type bug

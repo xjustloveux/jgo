@@ -6,10 +6,10 @@ package jsql
 
 import (
 	"fmt"
-	/*_ "github.com/denisenkom/go-mssqldb"
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/godror/godror"
-	_ "github.com/lib/pq"*/
+	//_ "github.com/denisenkom/go-mssqldb"
+	//_ "github.com/go-sql-driver/mysql"
+	//_ "github.com/godror/godror"
+	//_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 	"github.com/xjustloveux/jgo/jcast"
 	"github.com/xjustloveux/jgo/jfile"
@@ -46,24 +46,24 @@ func TestSql(t *testing.T) {
 	if err := Init(); err != nil {
 		t.Error(err)
 	}
-	/*testCreateTable(t)
-	testInsert(t)
-	testInsertTx(t)
-	testUpdate(t)
-	testUpdateTx(t)
-	testDelete(t)
-	testDeleteTx(t)
-	testQuery(t)
-	testQueryTx(t)
-	testQueryPage(t)
-	testQueryPageTx(t)
-	testCount(t)
-	testCountTx(t)
-	testExists(t)
-	testExistsTx(t)
-	testTableSchema(t)
-	testTableSchemaTx(t)
-	testDropTable(t)*/
+	//testCreateTable(t)
+	//testInsert(t)
+	//testInsertTx(t)
+	//testUpdate(t)
+	//testUpdateTx(t)
+	//testDelete(t)
+	//testDeleteTx(t)
+	//testQuery(t)
+	//testQueryTx(t)
+	//testQueryPage(t)
+	//testQueryPageTx(t)
+	//testCount(t)
+	//testCountTx(t)
+	//testExists(t)
+	//testExistsTx(t)
+	//testTableSchema(t)
+	//testTableSchemaTx(t)
+	//testDropTable(t)
 }
 
 func decodeFn(str string) (string, error) {
