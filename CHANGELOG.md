@@ -1,3 +1,7 @@
+# v1.3.26 (2024.07.03)
+Changes：
+* Update golang and packages version
+
 # v1.3.25 (2023.12.11)
 Changes：
 * Remove unused package
