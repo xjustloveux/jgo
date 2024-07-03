@@ -27,7 +27,7 @@
 
 JGo provides an easier configuration for writing sql, log, and cron jobs.
 
-JGo Web：[https://jgo.dev](https://jgo.dev)
+JGo Web：~~[https://jgo.dev](https://jgo.dev)~~
 
 JGo Web Project：[https://github.com/xjustloveux/jgo.web](https://github.com/xjustloveux/jgo.web)
 

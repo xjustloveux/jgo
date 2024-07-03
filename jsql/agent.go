@@ -1139,6 +1139,30 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 					default:
 						record[colType.Name()] = rowValue[i]
 					}
+				case "string":
+					fallthrough
+				case "sql.NullString":
+					switch dbType {
+					case "DOUBLE":
+						fallthrough
+					case "DECIMAL":
+						fallthrough
+					case "NUMERIC":
+						if v, ok := rowValue[i].([]byte); ok {
+							var err error
+							if record[colType.Name()], err = strconv.ParseFloat(string(v), 64); err != nil {
+								record[colType.Name()] = rowValue[i]
+							}
+						} else {
+							record[colType.Name()] = rowValue[i]
+						}
+					default:
+						if v, ok := rowValue[i].([]byte); ok {
+							record[colType.Name()] = string(v)
+						} else {
+							record[colType.Name()] = rowValue[i]
+						}
+					}
 				case "sql.RawBytes":
 					switch dbType {
 					case "DOUBLE":
@@ -1197,18 +1221,16 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 				case "[]uint8":
 					switch dbType {
 					case "DOUBLE":
-						var err error
-						if record[colType.Name()], err = strconv.ParseFloat(string(rowValue[i].([]uint8)), 64); err != nil {
-							record[colType.Name()] = rowValue[i]
-						}
+						fallthrough
 					case "DECIMAL":
-						var err error
-						if record[colType.Name()], err = strconv.ParseFloat(string(rowValue[i].([]uint8)), 64); err != nil {
-							record[colType.Name()] = rowValue[i]
-						}
+						fallthrough
 					case "NUMERIC":
-						var err error
-						if record[colType.Name()], err = strconv.ParseFloat(string(rowValue[i].([]uint8)), 64); err != nil {
+						if v, ok := rowValue[i].([]uint8); ok {
+							var err error
+							if record[colType.Name()], err = strconv.ParseFloat(string(v), 64); err != nil {
+								record[colType.Name()] = rowValue[i]
+							}
+						} else {
 							record[colType.Name()] = rowValue[i]
 						}
 					case "JSON":
@@ -1250,7 +1272,20 @@ func (a *Agent) getRecord(colTypes []*sql.ColumnType, rowValue []interface{}) ma
 						record[colType.Name()] = rowValue[i]
 					}
 				default:
-					record[colType.Name()] = rowValue[i]
+					switch dbType {
+					case "DOUBLE":
+						var err error
+						if record[colType.Name()], err = strconv.ParseFloat(string(rowValue[i].([]byte)), 64); err != nil {
+							record[colType.Name()] = rowValue[i]
+						}
+					case "DECIMAL":
+						var err error
+						if record[colType.Name()], err = strconv.ParseFloat(string(rowValue[i].([]byte)), 64); err != nil {
+							record[colType.Name()] = rowValue[i]
+						}
+					default:
+						record[colType.Name()] = rowValue[i]
+					}
 				}
 			}
 		} else {
